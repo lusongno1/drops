@@ -614,7 +614,7 @@ void SetupInterfaceRhsP1OnTriangle (const LocalP1CL<> p1[4],
             continue;
         r= qf*q[i];//cal in int std unit for every basis
         v[Numb[i]]+= r.quad( det);//assign cal result to corresponding pos in b, det here is area element
-        std::cout<<r.quad(det)<<std::endl;
+        //std::cout<<r.quad(det)<<std::endl;
     }
 }
 
@@ -642,7 +642,7 @@ void SetupInterfaceRhsP1OnTriangleHighQuad (const LocalP1CL<> p1[4],
  //       v[Numb[i]]+= r.quad( det);//assign cal result to corresponding pos in b
   //  }
 */
-#define DEBUG
+#define _DEBUG
 
 void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,
                           const VecDescCL& ls, const BndDataCL<>& lsetbnd, instat_scalar_fun_ptr f, double t)
@@ -680,16 +680,16 @@ void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,
                     SetupInterfaceRhsP1OnTriangle( p1, q, v->Data, num,
                                                    *it, &triangle.GetBary( tri), triangle.GetAbsDet( tri), f,t);
             }
-#ifdef DEBUG
-            std::cout<<std::endl;
-            for(int i=0; i<4; i++)
-            {
-
-                std::cout<<num[i]<<":";
-                std::cout<<(v->Data)[num[i]]<<std::endl;
-            }
-            getchar();
-#endif
+//#ifdef DEBUG
+//            std::cout<<std::endl;
+//            for(int i=0; i<4; i++)
+//            {
+//
+//                std::cout<<num[i]<<":";
+//                std::cout<<(v->Data)[num[i]]<<std::endl;
+//            }
+//            getchar();
+//#endif
         }
 
     }
@@ -933,7 +933,7 @@ void SetupInterfaceRhsP1HighQuad (const MultiGridCL& mg, VecDescCL* v,
                             NULL		/* pointer returning the computed rule */
                         );
 
-                std::cout<<res<<std::endl;
+                //std::cout<<res<<std::endl;
 
 
                 (v->Data)[num[iG]]+= res;//assign cal result to corresponding pos in b, det here is area element

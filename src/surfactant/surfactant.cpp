@@ -1076,8 +1076,8 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     L.LinComb( 1.0, A.Data, 1.0, M.Data);
  //   DROPS::MatrixCL& L= A.Data;
     DROPS::VecDescCL b( &ifaceidx);
-    DROPS::SetupInterfaceRhsP1( mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
-    //DROPS::SetupInterfaceRhsP1HighQuad(mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
+ //   DROPS::SetupInterfaceRhsP1( mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
+    DROPS::SetupInterfaceRhsP1HighQuad(mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
 
     //DROPS::WriteToFile( M.Data, "m_iface.txt", "M");
     //DROPS::WriteToFile( A.Data, "a_iface.txt", "A");
