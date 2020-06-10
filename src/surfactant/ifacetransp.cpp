@@ -31,11 +31,13 @@
 #include <cstring>
 //#include<math.h>
 //#include <cmath>
-#include "phg.h"//inc phg package include file
+//#include "phg.h"//inc phg package include file
+#include "surfactant/sfpde.h"
 
 
 namespace DROPS
 {
+
 
 void Extend (const MultiGridCL& mg, const VecDescCL& x, VecDescCL& xext)
 {
@@ -703,19 +705,20 @@ void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,
 double tet[4][3];
 int iG;
 
-void lsFun(double x, double y, double z, double *value)
-{
-    *value = x * x + y * y + z * z - 1.0;
-}
 
-
-void lsGrad(double x, double y, double z, double *grad)
-/* the gradient of the level set function */
-{
-    grad[0] = x + x;
-    grad[1] = y + y;
-    grad[2] = z + z;
-}
+//void lsFun(double x, double y, double z, double *value)
+//{
+//    *value = x * x + y * y + z * z - 1.0;
+//}
+//
+//
+//void lsGrad(double x, double y, double z, double *grad)
+///* the gradient of the level set function */
+//{
+//    grad[0] = x + x;
+//    grad[1] = y + y;
+//    grad[2] = z + z;
+//}
 void vecMinus(double a[3],double b[3],double (&result)[3])
 {
     for(int i=0; i<3; i++)
@@ -772,21 +775,23 @@ double getBaryCoord(double tetra[4][3],int i,double x,double y,double z)
     //assert()
     return pValue;
 }
-double xyz_rhs (const DROPS::Point3DCL& p, double)
-{
-    //my test case，f = 3*(x+y+z) for problem -\Delta u + u = f
-    return 3*(p[0]+p[1]+p[2]);//p.norm();
-}
+//double xyz_rhs (const DROPS::Point3DCL& p, double)
+//{
+//    //my test case，f = 3*(x+y+z) for problem -\Delta u + u = f
+//    return 3*(p[0]+p[1]+p[2]);//p.norm();
+//}
 
 void rhsIntFunP1(double x, double y, double z, double *ff)//how to define right hand side intergrand changed by tet with fixed input ???
 {
-    double xyz_rhs (const DROPS::Point3DCL& p, double);
+    //double xyz_rhs (const Point3DCL& p, double);
     //World2BaryCoordCL tetIdxMap(tetG);
     //Point3DCL& p{x,y,z};
     //double pValue = tetIdxMap.BaryCoordCL(p)[iG];
     double pValue = getBaryCoord(tet,iG,x,y,z);
     const DROPS::Point3DCL& p{x,y,z};
     double fValue = xyz_rhs(p,0);
+    //std::cout<<fValue<<std::endl;
+    //getchar();
     *ff = pValue*fValue;
 }
 

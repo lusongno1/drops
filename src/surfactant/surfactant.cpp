@@ -36,6 +36,7 @@
 #include "misc/omp_variable.h"
 #include "geom/subtriangulation.h"
 #include "num/gradient_recovery.h"
+//#include "surfactant/sfpde.h"
 /*
 #include "surfphasesep/separation.
 */
@@ -44,7 +45,7 @@
 #include <string>
 #include <tr1/unordered_map>
 #include <tr1/unordered_set>
-#include <phg.h>
+//#include <phg.h>
 
 using namespace DROPS;
 
@@ -601,10 +602,10 @@ double abs_det_sphere (const TetraCL& tet, const BaryCoordCL& xb, const SurfaceP
 // Sphere around 0, RadDrop 1, wind == 0
 // "Levelset": "SphereDist"
 // f = 2*(x+y+z) u=x+y+z for problem -\Delta u + u = f
-double xyz_rhs (const DROPS::Point3DCL& p, double)
-{//my test case，f = 3*(x+y+z) for problem -\Delta u + u = f
-    return 3*(p[0]+p[1]+p[2])/p.norm();
-}
+//double xyz_rhs (const DROPS::Point3DCL& p, double)
+//{//my test case，f = 3*(x+y+z) for problem -\Delta u + u = f
+//    return 3*(p[0]+p[1]+p[2])/p.norm();
+//}
 
 static RegisterScalarFunction regsca_xyz_rhs( "xyzRhs", xyz_rhs);
 
@@ -1076,8 +1077,8 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     L.LinComb( 1.0, A.Data, 1.0, M.Data);
  //   DROPS::MatrixCL& L= A.Data;
     DROPS::VecDescCL b( &ifaceidx);
- //   DROPS::SetupInterfaceRhsP1( mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
-    DROPS::SetupInterfaceRhsP1HighQuad(mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
+    DROPS::SetupInterfaceRhsP1( mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
+  //  DROPS::SetupInterfaceRhsP1HighQuad(mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
 
     //DROPS::WriteToFile( M.Data, "m_iface.txt", "M");
     //DROPS::WriteToFile( A.Data, "a_iface.txt", "A");
@@ -1886,19 +1887,19 @@ void StationaryStrategyDeformationP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangC
 }
 
 
-void lsFun(double x, double y, double z, double *value)
-{
-    *value = x * x + y * y + z * z - 1.0;
-}
-
-
-void lsGrad(double x, double y, double z, double *grad)
-/* the gradient of the level set function */
-{
-    grad[0] = x + x;
-    grad[1] = y + y;
-    grad[2] = z + z;
-}
+//void lsFun(double x, double y, double z, double *value)
+//{
+//    *value = x * x + y * y + z * z - 1.0;
+//}
+//
+//
+//void lsGrad(double x, double y, double z, double *grad)
+///* the gradient of the level set function */
+//{
+//    grad[0] = x + x;
+//    grad[1] = y + y;
+//    grad[2] = z + z;
+//}
 
 //static void
 //rhsIntFunP1(double x, double y, double z, double *f)
