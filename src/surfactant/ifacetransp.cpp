@@ -644,7 +644,7 @@ void SetupInterfaceRhsP1OnTriangleHighQuad (const LocalP1CL<> p1[4],
  //       v[Numb[i]]+= r.quad( det);//assign cal result to corresponding pos in b
   //  }
 */
-#define _DEBUG
+#define DEBUG
 
 void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,
                           const VecDescCL& ls, const BndDataCL<>& lsetbnd, instat_scalar_fun_ptr f, double t)
@@ -682,16 +682,16 @@ void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,
                     SetupInterfaceRhsP1OnTriangle( p1, q, v->Data, num,
                                                    *it, &triangle.GetBary( tri), triangle.GetAbsDet( tri), f,t);
             }
-//#ifdef DEBUG
-//            std::cout<<std::endl;
-//            for(int i=0; i<4; i++)
-//            {
-//
-//                std::cout<<num[i]<<":";
-//                std::cout<<(v->Data)[num[i]]<<std::endl;
-//            }
-//            getchar();
-//#endif
+#ifdef DEBUG
+            std::cout<<std::endl;
+            for(int i=0; i<4; i++)
+            {
+
+                std::cout<<num[i]<<":";
+                std::cout<<(v->Data)[num[i]]<<std::endl;
+            }
+            getchar();
+#endif
         }
 
     }
@@ -700,86 +700,9 @@ void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,
 
     std::cout << " Rhs set up." << std::endl;
 }
-#define WRT //what I am modified
-#ifdef WRT
+
 double tet[4][3];
 int iG;
-
-
-//void lsFun(double x, double y, double z, double *value)
-//{
-//    *value = x * x + y * y + z * z - 1.0;
-//}
-//
-//
-//void lsGrad(double x, double y, double z, double *grad)
-///* the gradient of the level set function */
-//{
-//    grad[0] = x + x;
-//    grad[1] = y + y;
-//    grad[2] = z + z;
-//}
-void vecMinus(double a[3],double b[3],double (&result)[3])
-{
-    for(int i=0; i<3; i++)
-    {
-        result[i] = a[i]-b[i];
-    }
-}
-
-
-
-void crossMul(double a[3],double b[3],double (&p)[3])
-{
-    p[0] = a[1]*b[2] - a[2]*b[1];
-    p[1] = a[2]*b[0] - a[0]*b[2];
-    p[2] = a[0]*b[1] - a[1]*b[0];
-}
-
-double dotP3(double a[3],double b[3])
-{
-
-    return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
-}
-
-
-double getBaryCoord(double tetra[4][3],int i,double x,double y,double z)
-{
-    double pValue = 0;
-    double v0[3] = {tetra[i][0],tetra[i][1],tetra[i][2]};
-    int idx = 0;
-    double vGround[3][3];
-    for(int j; j<4; j++)
-    {
-        if(j==i)
-            continue;
-        for(int k=0; k<3; k++)
-            vGround[idx][k] = tetra[j][k];
-        idx++;
-    }
-    double vec1[3];
-    double vec2[3];
-    double n[3];
-    vecMinus(vGround[1],vGround[0],vec1);
-    vecMinus(vGround[2],vGround[0],vec2);
-    crossMul(vec1,vec2,n);
-    double n_norm = std::sqrt(n[0]*n[0]+n[1]*n[1]+n[2]*n[2]);
-    for(int j=0; j<3; j++)
-        n[j] /=n_norm;
-    double vecV[3] = {v0[0] - vGround[0][0],v0[1] - vGround[0][1],v0[2] - vGround[0][2]};
-    double vecX[3] = {x - vGround[0][0],y - vGround[0][1],z - vGround[0][2]};
-    double valXYZ = dotP3(vecX,n);
-    double valV = dotP3(vecV,n);
-    //assert((valV>=0&&valXYZ>=0)||(valV<=0&&valXYZ<=0));
-    pValue = valXYZ/valV;
-    //assert()
-    return pValue;
-}
-//double xyz_rhs (const DROPS::Point3DCL& p, double)
-//{
-//    //my test case，f = 3*(x+y+z) for problem -\Delta u + u = f
-//    return 3*(p[0]+p[1]+p[2]);//p.norm();
-//}
 
 void rhsIntFunP1(double x, double y, double z, double *ff)//how to define right hand side intergrand changed by tet with fixed input ???
 {
@@ -795,7 +718,7 @@ void rhsIntFunP1(double x, double y, double z, double *ff)//how to define right 
     *ff = pValue*fValue;
 }
 
-//set up right hand side by high order quad
+//set up right hand side by high order quad first version
 //void SetupInterfaceRhsP1HighQuad (const MultiGridCL& mg, VecDescCL* v,
 //                                  const VecDescCL& ls, const BndDataCL<>& lsetbnd, instat_scalar_fun_ptr f, double t)
 //{
@@ -943,12 +866,24 @@ void SetupInterfaceRhsP1HighQuad (const MultiGridCL& mg, VecDescCL* v,
 
                 (v->Data)[num[iG]]+= res;//assign cal result to corresponding pos in b, det here is area element
             }
+
+
+
+#ifdef DEBUG
+            std::cout<<std::endl;
+            for(int i=0; i<4; i++)
+            {
+
+                std::cout<<num[i]<<":";
+                std::cout<<(v->Data)[num[i]]<<std::endl;
+            }
+            getchar();
+#endif
         }
     }
     std::cout << " Rhs set up." << std::endl;
 }
 
-#endif
 
 // void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,
 //     const VecDescCL& ls, const BndDataCL<>& lsetbnd, instat_scalar_fun_ptr f, double t)

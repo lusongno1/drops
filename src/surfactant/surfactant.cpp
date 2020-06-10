@@ -610,10 +610,7 @@ double abs_det_sphere (const TetraCL& tet, const BaryCoordCL& xb, const SurfaceP
 static RegisterScalarFunction regsca_xyz_rhs( "xyzRhs", xyz_rhs);
 
 
-double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
-{//my test case u=x+y+z
-    return (p[0]+p[1]+p[2])/p.norm();
-}
+
 static RegisterScalarFunction regsca_laplace_beltrami_xyz_sol( "LaplaceBeltramixyzSol", laplace_beltrami_xyz_sol);
 
 
@@ -1077,8 +1074,8 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     L.LinComb( 1.0, A.Data, 1.0, M.Data);
  //   DROPS::MatrixCL& L= A.Data;
     DROPS::VecDescCL b( &ifaceidx);
-    DROPS::SetupInterfaceRhsP1( mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
-  //  DROPS::SetupInterfaceRhsP1HighQuad(mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
+   // DROPS::SetupInterfaceRhsP1( mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
+    DROPS::SetupInterfaceRhsP1HighQuad(mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
 
     //DROPS::WriteToFile( M.Data, "m_iface.txt", "M");
     //DROPS::WriteToFile( A.Data, "a_iface.txt", "A");
