@@ -36,7 +36,7 @@
 #include "misc/omp_variable.h"
 #include "geom/subtriangulation.h"
 #include "num/gradient_recovery.h"
-//#include "surfactant/sfpde.h"
+#include "surfactant/sfpde.h"
 /*
 #include "surfphasesep/separation.
 */
