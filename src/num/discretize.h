@@ -144,7 +144,7 @@ template<class T>
     return *this;
 }
 
-template<class T1, class T2> 
+template<class T1, class T2>
   inline GridFunctionCL<T1> eval( T1 (&f)(const T2&), const GridFunctionCL<T2>& a)
 {
     GridFunctionCL<T1> ret(a.size());
@@ -155,7 +155,7 @@ template<class T1, class T2>
     return ret;
 }
 
-template<class T1, class T2, class U> 
+template<class T1, class T2, class U>
     inline GridFunctionCL<T1> eval( T1 (&f)(const U &, const T2&), const U & b, const GridFunctionCL<T2>& a)
 {
     GridFunctionCL<T1> ret(a.size());
@@ -166,7 +166,7 @@ template<class T1, class T2, class U>
     return ret;
 }
 
-template<class T1, class T2, class U, class V> 
+template<class T1, class T2, class U, class V>
     inline GridFunctionCL<T1> eval( T1 (&f)(const U &, const V &, const T2&), const U & b, const V & c, const GridFunctionCL<T2>& a)
 {
     GridFunctionCL<T1> ret(a.size());
@@ -177,7 +177,7 @@ template<class T1, class T2, class U, class V>
     return ret;
 }
 
-template<class T1, class T2, class U, class V, class W> 
+template<class T1, class T2, class U, class V, class W>
     inline GridFunctionCL<T1> eval( T1 (&f)(const U &, const V &, const W &, const T2&), const U & b, const V & c, const W & d, const GridFunctionCL<T2>& a)
 {
     GridFunctionCL<T1> ret(a.size());
@@ -189,7 +189,7 @@ template<class T1, class T2, class U, class V, class W>
 }
 
 
-template<class T1, class T2> 
+template<class T1, class T2>
   inline GridFunctionCL<T1> apply_and_eval( T1 (&f)( T2&), GridFunctionCL<T2>& a)
 {
     GridFunctionCL<T1> ret(a.size());
@@ -200,7 +200,7 @@ template<class T1, class T2>
     return ret;
 }
 
-template<class T1, class T2, class U> 
+template<class T1, class T2, class U>
     inline GridFunctionCL<T1> apply_and_eval( T1 (&f)(const U &, T2&), const U & b, GridFunctionCL<T2>& a)
 {
     GridFunctionCL<T1> ret(a.size());
@@ -211,7 +211,7 @@ template<class T1, class T2, class U>
     return ret;
 }
 
-template<class T1, class T2, class U, class V> 
+template<class T1, class T2, class U, class V>
     inline GridFunctionCL<T1> apply_and_eval( T1 (&f)(const U &, const V &, T2&), const U & b, const V & c, GridFunctionCL<T2>& a)
 {
     GridFunctionCL<T1> ret(a.size());
@@ -222,9 +222,9 @@ template<class T1, class T2, class U, class V>
     return ret;
 }
 
-template<class T1, class T2, class U, class V, class W> 
-    inline GridFunctionCL<T1> apply_and_eval( T1 (&f)(const U &, const V &, const W &, T2&), 
-                                              const U & b, const V & c, const W & d, 
+template<class T1, class T2, class U, class V, class W>
+    inline GridFunctionCL<T1> apply_and_eval( T1 (&f)(const U &, const V &, const W &, T2&),
+                                              const U & b, const V & c, const W & d,
                                               GridFunctionCL<T2>& a)
 {
     GridFunctionCL<T1> ret(a.size());
@@ -253,7 +253,7 @@ operator*(const GridFunctionCL<SVectorCL<D> >& a, const GridFunctionCL<double>& 
 }
 
 template<Uint D>
-inline GridFunctionCL<SVectorCL<D> > 
+inline GridFunctionCL<SVectorCL<D> >
 operator*(const SMatrixCL<D,D>& A, const GridFunctionCL<SVectorCL<D> >& b)
 {
     GridFunctionCL<SVectorCL<D> > ret( b);
@@ -649,7 +649,7 @@ class Quad2CL: public GridFunctionCL<T>
     typedef typename base_type::tetra_function tetra_function;
     typedef Quad2DataCL DataClass;
 
-    
+
 
     static const double Node[5][4]; // Stuetzstellen (NumNodesC*4 doubles)
     static const double Wght[5];    // Gewichte      (NumNodesC   doubles)
@@ -958,7 +958,7 @@ class Quad2_2DDataCL
     { DROPS::SetInterface( p, NumNodesC, NodeInTetra, Node); }
 };
 
-/// \brief Contains the nodes and weights of a Gauss–Legendre quadrature rule on the reference interval [-1 1]. 
+/// \brief Contains the nodes and weights of a Gauss–Legendre quadrature rule on the reference interval [-1 1].
 /// It uses 5 nodes an is exact up to degree 9.
 
 class Quad9_1DDataCL
@@ -971,7 +971,7 @@ class Quad9_1DDataCL
 
     static const double        Node[NumNodesC];   ///< quadrature nodes
     static const double        Weight[NumNodesC]; ///< quadrature weights for each node
-    
+
     /// Calculates the barycentric coordinates of the quadrature points
     /// of the interval (in 1D) given by the first argument with respect to the
     /// tetrahedron and stores them in the second argument.
@@ -1093,6 +1093,8 @@ DROPS_DEFINE_VALARRAY_DERIVATIVE(Quad5_2DCL, T, base_type)
     // absdet wird als Parameter uebergeben, damit dieser Faktor bei der
     // Diskretisierung nicht vergessen wird (beliebter folgenschwerer Fehler :-)
     T quad (double absdet) const {
+//        for(int i=0;i<7;i++)
+//    std::cout<<(*this)[i]<<std::endl;
       return absdet*(9./80.*(*this)[0] + (155. - std::sqrt( 15.0))/2400.*((*this)[1]+(*this)[2]+(*this)[3]) + (155. + std::sqrt( 15.0))/2400.*((*this)[4]+(*this)[5]+(*this)[6]));
     }
 };

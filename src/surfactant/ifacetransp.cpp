@@ -34,6 +34,7 @@
 //#include "phg.h"//inc phg package include file
 #include "surfactant/sfpde.h"
 
+#define DEBUG
 
 namespace DROPS
 {
@@ -617,6 +618,16 @@ void SetupInterfaceRhsP1OnTriangle (const LocalP1CL<> p1[4],
         r= qf*q[i];//cal in int std unit for every basis
         v[Numb[i]]+= r.quad( det);//assign cal result to corresponding pos in b, det here is area element
         //std::cout<<r.quad(det)<<std::endl;
+#ifdef DEBUG
+        std::cout<<std::endl;
+        // for(int i=0; i<4; i++)
+        {
+
+            std::cout<<Numb[i]<<":";
+            std::cout<<r.quad( det)<<std::endl;
+        }
+        getchar();
+#endif
     }
 }
 
@@ -644,7 +655,7 @@ void SetupInterfaceRhsP1OnTriangleHighQuad (const LocalP1CL<> p1[4],
  //       v[Numb[i]]+= r.quad( det);//assign cal result to corresponding pos in b
   //  }
 */
-#define DEBUG
+
 
 void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,
                           const VecDescCL& ls, const BndDataCL<>& lsetbnd, instat_scalar_fun_ptr f, double t)
@@ -662,6 +673,12 @@ void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,
 
     LocalP1CL<> p1[4];//put P1 finite element and get their value on tetra
     p1[0][0]= p1[1][1]= p1[2][2]= p1[3][3]= 1.; // P1-Basis-Functions
+//    for(int i=0; i<4; i++)
+//    {
+//        for(int j=0; j<4; j++)
+//            p1[i][j] = 1;
+//    }
+
     Quad5_2DCL<double> q[4], m;// define quad class to cal result
 
     InterfaceTriangleCL triangle;//donate trangle approximation of surface
@@ -713,9 +730,11 @@ void rhsIntFunP1(double x, double y, double z, double *ff)//how to define right 
     double pValue = getBaryCoord(tet,iG,x,y,z);
     const DROPS::Point3DCL& p{x,y,z};
     double fValue = xyz_rhs(p,0);
-    //std::cout<<fValue<<std::endl;
+   // std::cout<<pValue<<std::endl;
     //getchar();
     *ff = pValue*fValue;
+
+   // *ff = 1;
 }
 
 //set up right hand side by high order quad first version
@@ -837,10 +856,14 @@ void SetupInterfaceRhsP1HighQuad (const MultiGridCL& mg, VecDescCL* v,
                 {
 
                     tet[i][j] = coord[j];
+                  //  std::cout<<tet[i][j]<<std::endl;
+
 
                 }
 
+
             }
+            //getchar();
 
 
             for (iG= 0; iG < 4; ++iG)
@@ -865,6 +888,19 @@ void SetupInterfaceRhsP1HighQuad (const MultiGridCL& mg, VecDescCL* v,
 
 
                 (v->Data)[num[iG]]+= res;//assign cal result to corresponding pos in b, det here is area element
+
+#ifdef DEBUG
+                std::cout<<std::endl;
+                // for(int i=0; i<4; i++)
+                {
+
+                    std::cout<<num[iG]<<":";
+                    std::cout<<res<<std::endl;
+                }
+                getchar();
+#endif
+
+
             }
 
 
