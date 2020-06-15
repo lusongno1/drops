@@ -1065,7 +1065,7 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 
     DROPS::MatDescCL M( &ifaceidx, &ifaceidx);
     DROPS::SetupInterfaceMassP1( mg, &M, lset.Phi, lset.GetBndData());
-    DROPS::SetupInterfaceMassP1HighQuad( mg, &M, lset.Phi, lset.GetBndData());
+ //   DROPS::SetupInterfaceMassP1HighQuad( mg, &M, lset.Phi, lset.GetBndData());
     std::cout << "M is set up.\n";
 
 

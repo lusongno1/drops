@@ -215,7 +215,7 @@ struct do_accumulateCL<AccumulatorTupleCL<VisitedT> >
 {
     static void accumulate (AccumulatorTupleCL<VisitedT>& accu, const MultiGridCL& mg, int lvl, __UNUSED__ const BndCondCL& Bnd)
     {
-#ifdef _OPENMP
+#ifdef _OPENMP_
         if (omp_get_max_threads() > 1)
             accu( mg.GetColorClasses( lvl, Bnd));
         else
