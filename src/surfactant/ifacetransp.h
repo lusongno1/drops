@@ -36,6 +36,7 @@
 #include "num/fe_repair.h"
 #include "num/quadrature.h"
 #include "num/oseensolver.h"
+#include "surfactant/sfpde.h"
 
 #include <math.h>
 #include <cmath>
@@ -1016,167 +1017,71 @@ public:
 
     LocalInterfaceMassP1CL (double alpha= 1.) : alpha_( alpha) {}
 };
-//class LocalInterfaceMassP1CLHighQuad
-//{
-//  private:
-//    std::valarray<double> q[4];
-//    QuadDomain2DCL qdom;
-//    double alpha_;
-//
-//  public:
-//    static const FiniteElementT row_fe_type= P1IF_FE,
-//                                col_fe_type= P1IF_FE;
-//
-//    double coup[4][4];
-//
-//    void setup (const TetraCL& t, const InterfaceCommonDataP1CL& cdata) {
-//        make_CompositeQuad2Domain2D ( qdom, cdata.surf, t);
-//        for (int i= 0; i < 4; ++i)
-//            resize_and_evaluate_on_vertexes ( cdata.p1[i], qdom, q[i]);
-//        for (int i= 0; i < 4; ++i) {
-//            coup[i][i]= quad_2D( q[i]*q[i], qdom);
-//            for(int j= 0; j < i; ++j)
-//                coup[i][j]= coup[j][i]= alpha_*quad_2D( q[j]*q[i], qdom);
-//        }
-//    }
-//
-//    LocalInterfaceMassP1CLHighQuad (double alpha= 1.) : alpha_( alpha) {}
-//};
 
 
 
+class LocalInterfaceMassP1CLHighQuad
+{
+private:
+    double res;
+    int order = 10;
+    double alpha_;
 
-//class LocalInterfaceMassP1CLHighQuad
-//{
-//private:
-//    static double tet[4][3];
-//    double res;
-//    static int iG;
-//    static int jG;
-//    int order = 10;
-//    double alpha_;
-//
-//public:
-//    double coup[4][4];
-//    static const FiniteElementT row_fe_type= P1IF_FE,
-//                                col_fe_type= P1IF_FE;
-//
-//    static void  lsFun(double x, double y, double z, double *value)
-//    {
-//        *value = x * x + y * y + z * z - 1.0;
-//    }
-//    static void  lsGrad(double x, double y, double z, double *grad)
-//    /* the gradient of the level set function */
-//    {
-//        grad[0] = x + x;
-//        grad[1] = y + y;
-//        grad[2] = z + z;
-//    }
-//    static void  vecMinus(double a[3],double b[3],double (&result)[3])
-//    {
-//        for(int i=0; i<3; i++)
-//        {
-//            result[i] = a[i]-b[i];
-//        }
-//    }
-//    static double  dotP3(double a[3],double b[3])
-//    {
-//
-//        return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
-//    }
-//    static void crossMul(double a[3],double b[3],double (&p)[3])
-//    {
-//        p[0] = a[1]*b[2] - a[2]*b[1];
-//        p[1] = a[2]*b[0] - a[0]*b[2];
-//        p[2] = a[0]*b[1] - a[1]*b[0];
-//    }
-//    static double getBaryCoord(int i,double x,double y,double z)
-//    {
-//        double pValue = 0;
-//        double v0[3] = {tet[i][0],tet[i][1],tet[i][2]};
-//        int idx = 0;
-//        double vGround[3][3];
-//        for(int j; j<4; j++)
-//        {
-//            if(j==i)
-//                continue;
-//            for(int k=0; k<3; k++)
-//                vGround[idx][k] = tet[j][k];
-//            idx++;
-//        }
-//        double vec1[3];
-//        double vec2[3];
-//        double n[3];
-//        vecMinus(vGround[1],vGround[0],vec1);
-//        vecMinus(vGround[2],vGround[0],vec2);
-//        crossMul(vec1,vec2,n);
-//        double n_norm = std::sqrt(n[0]*n[0]+n[1]*n[1]+n[2]*n[2]);
-//        for(int j=0; j<3; j++)
-//            n[j] /=n_norm;
-//        double vecV[3] = {v0[0] - vGround[0][0],v0[1] - vGround[0][1],v0[2] - vGround[0][2]};
-//        double vecX[3] = {x - vGround[0][0],y - vGround[0][1],z - vGround[0][2]};
-//        double valXYZ = dotP3(vecX,n);
-//        double valV = dotP3(vecV,n);
-//        //assert((valV>=0&&valXYZ>=0)||(valV<=0&&valXYZ<=0));
-//        pValue = valXYZ/valV;
-//        //assert()
-//        return pValue;
-//    }
-//    static void localMassIntFunP1(double x, double y, double z, double *ff)//how to define right hand side intergrand changed by tet with fixed input ???
-//    {
-//        double vtxIValue = getBaryCoord(iG,x,y,z);
-//        double vtxJValue = getBaryCoord(jG,x,y,z);
-//        *ff = vtxIValue*vtxJValue;
-//    }
-//
-//    void setup (const TetraCL& t, const InterfaceCommonDataP1CL& cdata)
-//    {
-//        for (Uint i= 0; i < 4; ++i)
-//        {
-//            auto vtx = t.GetVertex(i);
-//            auto coord = vtx->GetCoord();
-//            for(int j=0; j<4; j++)
-//            {
-//
-//                tet[i][j] = coord[j];
-//
-//            }
-//
-//        }
-//
-//
-//        for(iG=0; iG<4; iG++)
-//        {
-//            for(jG=iG; jG<4; jG++)
-//            {
-//                int n = phgQuadInterface2(
-//                            lsFun,		/* the level set function */
-//                            2,		/* polynomial order of the level set function */
-//                            lsGrad,	/* the gradient of the level set function */
-//                            tet,		/* coordinates of the vertices of the tetra */
-//                            localMassIntFunP1,		/* the integrand */
-//                            1,		/* dimension of the integrand */
-//                            DOF_PROJ_NONE,	/* projection type for surface integral */
-//                            0,		/* integration type (-1, 0, 1) */
-//                            order,		/* order of the 1D Gaussian quadrature */
-//                            &res,		/* the computed integral */
-//                            NULL		/* pointer returning the computed rule */
-//                        );
-//
-//                coup[iG][jG] = res;
-//                coup[jG][iG] = res;
-//            }
-//
-//
-//        }
-//
-//    }
-//    LocalInterfaceMassP1CLHighQuad (double alpha= 1.) : alpha_( alpha) {}
-//
-//
-//
-//};
-//
+public:
+    double coup[4][4];
+    static const FiniteElementT row_fe_type= P1IF_FE,
+                                col_fe_type= P1IF_FE;
+    static void localMassIntFunP1(double x, double y, double z, double *ff)//how to define right hand side intergrand changed by tet with fixed input ???
+    {
+        double vtxIValue = getBaryCoord(tet,iG,x,y,z);
+        double vtxJValue = getBaryCoord(tet,jG,x,y,z);
+        *ff = vtxIValue*vtxJValue;
+    }
+
+
+
+    void setup (const TetraCL& t, const InterfaceCommonDataP1CL& cdata)
+    {
+        for (Uint i= 0; i < 4; ++i)
+        {
+            auto vtx = t.GetVertex(i);
+            auto coord = vtx->GetCoord();
+            for(int j=0; j<4; j++)
+            {
+
+                tet[i][j] = coord[j];
+
+            }
+
+        }
+
+        for(iG=0; iG<4; iG++)
+        {
+            for(jG=iG; jG<4; jG++)
+            {
+                int n = phgQuadInterface2(
+                            lsFun,		/* the level set function */
+                            2,		/* polynomial order of the level set function */
+                            lsGrad,	/* the gradient of the level set function */
+                            tet,		/* coordinates of the vertices of the tetra */
+                            localMassIntFunP1,		/* the integrand */
+                            1,		/* dimension of the integrand */
+                            DOF_PROJ_NONE,	/* projection type for surface integral */
+                            0,		/* integration type (-1, 0, 1) */
+                            order,		/* order of the 1D Gaussian quadrature */
+                            &res,		/* the computed integral */
+                            NULL		/* pointer returning the computed rule */
+                        );
+
+                coup[iG][jG] = res;
+                coup[jG][iG] = res;
+            }
+        }
+
+    }
+    LocalInterfaceMassP1CLHighQuad (double alpha= 1.) : alpha_( alpha) {}
+};
+
 
 
 /// \brief The routine sets up the Laplace-Beltrami-matrix in mat on the interface defined by ls.

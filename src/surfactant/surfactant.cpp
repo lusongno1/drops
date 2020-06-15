@@ -45,6 +45,7 @@
 #include <string>
 #include <tr1/unordered_map>
 #include <tr1/unordered_set>
+#include <surfactant/sfpde.h>
 //#include <phg.h>
 
 using namespace DROPS;
@@ -537,7 +538,10 @@ static RegisterScalarFunction regsca_mergedrop_rhs( "MergeDropRhs", mergedrop_rh
 double sphere_dist (const DROPS::Point3DCL& p, double)
 {
     DROPS::Point3DCL x( p - PosDrop);
+    //double value=0;
+    //lsFun(x[0], x[1], x[2], &value);
     return x.norm() - RadDrop[0];
+    //return value;
 }
 static RegisterScalarFunction regsca_sphere_dist_lset( "SphereDist", sphere_dist);
 
@@ -1061,13 +1065,13 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 
     DROPS::MatDescCL M( &ifaceidx, &ifaceidx);
     DROPS::SetupInterfaceMassP1( mg, &M, lset.Phi, lset.GetBndData());
-    //DROPS::SetupInterfaceMassP1HighQuad( mg, &M, lset.Phi, lset.GetBndData());
+    DROPS::SetupInterfaceMassP1HighQuad( mg, &M, lset.Phi, lset.GetBndData());
     std::cout << "M is set up.\n";
 
 
     DROPS::MatDescCL A( &ifaceidx, &ifaceidx);
     DROPS::SetupLBP1( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
-    //DROPS::SetupLBP1HighQuad( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
+//    DROPS::SetupLBP1HighQuad( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
     std::cout << "A is set up.\n";
 
     DROPS::MatrixCL L;

@@ -20,8 +20,11 @@
  *
  * Copyright 2009 LNM/SC RWTH Aachen, Germany
 */
-#pragma once
+//#pragma once
 #include "misc/container.h"
+
+#ifndef DROPS_SFPDE_H
+#define DROPS_SFPDE_H
 //namespace DROPS
 //{
 double xyz_rhs (const DROPS::Point3DCL& p, double);
@@ -34,3 +37,8 @@ void vecMinus(double a[3],double b[3],double (&result)[3]);
 void crossMul(double a[3],double b[3],double (&p)[3]);
 double dotP3(double a[3],double b[3]);
 double getBaryCoord(double tetra[4][3],int i,double x,double y,double z);
+
+extern double tet[4][3];
+extern int iG;
+extern int jG;
+#endif

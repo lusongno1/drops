@@ -401,21 +401,21 @@ void SetupInterfaceMassP1 (const MultiGridCL& mg, MatDescCL* matM, const VecDesc
     // WriteToFile( matM->Data, "mass.txt", "mass");
 }
 
-////set up interface mass matrix, high quad version
-//void SetupInterfaceMassP1HighQuad (const MultiGridCL& mg, MatDescCL* matM, const VecDescCL& ls, const BndDataCL<>& lsetbnd, double alpha)
-//{
-//    //ScopeTimerCL timer( "SetupInterfaceMassP1");
-//
-//    TetraAccumulatorTupleCL accus;
-//    InterfaceCommonDataP1CL cdata( ls, lsetbnd);
-//    accus.push_back( &cdata);
-//    InterfaceMatrixAccuCL<LocalInterfaceMassP1CLHighQuad, InterfaceCommonDataP1CL> accu( matM, LocalInterfaceMassP1CLHighQuad( alpha), cdata);
-//    accus.push_back( &accu);
-//    const IdxDescCL* RowIdx= matM->RowIdx;
-//    accumulate( accus, mg, RowIdx->TriangLevel(), RowIdx->GetBndInfo());
-//
-//    // WriteToFile( matM->Data, "mass.txt", "mass");
-//}
+//set up interface mass matrix, high quad version
+void SetupInterfaceMassP1HighQuad (const MultiGridCL& mg, MatDescCL* matM, const VecDescCL& ls, const BndDataCL<>& lsetbnd, double alpha)
+{
+    //ScopeTimerCL timer( "SetupInterfaceMassP1");
+
+    TetraAccumulatorTupleCL accus;
+    InterfaceCommonDataP1CL cdata( ls, lsetbnd);
+    accus.push_back( &cdata);
+    InterfaceMatrixAccuCL<LocalInterfaceMassP1CLHighQuad, InterfaceCommonDataP1CL> accu( matM, LocalInterfaceMassP1CLHighQuad( alpha), cdata);
+    accus.push_back( &accu);
+    const IdxDescCL* RowIdx= matM->RowIdx;
+    accumulate( accus, mg, RowIdx->TriangLevel(), RowIdx->GetBndInfo());
+
+    // WriteToFile( matM->Data, "mass.txt", "mass");
+}
 
 void SetupInterfaceMassP1OnTriangle (const LocalP1CL<> p1[4], Quad5_2DCL<> q[4],
                                      const BaryCoordCL triangle[3], double det, double coup[4][4])
@@ -731,8 +731,8 @@ void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,
     std::cout << " Rhs set up." << std::endl;
 }
 
-double tet[4][3];
-int iG;
+//double tet[4][3];
+//int iG;
 
 void rhsIntFunP1(double x, double y, double z, double *ff)//how to define right hand side intergrand changed by tet with fixed input ???
 {

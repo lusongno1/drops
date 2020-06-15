@@ -121,5 +121,9 @@ double getBaryCoord(double tetra[4][3],int i,double x,double y,double z)
     return pValue;
 }
 
+double tet[4][3];
+int iG;
+int jG;
+
 
 
