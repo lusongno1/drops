@@ -34,7 +34,7 @@
 //#include "phg.h"//inc phg package include file
 #include "surfactant/sfpde.h"
 
-#define DEBUG
+#define _DEBUG
 
 namespace DROPS
 {
@@ -618,7 +618,7 @@ void SetupInterfaceRhsP1OnTriangle (const LocalP1CL<> p1[4],
         r= qf*q[i];//cal in int std unit for every basis
         v[Numb[i]]+= r.quad( det);//assign cal result to corresponding pos in b, det here is area element
         //std::cout<<r.quad(det)<<std::endl;
-#ifdef DEBUG
+#ifdef DEBUG_
         std::cout<<std::endl;
         // for(int i=0; i<4; i++)
         {
@@ -699,7 +699,20 @@ void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,
                     SetupInterfaceRhsP1OnTriangle( p1, q, v->Data, num,
                                                    *it, &triangle.GetBary( tri), triangle.GetAbsDet( tri), f,t);
             }
-#ifdef DEBUG
+#ifdef DEBUG_
+            for (Uint i= 0; i < 4; ++i)
+            {
+                auto vtx = (*it).GetVertex(i);
+                auto coord = vtx->GetCoord();
+                for(int j =0 ;j<3;j++)
+                {
+                    std::cout<<coord[j]<<" ";
+                }
+                std::cout<<std::endl;
+            }
+            getchar();
+#endif
+#ifdef DEBUG_
             std::cout<<std::endl;
             for(int i=0; i<4; i++)
             {
@@ -730,12 +743,120 @@ void rhsIntFunP1(double x, double y, double z, double *ff)//how to define right 
     double pValue = getBaryCoord(tet,iG,x,y,z);
     const DROPS::Point3DCL& p{x,y,z};
     double fValue = xyz_rhs(p,0);
-   // std::cout<<pValue<<std::endl;
+    // std::cout<<pValue<<std::endl;
     //getchar();
     *ff = pValue*fValue;
 
-   // *ff = 1;
+    // *ff = 1;
 }
+
+
+void SetupInterfaceRhsP1HighQuad (const MultiGridCL& mg, VecDescCL* v,
+                                  const VecDescCL& ls, const BndDataCL<>& lsetbnd, instat_scalar_fun_ptr f, double t)
+{
+    //mg include partition, v is result we put intergrant on,ls is decrete level set values, lsetbnd contain some boundary info
+    //f is right hand side function, t is time unused here.
+
+    const IdxT num_unks= v->RowIdx->NumUnknowns();//unknown number count, that vertexes name of tetra which intersect with bnd
+    const Uint lvl = v->GetLevel();//lvl is refine level
+
+    v->Clear(0);//reset v
+    IdxT num[4];//to put right hand side index of four vertexes
+
+    std::cout << "entering SetupInterfaceRhsP1: " << num_unks << " dof... ";
+
+
+    InterfaceTriangleCL triangle;//donate trangle approximation of surface
+
+
+    int order = 10;
+    double res = 0.0;
+    int tri_idx = 0;
+
+    DROPS_FOR_TRIANG_CONST_TETRA( mg, lvl, it)//we need to find tetrahedron which contain useful triangles, most is useless
+    {
+        //itertor from mg.GetTriangTetraBegin( lvl) to mg.GetTriangTetraEnd( lvl), "it" is a iterator
+        triangle.Init( *it, ls, lsetbnd);//init the zero level set of tetra it, lsetbnd is useless here
+        if (triangle.Intersects())   // We are at the phase boundary.
+        {
+            tri_idx++;
+            GetLocalNumbP1NoBnd( num, *it, *v->RowIdx);//num map four vertexes of tet to dof index of b
+
+            const Uint sys= (*v->RowIdx).GetIdx();
+            for (Uint i= 0; i < 4; ++i)
+            {
+                auto vtx = (*it).GetVertex(i);
+                num[i]= vtx->Unknowns( sys);//find the dof idx of four vtx
+
+                auto coord = vtx->GetCoord();
+                for(int j=0; j<4; j++)
+                {
+
+                    tet[i][j] = coord[j];
+                    //  std::cout<<tet[i][j]<<std::endl;
+
+
+                }
+
+
+            }
+            //getchar();
+
+
+            for (iG= 0; iG < 4; ++iG)
+            {
+                if (num[iG] == NoIdx)//NoIdx means discarded dof
+                    continue;
+                int n = phgQuadInterface2(
+                            lsFun,		/* the level set function */
+                            2,		/* polynomial order of the level set function */
+                            lsGrad,	/* the gradient of the level set function */
+                            tet,		/* coordinates of the vertices of the tetra */
+                            rhsIntFunP1,		/* the integrand */
+                            1,		/* dimension of the integrand */
+                            DOF_PROJ_NONE,	/* projection type for surface integral */
+                            0,		/* integration type (-1, 0, 1) */
+                            order,		/* order of the 1D Gaussian quadrature */
+                            &res,		/* the computed integral */
+                            NULL		/* pointer returning the computed rule */
+                        );
+
+                //std::cout<<res<<std::endl;
+
+
+                (v->Data)[num[iG]]+= res;//assign cal result to corresponding pos in b, det here is area element
+
+#ifdef DEBUG_
+                std::cout<<std::endl;
+                // for(int i=0; i<4; i++)
+                {
+
+                    std::cout<<num[iG]<<":";
+                    std::cout<<res<<std::endl;
+                }
+              //  getchar();
+#endif
+
+
+            }
+
+
+
+#ifdef DEBUG_
+            std::cout<<std::endl;
+            for(int i=0; i<4; i++)
+            {
+
+                std::cout<<num[i]<<":";
+                std::cout<<(v->Data)[num[i]]<<std::endl;
+            }
+            //getchar();
+#endif
+        }
+    }
+    std::cout << " Rhs set up." << std::endl;
+}
+
 
 //set up right hand side by high order quad first version
 //void SetupInterfaceRhsP1HighQuad (const MultiGridCL& mg, VecDescCL* v,
@@ -814,111 +935,6 @@ void rhsIntFunP1(double x, double y, double z, double *ff)//how to define right 
 //    std::cout << " Rhs set up." << std::endl;
 //}
 
-
-
-void SetupInterfaceRhsP1HighQuad (const MultiGridCL& mg, VecDescCL* v,
-                                  const VecDescCL& ls, const BndDataCL<>& lsetbnd, instat_scalar_fun_ptr f, double t)
-{
-    //mg include partition, v is result we put intergrant on,ls is decrete level set values, lsetbnd contain some boundary info
-    //f is right hand side function, t is time unused here.
-
-    const IdxT num_unks= v->RowIdx->NumUnknowns();//unknown number count, that vertexes name of tetra which intersect with bnd
-    const Uint lvl = v->GetLevel();//lvl is refine level
-
-    v->Clear(0);//reset v
-    IdxT num[4];//to put right hand side index of four vertexes
-
-    std::cout << "entering SetupInterfaceRhsP1: " << num_unks << " dof... ";
-
-
-    InterfaceTriangleCL triangle;//donate trangle approximation of surface
-
-
-    int order = 10;
-    double res = 0.0;
-
-    DROPS_FOR_TRIANG_CONST_TETRA( mg, lvl, it)//we need to find tetrahedron which contain useful triangles, most is useless
-    {
-        //itertor from mg.GetTriangTetraBegin( lvl) to mg.GetTriangTetraEnd( lvl), "it" is a iterator
-        triangle.Init( *it, ls, lsetbnd);//init the zero level set of tetra it, lsetbnd is useless here
-        if (triangle.Intersects())   // We are at the phase boundary.
-        {
-            GetLocalNumbP1NoBnd( num, *it, *v->RowIdx);//num map four vertexes of tet to dof index of b
-
-            const Uint sys= (*v->RowIdx).GetIdx();
-            for (Uint i= 0; i < 4; ++i)
-            {
-                auto vtx = (*it).GetVertex(i);
-                num[i]= vtx->Unknowns( sys);//find the dof idx of four vtx
-
-                auto coord = vtx->GetCoord();
-                for(int j=0; j<4; j++)
-                {
-
-                    tet[i][j] = coord[j];
-                  //  std::cout<<tet[i][j]<<std::endl;
-
-
-                }
-
-
-            }
-            //getchar();
-
-
-            for (iG= 0; iG < 4; ++iG)
-            {
-                if (num[iG] == NoIdx)//NoIdx means discarded dof
-                    continue;
-                int n = phgQuadInterface2(
-                            lsFun,		/* the level set function */
-                            2,		/* polynomial order of the level set function */
-                            lsGrad,	/* the gradient of the level set function */
-                            tet,		/* coordinates of the vertices of the tetra */
-                            rhsIntFunP1,		/* the integrand */
-                            1,		/* dimension of the integrand */
-                            DOF_PROJ_NONE,	/* projection type for surface integral */
-                            0,		/* integration type (-1, 0, 1) */
-                            order,		/* order of the 1D Gaussian quadrature */
-                            &res,		/* the computed integral */
-                            NULL		/* pointer returning the computed rule */
-                        );
-
-                //std::cout<<res<<std::endl;
-
-
-                (v->Data)[num[iG]]+= res;//assign cal result to corresponding pos in b, det here is area element
-
-#ifdef DEBUG
-                std::cout<<std::endl;
-                // for(int i=0; i<4; i++)
-                {
-
-                    std::cout<<num[iG]<<":";
-                    std::cout<<res<<std::endl;
-                }
-                getchar();
-#endif
-
-
-            }
-
-
-
-#ifdef DEBUG
-            std::cout<<std::endl;
-            for(int i=0; i<4; i++)
-            {
-
-                std::cout<<num[i]<<":";
-                std::cout<<(v->Data)[num[i]]<<std::endl;
-            }
-            getchar();
-#endif
-        }
-    }
-    std::cout << " Rhs set up." << std::endl;
-}
 
 
 // void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,

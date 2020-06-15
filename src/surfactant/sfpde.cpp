@@ -22,7 +22,7 @@
  * Copyright 2009 LNM/SC RWTH Aachen, Germany
 */
 #include "sfpde.h"
-/*
+
 // test case 1
 //define right hand side and true solution
 //my test case，f = 3*(x+y+z) for problem -\Delta u + u = f
@@ -36,18 +36,18 @@ double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
 {
     return (p[0]+p[1]+p[2]);//p.norm();
 }
-*/
+
 
 // test case 2
-double xyz_rhs (const DROPS::Point3DCL& p, double)
-{
-
-    return 1;
-}
-double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
-{
-    return 1;
-}
+//double xyz_rhs (const DROPS::Point3DCL& p, double)
+//{
+//
+//    return 1;
+//}
+//double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+//{
+//    return 1;
+//}
 
 //define level set funcion and its gradient
 //unit ball zero level set
@@ -94,7 +94,7 @@ double getBaryCoord(double tetra[4][3],int i,double x,double y,double z)
     double v0[3] = {tetra[i][0],tetra[i][1],tetra[i][2]};
     int idx = 0;
     double vGround[3][3];
-    for(int j; j<4; j++)
+    for(int j=0; j<4; j++)
     {
         if(j==i)
             continue;
