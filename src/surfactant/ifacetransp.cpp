@@ -567,38 +567,22 @@ void SetupLBP1 (const MultiGridCL& mg, MatDescCL* mat, const VecDescCL& ls, cons
     // WriteToFile( mat->Data, "lb.txt", "lb");
 }
 
-//void SetupLBP1HighQuad (const MultiGridCL& mg, MatDescCL* mat, const VecDescCL& ls, const BndDataCL<>& lsetbnd, double D)
-//{//input: multigrid, result matrix, dicrete level set, boundary data
-//    //ScopeTimerCL timer( "SetuLBP1");
-//
-//    TetraAccumulatorTupleCL accus;//define tetrahedron accumulator tuple class
-//    InterfaceCommonDataP1CL cdata( ls, lsetbnd);//store some info of zero ls
-//    accus.push_back( &cdata);//push zero ls to accumulator
-//    InterfaceMatrixAccuCL<LocalLaplaceBeltramiP1CLHighQuad, InterfaceCommonDataP1CL> accu( mat, LocalLaplaceBeltramiP1CLHighQuad( D), cdata);
-//    accus.push_back( &accu);//push A,visc,zero level set to accumulator
-//    const IdxDescCL* RowIdx= mat->RowIdx;//row index info of A
-//    accumulate( accus, mg, RowIdx->TriangLevel(), RowIdx->GetBndInfo());//calculate intergrant by accumulate
-//
-//    // WriteToFile( mat->Data, "lb.txt", "lb");
-//}
-
-
 
 // set up laplace beltrami P1 high quad version
-//void SetupLBP1HighQuad (const MultiGridCL& mg, MatDescCL* mat, const VecDescCL& ls, const BndDataCL<>& lsetbnd, double D)
-//{//input: multigrid, result matrix, dicrete level set, boundary data
-//    //ScopeTimerCL timer( "SetuLBP1");
-//
-//    TetraAccumulatorTupleCL accus;//define tetrahedron accumulator tuple class
-//    InterfaceCommonDataP1CL cdata( ls, lsetbnd);//store some info of zero ls
-//    accus.push_back( &cdata);//push zero ls to accumulator
-//    InterfaceMatrixAccuCL<LocalLaplaceBeltramiP1CLHighQuad, InterfaceCommonDataP1CL> accu( mat, LocalLaplaceBeltramiP1CLHighQuad( D), cdata);
-//    accus.push_back( &accu);//push A,visc,zero level set to accumulator
-//    const IdxDescCL* RowIdx= mat->RowIdx;//row index info of A
-//    accumulate( accus, mg, RowIdx->TriangLevel(), RowIdx->GetBndInfo());//calculate intergrant by accumulate
-//
-//    // WriteToFile( mat->Data, "lb.txt", "lb");
-//}
+void SetupLBP1HighQuad (const MultiGridCL& mg, MatDescCL* mat, const VecDescCL& ls, const BndDataCL<>& lsetbnd, double D)
+{//input: multigrid, result matrix, dicrete level set, boundary data
+    //ScopeTimerCL timer( "SetuLBP1");
+
+    TetraAccumulatorTupleCL accus;//define tetrahedron accumulator tuple class
+    InterfaceCommonDataP1CL cdata( ls, lsetbnd);//store some info of zero ls
+    accus.push_back( &cdata);//push zero ls to accumulator
+    InterfaceMatrixAccuCL<LocalLaplaceBeltramiP1CLHighQuad, InterfaceCommonDataP1CL> accu( mat, LocalLaplaceBeltramiP1CLHighQuad( D), cdata);
+    accus.push_back( &accu);//push A,visc,zero level set to accumulator
+    const IdxDescCL* RowIdx= mat->RowIdx;//row index info of A
+    accumulate( accus, mg, RowIdx->TriangLevel(), RowIdx->GetBndInfo());//calculate intergrant by accumulate
+
+    // WriteToFile( mat->Data, "lb.txt", "lb");
+}
 
 /// P1
 void SetupInterfaceRhsP1OnTriangle (const LocalP1CL<> p1[4],

@@ -1153,174 +1153,113 @@ public:
 };
 
 
-//class LocalLaplaceBeltramiP1CLHighQuad
-//{
-//private:
-//    static double tet[4][3];
-//    double res;
-//    static int iG;
-//    static int jG;
-//    int order = 10;
-//    double D_;
-//    Point3DCL gradTri3DCL[4];
-//    static double gradTri[4][3];
-//    double dummy;
-//
-//
-//
-//public:
-//    static const FiniteElementT row_fe_type= P1IF_FE,
-//                                col_fe_type= P1IF_FE;
-//
-//    double coup[4][4];
-//
-//    static void  lsFun(double x, double y, double z, double *value)
-//    {
-//        *value = x * x + y * y + z * z - 1.0;
-//    }
-//    static void  lsGrad(double x, double y, double z, double *grad)
-//    /* the gradient of the level set function */
-//    {
-//        double norm = 2*std::sqrt(x*x+y*y+z*z);
-//        grad[0] = (x + x)/norm;
-//        grad[1] = (y + y)/norm;
-//        grad[2] = (z + z)/norm;
-//    }
-//    static void  vecMinus(double a[3],double b[3],double (&result)[3])
-//    {
-//        for(int i=0; i<3; i++)
-//        {
-//            result[i] = a[i]-b[i];
-//        }
-//    }
-//    static double  dotP3(double a[3],double b[3])
-//    {
-//
-//        return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
-//    }
-//    static void crossMul(double a[3],double b[3],double (&p)[3])
-//    {
-//        p[0] = a[1]*b[2] - a[2]*b[1];
-//        p[1] = a[2]*b[0] - a[0]*b[2];
-//        p[2] = a[0]*b[1] - a[1]*b[0];
-//    }
-//    static double getBaryCoord(int i,double x,double y,double z)
-//    {
-//        double pValue = 0;
-//        double v0[3] = {tet[i][0],tet[i][1],tet[i][2]};
-//        int idx = 0;
-//        double vGround[3][3];
-//        for(int j; j<4; j++)
-//        {
-//            if(j==i)
-//                continue;
-//            for(int k=0; k<3; k++)
-//                vGround[idx][k] = tet[j][k];
-//            idx++;
-//        }
-//        double vec1[3];
-//        double vec2[3];
-//        double n[3];
-//        vecMinus(vGround[1],vGround[0],vec1);
-//        vecMinus(vGround[2],vGround[0],vec2);
-//        crossMul(vec1,vec2,n);
-//        double n_norm = std::sqrt(n[0]*n[0]+n[1]*n[1]+n[2]*n[2]);
-//        for(int j=0; j<3; j++)
-//            n[j] /=n_norm;
-//        double vecV[3] = {v0[0] - vGround[0][0],v0[1] - vGround[0][1],v0[2] - vGround[0][2]};
-//        double vecX[3] = {x - vGround[0][0],y - vGround[0][1],z - vGround[0][2]};
-//        double valXYZ = dotP3(vecX,n);
-//        double valV = dotP3(vecV,n);
-//        //assert((valV>=0&&valXYZ>=0)||(valV<=0&&valXYZ<=0));
-//        pValue = valXYZ/valV;
-//        //assert()
-//        return pValue;
-//    }
-//
-//    static double getSfGradDot(double x,double y,double z)
-//    {
-//        double vtxIValue = getBaryCoord(iG,x,y,z);
-//        double vtxJValue = getBaryCoord(jG,x,y,z);
-//    }
-//
-//
-//    static void getSurfaceGradient(double v[3],double n[3],double (&sf_grad)[3])
-//    {
-//        double proj_norm = dotP3(v,n);
-//        double v_proj[3];
-//        for(int i=0;i<3;i++)
-//        {
-//            //v_proj[i] = proj_norm*n[i];
-//            sf_grad[i] = v[i] - proj_norm*n[i];
-//        }
-//    }
-//
-//    static void localLBIntFunP1(double x, double y, double z, double *ff)//how to define right hand side intergrand changed by tet with fixed input ???
-//    {
-//        double n[3];
-//        double sf_grad_iG[3];
-//        double sf_grad_jG[3];
-//        lsGrad(x, y, z, n);
-//        getSurfaceGradient(gradTri[iG],n,sf_grad_iG);
-//        getSurfaceGradient(gradTri[jG],n,sf_grad_jG);
-//        *ff = dotP3(sf_grad_iG,sf_grad_jG);
-//    }
-//
-//
-//    void setup (const TetraCL& t, const InterfaceCommonDataP1CL& cdata)
-//    {
-//        for (Uint i= 0; i < 4; ++i)
-//        {
-//            auto vtx = t.GetVertex(i);
-//            auto coord = vtx->GetCoord();
-//            for(int j=0; j<4; j++)
-//            {
-//
-//                tet[i][j] = coord[j];
-//
-//            }
-//
-//        }
-//        P1DiscCL::GetGradients( gradTri3DCL, dummy, t);//gradient is a constant vector
-//        for(int i=0;i<4;i++)
-//            for(int j=0;j<3;j++)
-//        {
-//            gradTri[i][j] = gradTri3DCL[i][j];
-//        }
-//
-//
-//        for(iG=0; iG<4; iG++)
-//        {
-//            for(jG=iG; jG<4; jG++)
-//            {
-//                int n = phgQuadInterface2(
-//                            lsFun,		/* the level set function */
-//                            2,		/* polynomial order of the level set function */
-//                            lsGrad,	/* the gradient of the level set function */
-//                            tet,		/* coordinates of the vertices of the tetra */
-//                            localLBIntFunP1,		/* the integrand */
-//                            1,		/* dimension of the integrand */
-//                            DOF_PROJ_NONE,	/* projection type for surface integral */
-//                            0,		/* integration type (-1, 0, 1) */
-//                            order,		/* order of the 1D Gaussian quadrature */
-//                            &res,		/* the computed integral */
-//                            NULL		/* pointer returning the computed rule */
-//                        );
-//
-//                coup[iG][jG] = res;
-//                coup[jG][iG] = res;
-//            }
-//
-//
-//        }
-//
-//
-//    }
-//
-//    LocalLaplaceBeltramiP1CLHighQuad (double D)
-//        :D_( D) {}
-//};
-//
+class LocalLaplaceBeltramiP1CLHighQuad
+{
+private:
+    double res;
+    int order = 10;
+    double D_;
+    Point3DCL gradTri3DCL[4];
+    //static double gradTri[4][3];
+    double dummy;
+
+
+
+public:
+    static const FiniteElementT row_fe_type= P1IF_FE,
+                                col_fe_type= P1IF_FE;
+    double coup[4][4];
+
+    static double getSfGradDot(double x,double y,double z)
+    {
+        double vtxIValue = getBaryCoord(tet,iG,x,y,z);
+        double vtxJValue = getBaryCoord(tet,jG,x,y,z);
+    }
+
+
+    static void getSurfaceGradient(double v[3],double n[3],double (&sf_grad)[3])
+    {
+        double proj_norm = dotP3(v,n);
+        double v_proj[3];
+        for(int i=0;i<3;i++)
+        {
+            //v_proj[i] = proj_norm*n[i];
+            sf_grad[i] = v[i] - proj_norm*n[i];
+        }
+    }
+
+    static void localLBIntFunP1(double x, double y, double z, double *ff)//how to define right hand side intergrand changed by tet with fixed input ???
+    {
+        double n[3];
+        double sf_grad_iG[3];
+        double sf_grad_jG[3];
+        double ls_grad[3];
+        lsGrad(x, y,z,ls_grad);
+        double ls_grad_norm = std::sqrt(ls_grad[0]*ls_grad[0]+ls_grad[1]*ls_grad[1]+ls_grad[2]*ls_grad[2]);
+        for(int i=0;i<3;i++)
+        {
+            n[i] = ls_grad[i]/ls_grad_norm;
+        }
+        getSurfaceGradient(gradTri[iG],n,sf_grad_iG);
+        getSurfaceGradient(gradTri[jG],n,sf_grad_jG);
+        *ff = dotP3(sf_grad_iG,sf_grad_jG);
+    }
+
+
+    void setup (const TetraCL& t, const InterfaceCommonDataP1CL& cdata)
+    {
+        for (Uint i= 0; i < 4; ++i)
+        {
+            auto vtx = t.GetVertex(i);
+            auto coord = vtx->GetCoord();
+            for(int j=0; j<4; j++)
+            {
+
+                tet[i][j] = coord[j];
+
+            }
+
+        }
+        P1DiscCL::GetGradients( gradTri3DCL, dummy, t);//gradient is a constant vector
+        for(int i=0;i<4;i++)
+            for(int j=0;j<3;j++)
+        {
+            gradTri[i][j] = gradTri3DCL[i][j];
+        }
+
+
+        for(iG=0; iG<4; iG++)
+        {
+            for(jG=iG; jG<4; jG++)
+            {
+                int n = phgQuadInterface2(
+                            lsFun,		/* the level set function */
+                            2,		/* polynomial order of the level set function */
+                            lsGrad,	/* the gradient of the level set function */
+                            tet,		/* coordinates of the vertices of the tetra */
+                            localLBIntFunP1,		/* the integrand */
+                            1,		/* dimension of the integrand */
+                            DOF_PROJ_NONE,	/* projection type for surface integral */
+                            0,		/* integration type (-1, 0, 1) */
+                            order,		/* order of the 1D Gaussian quadrature */
+                            &res,		/* the computed integral */
+                            NULL		/* pointer returning the computed rule */
+                        );
+
+                coup[iG][jG] = res;
+                coup[jG][iG] = res;
+            }
+
+
+        }
+
+
+    }
+
+    LocalLaplaceBeltramiP1CLHighQuad (double D)
+        :D_( D) {}
+};
+
 
 
 template <typename DiscVelSolT>
