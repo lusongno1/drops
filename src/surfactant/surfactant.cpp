@@ -712,6 +712,27 @@ double L2_error (const DROPS::VecDescCL& ls, const BndDataCL<>& lsbnd,
     double d( 0.);
     DROPS_FOR_TRIANG_CONST_TETRA( discsol.GetMG(), ls.GetLevel(), it) {
         make_CompositeQuad5Domain2D (qdom, *it, lat, ls, lsbnd);
+        resize_and_evaluate_on_vertexes ( discsol, *it, qdom, qdiscsol);//discsol.getDoF
+        resize_and_evaluate_on_vertexes ( extsol,  *it, qdom, t, qsol);
+        d+= quad_2D( std::pow( qdiscsol - qsol, 2), qdom);
+    }
+    return std::sqrt( d);
+}
+
+
+template<class DiscP1FunType>
+double L2_error_high_quad (const DROPS::VecDescCL& ls, const BndDataCL<>& lsbnd,
+    const DiscP1FunType& discsol, DROPS::instat_scalar_fun_ptr extsol)
+{
+    const PrincipalLatticeCL& lat= PrincipalLatticeCL::instance( 2);
+    const double t= discsol.GetTime();
+    QuadDomain2DCL qdom;
+    std::valarray<double> qsol,
+                          qdiscsol;
+
+    double d( 0.);
+    DROPS_FOR_TRIANG_CONST_TETRA( discsol.GetMG(), ls.GetLevel(), it) {
+        make_CompositeQuad5Domain2D (qdom, *it, lat, ls, lsbnd);
         resize_and_evaluate_on_vertexes ( discsol, *it, qdom, qdiscsol);
         resize_and_evaluate_on_vertexes ( extsol,  *it, qdom, t, qsol);
         d+= quad_2D( std::pow( qdiscsol - qsol, 2), qdom);
@@ -1064,21 +1085,21 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     std::cout << "NumUnknowns: " << ifaceidx.NumUnknowns() << std::endl;
 
     DROPS::MatDescCL M( &ifaceidx, &ifaceidx);
-    DROPS::SetupInterfaceMassP1( mg, &M, lset.Phi, lset.GetBndData());
- //   DROPS::SetupInterfaceMassP1HighQuad( mg, &M, lset.Phi, lset.GetBndData());
+   // DROPS::SetupInterfaceMassP1( mg, &M, lset.Phi, lset.GetBndData());
+    DROPS::SetupInterfaceMassP1HighQuad( mg, &M, lset.Phi, lset.GetBndData());
     std::cout << "M is set up.\n";
 
 
     DROPS::MatDescCL A( &ifaceidx, &ifaceidx);
-    DROPS::SetupLBP1( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
-  //  DROPS::SetupLBP1HighQuad( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
+   // DROPS::SetupLBP1( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
+    DROPS::SetupLBP1HighQuad( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
     std::cout << "A is set up.\n";
 
     DROPS::MatrixCL L;
     L.LinComb( 1.0, A.Data, 1.0, M.Data);
  //   DROPS::MatrixCL& L= A.Data;
     DROPS::VecDescCL b( &ifaceidx);
-    //DROPS::SetupInterfaceRhsP1( mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
+ //   DROPS::SetupInterfaceRhsP1( mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
     DROPS::SetupInterfaceRhsP1HighQuad(mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
 
     //DROPS::WriteToFile( M.Data, "m_iface.txt", "M");
@@ -1100,7 +1121,7 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     DROPS::IdxDescCL ifacefullidx( DROPS::P1_FE);
     ifacefullidx.CreateNumbering( mg.GetLastLevel(), mg);
     DROPS::VecDescCL xext( &ifacefullidx);
-    DROPS::Extend( mg, x, xext);
+    DROPS::Extend( mg, x, xext);//fixup the edge-dofs
     DROPS::NoBndDataCL<> nobnd;
     if (vtkwriter.get() != 0) {
         vtkwriter->Register( make_VTKScalar( lset.GetSolution(), "Levelset") );

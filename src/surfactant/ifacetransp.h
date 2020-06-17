@@ -1024,7 +1024,7 @@ class LocalInterfaceMassP1CLHighQuad
 {
 private:
     double res;
-    int order = 10;
+    int order = orderG;
     double alpha_;
 
 public:
@@ -1157,7 +1157,7 @@ class LocalLaplaceBeltramiP1CLHighQuad
 {
 private:
     double res;
-    int order = 10;
+    int order = orderG;
     double D_;
     Point3DCL gradTri3DCL[4];
     //static double gradTri[4][3];
@@ -1169,14 +1169,6 @@ public:
     static const FiniteElementT row_fe_type= P1IF_FE,
                                 col_fe_type= P1IF_FE;
     double coup[4][4];
-
-    static double getSfGradDot(double x,double y,double z)
-    {
-        double vtxIValue = getBaryCoord(tet,iG,x,y,z);
-        double vtxJValue = getBaryCoord(tet,jG,x,y,z);
-    }
-
-
     static void getSurfaceGradient(double v[3],double n[3],double (&sf_grad)[3])
     {
         double proj_norm = dotP3(v,n);

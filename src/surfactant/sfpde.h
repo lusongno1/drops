@@ -41,5 +41,6 @@ double getBaryCoord(double tetra[4][3],int i,double x,double y,double z);
 extern double tet[4][3];
 extern int iG;
 extern int jG;
+extern int orderG;
 extern double gradTri[4][3];//store gradients of shape functions
 #endif

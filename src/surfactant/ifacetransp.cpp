@@ -753,7 +753,7 @@ void SetupInterfaceRhsP1HighQuad (const MultiGridCL& mg, VecDescCL* v,
     InterfaceTriangleCL triangle;//donate trangle approximation of surface
 
 
-    int order = 10;
+    int order = orderG;
     double res = 0.0;
     int tri_idx = 0;
 
