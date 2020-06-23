@@ -23,19 +23,20 @@
 */
 #include "sfpde.h"
 
-// test case 1
-//define right hand side and true solution
-//my test case，f = 3*(x+y+z) for problem -\Delta u + u = f
-double xyz_rhs (const DROPS::Point3DCL& p, double)
-{
-
-    return 3*(p[0]+p[1]+p[2]);//p.norm();
-}
-//my test case u=x+y+z
-double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
-{
-    return (p[0]+p[1]+p[2]);//p.norm();
-}
+//// test case 1
+////define right hand side and true solution
+////my test case，f = 3*(x+y+z) for problem -\Delta u + u = f
+////then u = f/3
+//double xyz_rhs (const DROPS::Point3DCL& p, double)
+//{
+//
+//    return 3*(p[0]+p[1]+p[2]);//p.norm();
+//}
+////my test case u=x+y+z
+//double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+//{
+//    return (p[0]+p[1]+p[2]);//p.norm();
+//}
 
 
 // test case 2
@@ -48,6 +49,23 @@ double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
 //{
 //    return 1;
 //}
+
+// test case 3
+//define right hand side and true solution
+//u = a*|x|^2/(12+|x|^2)*(3x1^2x2-x2^3)
+//f = a*(3x1^2x2-x2^3)
+double a(1.0);
+double xyz_rhs (const DROPS::Point3DCL& p, double)
+{
+
+    return a*(3.*p[0]*p[0]*p[1]-p[1]*p[1]*p[1]);
+}
+double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+{
+    return (p.norm_sq()/(12.+p.norm_sq()))*xyz_rhs(p,0.);
+}
+
+
 
 //define level set funcion and its gradient
 //unit ball zero level set
