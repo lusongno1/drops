@@ -54,18 +54,30 @@
 //define right hand side and true solution
 //u = a*|x|^2/(12+|x|^2)*(3x1^2x2-x2^3)
 //f = a*(3x1^2x2-x2^3)
-double a(1.0);
+//double a(1.0);
+//double xyz_rhs (const DROPS::Point3DCL& p, double)
+//{
+//
+//    return a*(3.*p[0]*p[0]*p[1]-p[1]*p[1]*p[1]);
+//}
+//double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+//{
+//    return (p.norm_sq()/(12.+p.norm_sq()))*xyz_rhs(p,0.);
+//}
+
+// test case 4
+//define right hand side and true solution
+//u = x*y*z
+//f = x*y*z - 12*x*y*z*(x^2 + y^2 + z^2 - 2)
 double xyz_rhs (const DROPS::Point3DCL& p, double)
 {
 
-    return a*(3.*p[0]*p[0]*p[1]-p[1]*p[1]*p[1]);
+    return p[0]*p[1]*p[2]-12.*p[0]*p[1]*p[2]*(p.norm_sq()-2);
 }
 double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
 {
-    return (p.norm_sq()/(12.+p.norm_sq()))*xyz_rhs(p,0.);
+    return p[0]*p[1]*p[2];
 }
-
-
 
 //define level set funcion and its gradient
 //unit ball zero level set
