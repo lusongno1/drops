@@ -712,85 +712,90 @@ template<class DiscP1FunType>
 double L2_error (const DROPS::VecDescCL& ls, const BndDataCL<>& lsbnd,
                  const DiscP1FunType& discsol, DROPS::instat_scalar_fun_ptr extsol)
 {
-    const PrincipalLatticeCL& lat= PrincipalLatticeCL::instance( 2);
-    const double t= discsol.GetTime();
-    QuadDomain2DCL qdom;
-    std::valarray<double> qsol,
+    const PrincipalLatticeCL& lat= PrincipalLatticeCL::instance( 2);//store reference tetra
+    const double t= discsol.GetTime();//discsol is piecewise linear function
+    QuadDomain2DCL qdom;//2D domain quadrature class
+    std::valarray<double> qsol,//q is value on qdom
         qdiscsol;
 
     double d( 0.);
-    DROPS_FOR_TRIANG_CONST_TETRA( discsol.GetMG(), ls.GetLevel(), it)
+    DROPS_FOR_TRIANG_CONST_TETRA( discsol.GetMG(), ls.GetLevel(), it)//go through tetra
     {
-        make_CompositeQuad5Domain2D (qdom, *it, lat, ls, lsbnd);
-        resize_and_evaluate_on_vertexes ( discsol, *it, qdom, qdiscsol);//discsol.getDoF
-        resize_and_evaluate_on_vertexes ( extsol,  *it, qdom, t, qsol);
-        d+= quad_2D( std::pow( qdiscsol - qsol, 2), qdom);
+     //   LocalP1CL<P1EvalCL<double, DROPS::NoBndDataCL<double>,
+       //           DROPS::VecDescBaseCL<DROPS::VectorBaseCL<double> > >> local_p1_f(*it,discsol);
+       //typename PEvalT::LocalFET( tet, f)
+//        const BaryCoordCL& test {1,2,3,4};
+//        LocalP1CL<double> local_p1_f(*it,discsol);
+//        std::cout<<"here:"<<local_p1_f(test)<<std::endl;
+        make_CompositeQuad5Domain2D (qdom, *it, lat, ls, lsbnd);// get quadrature domain
+        resize_and_evaluate_on_vertexes ( discsol, *it, qdom, qdiscsol);//discsol.getDoF, get calculated value on qdom
+        resize_and_evaluate_on_vertexes ( extsol,  *it, qdom, t, qsol);//get true value on qdom
+        d+= quad_2D( std::pow( qdiscsol - qsol, 2), qdom);//lenght of q, 63 35 28
+        //  std::cout<<d<<std::endl;
     }
     return std::sqrt( d);
 }
+//#ifdef Debug
 
-//(const DROPS::P1EvalCL<double, DROPS::NoBndDataCL<double>,
- //  DROPS::VecDescBaseCL<DROPS::VectorBaseCL<double> > > &)
-//void errL2IntFun(double x, double y, double z, double *ff)
-//{
-//    const DROPS::Point3DCL& p{x,y,z};
-//    double qdiscsol = discsol.GetDoF(p);
-//    double qsol = laplace_beltrami_xyz_sol (p, 0.);
-//    *ff = std::pow( qdiscsol - qsol, 2)
-//}
-//
-//template<class DiscP1FunType>
-//double L2_error_high_quad (const DROPS::VecDescCL& ls, const BndDataCL<>& lsbnd,
-//                           const DiscP1FunType& discsol, DROPS::instat_scalar_fun_ptr extsol)
-//{
-//    const PrincipalLatticeCL& lat= PrincipalLatticeCL::instance( 2);
-//    const double t= discsol.GetTime();
-//    QuadDomain2DCL qdom;
-//   // std::valarray<double> qsol,
-//    //    qdiscsol;
-//
-//    double d( 0.);
-//    double res(0.);
-//    DROPS_FOR_TRIANG_CONST_TETRA( discsol.GetMG(), ls.GetLevel(), it)
-//    {
-//        //ake_CompositeQuad5Domain2D (qdom, *it, lat, ls, lsbnd);
-//        //resize_and_evaluate_on_vertexes ( discsol, *it, qdom, qdiscsol);
-//        //resize_and_evaluate_on_vertexes ( extsol,  *it, qdom, t, qsol);
-//        //d+= quad_2D( std::pow( qdiscsol - qsol, 2), qdom);
-//        for (Uint i= 0; i < 4; ++i)
-//        {
-//            auto vtx = (*it).GetVertex(i);
-//            num[i]= vtx->Unknowns( sys);//find the dof idx of four vtx
-//
-//            auto coord = vtx->GetCoord();
-//            for(int j=0; j<4; j++)
-//            {
-//
-//                tet[i][j] = coord[j];
-//                //  std::cout<<tet[i][j]<<std::endl;
-//
-//            }
-//
-//
-//        }
-//        n = phgQuadInterface2(
-//                ls,		/* the level set function */
-//                2,		/* polynomial order of the level set function */
-//                ls_grad,	/* the gradient of the level set function */
-//                tet,		/* coordinates of the vertices of the tetra */
-//                errL2IntFun,		/* the integrand */
-//                1,		/* dimension of the integrand */
-//                DOF_PROJ_NONE,	/* projection type for surface integral */
-//                type,		/* integration type (-1, 0, 1) */
-//                order,		/* order of the 1D Gaussian quadrature */
-//                &res,		/* the computed integral */
-//                NULL		/* pointer returning the computed rule */
-//            );
-//        d += res;
-//    }
-//    return std::sqrt( d);
-//}
+//const DROPS::P1EvalCL<double, DROPS::NoBndDataCL<double>,
+ //     DROPS::VecDescBaseCL<DROPS::VectorBaseCL<double> > > *discsol_ref;
+LocalP1CL<double> local_p1_f;
+const P1EvalCL<double, NoBndDataCL<double>,
+      VecDescBaseCL<VectorBaseCL<double> > > *discsol_ref;
+LocalP1CL<double> *local_p1_f_ptr;
+void errL2IntFun(double x, double y, double z, double *ff)
+{
+    double BaryCoordArr[4];
+    for(int i=0;i<4;i++)
+    {
+        BaryCoordArr[i] = getBaryCoord(tet,i, x,y,z);
+    }
+    const BaryCoordCL& BaryCoord{BaryCoordArr[0],BaryCoordArr[1],BaryCoordArr[2],BaryCoordArr[3]};
+    double qdiscsol = (*local_p1_f_ptr)(BaryCoord);
+    const DROPS::Point3DCL& p{x,y,z};
+    double qsol = laplace_beltrami_xyz_sol (p, 0.);
+    *ff = std::pow( qdiscsol - qsol, 2);
+}
 
+template<class DiscP1FunType>
+double L2_error_high_quad (const DROPS::VecDescCL& ls, const BndDataCL<>& lsbnd,
+                           const DiscP1FunType& discsol, DROPS::instat_scalar_fun_ptr extsol)
+{
+    const double t= discsol.GetTime();
+    double d( 0.);
+    double res(0.);
+    DROPS_FOR_TRIANG_CONST_TETRA( discsol.GetMG(), ls.GetLevel(), it)
+    {
+        for (Uint i= 0; i < 4; ++i)
+        {
+            auto vtx = (*it).GetVertex(i);
+            auto coord = vtx->GetCoord();
+            for(int j=0; j<4; j++)
+            {
+                tet[i][j] = coord[j];
+                //  std::cout<<tet[i][j]<<std::endl;
+            }
+        }
+    LocalP1CL<double> local_p1_f(*it,discsol);
+    local_p1_f_ptr = &local_p1_f;
+        int n = phgQuadInterface2(
+                lsFun,		/* the level set function */
+                2,		/* polynomial order of the level set function */
+                lsGrad,	/* the gradient of the level set function */
+                tet,		/* coordinates of the vertices of the tetra */
+                errL2IntFun,		/* the integrand */
+                1,		/* dimension of the integrand */
+                DOF_PROJ_NONE,	/* projection type for surface integral */
+                0,		/* integration type (-1, 0, 1) */
+                orderG,		/* order of the 1D Gaussian quadrature */
+                &res,		/* the computed integral */
+                NULL		/* pointer returning the computed rule */
+            );
+        d += res;
+    }
+    return std::sqrt( d);
+}
+//#endif
 
 /// The nodal interpolant of extsol on the interface-FE-space ist computed first.
 /// The H1-error is then computed between the interpolant and the numerical solution.
@@ -1143,23 +1148,24 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     ifaceidx.GetXidx().SetBound( P.get<double>("SurfTransp.XFEMReduced"));
     ifaceidx.CreateNumbering( mg.GetLastLevel(), mg, &lset.Phi, &lset.GetBndData());
     std::cout << "NumUnknowns: " << ifaceidx.NumUnknowns() << std::endl;
+    //only consider the dofs on tet which interact with surface
 
     DROPS::MatDescCL M( &ifaceidx, &ifaceidx);
- //   DROPS::SetupInterfaceMassP1( mg, &M, lset.Phi, lset.GetBndData());
+    //DROPS::SetupInterfaceMassP1( mg, &M, lset.Phi, lset.GetBndData());
     DROPS::SetupInterfaceMassP1HighQuad( mg, &M, lset.Phi, lset.GetBndData());
     std::cout << "M is set up.\n";
 
 
     DROPS::MatDescCL A( &ifaceidx, &ifaceidx);
-   //DROPS::SetupLBP1( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
-   DROPS::SetupLBP1HighQuad( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
+    //DROPS::SetupLBP1( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
+    DROPS::SetupLBP1HighQuad( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
     std::cout << "A is set up.\n";
 
     DROPS::MatrixCL L;
     L.LinComb( 1.0, A.Data, 1.0, M.Data);
 //   DROPS::MatrixCL& L= A.Data;
     DROPS::VecDescCL b( &ifaceidx);
-   // DROPS::SetupInterfaceRhsP1( mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
+    //DROPS::SetupInterfaceRhsP1( mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
     DROPS::SetupInterfaceRhsP1HighQuad(mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
 
     //DROPS::WriteToFile( M.Data, "m_iface.txt", "M");
@@ -1179,9 +1185,9 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
         DROPS::WriteFEToFile( x, mg, P.get<std::string>( "SurfTransp.SolutionOutput.Path"), P.get<bool>( "SurfTransp.SolutionOutput.Binary"));
 
     DROPS::IdxDescCL ifacefullidx( DROPS::P1_FE);
-    ifacefullidx.CreateNumbering( mg.GetLastLevel(), mg);
+    ifacefullidx.CreateNumbering( mg.GetLastLevel(), mg);//only consider the dof interact with exact surface
     DROPS::VecDescCL xext( &ifacefullidx);
-    DROPS::Extend( mg, x, xext);//fixup the edge-dofs
+    DROPS::Extend( mg, x, xext);//fixup the edge-dofs, much more, how to understand???
     DROPS::NoBndDataCL<> nobnd;
     if (vtkwriter.get() != 0)
     {
@@ -1190,7 +1196,8 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
         vtkwriter->Write( 0.);
     }
 
-    double L2_err( L2_error( lset.Phi, lset.GetBndData(), make_P1Eval( mg, nobnd, xext), the_sol_fun));
+    //double L2_err( L2_error( lset.Phi, lset.GetBndData(), make_P1Eval( mg, nobnd, xext), the_sol_fun));
+    double L2_err( L2_error_high_quad( lset.Phi, lset.GetBndData(), make_P1Eval( mg, nobnd, xext), the_sol_fun));
     std::cout << "L_2-error: " << L2_err << std::endl;
 }
 
@@ -2187,6 +2194,7 @@ int main (int argc, char* argv[])
         typedef DistMarkingStrategyCL MarkerT;
         MarkerT marker( the_lset_fun, P.get<double>( "Mesh.AdaptRef.Width"),
                         P.get<int>( "Mesh.AdaptRef.CoarsestLevel"), P.get<int>( "Mesh.AdaptRef.FinestLevel"));
+        //mark band
 
         DROPS::AdapTriangCL adap( mg, &marker);
 

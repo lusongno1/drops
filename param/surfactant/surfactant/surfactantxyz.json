@@ -21,7 +21,7 @@
 
         "AdaptRef": {
             "Freq":          0,
-            "Width":         10,
+            "Width":         0,
             "CoarsestLevel": 0,
             "FinestLevel":   0,
             "SD":            0.1,

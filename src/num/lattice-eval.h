@@ -162,6 +162,7 @@ namespace DROPS {
     {
       return std::transform( dom.vertex_begin(), dom.vertex_end(), result_iterator, ls);
     }
+        //transform imply ls operation to every element from dom.vertex_begin to end
 
     template <class LocalFET, class DomainT, class ResultIterT>
     inline ResultIterT
@@ -169,6 +170,7 @@ namespace DROPS {
     {
       return std::transform( dom.vertex_begin( s), dom.vertex_end( s), result_iterator, ls);
     }
+
 
     template <class LocalFET, class DomainT, class ResultContT>
     inline const ResultContT&
@@ -235,11 +237,11 @@ namespace DROPS {
       return evaluate_on_vertexes( typename PEvalT::LocalFET( tet, f), dom, s, result_iterator);
     }
 
-    template <class PEvalT, class DomainT, class ResultContT>
+    template <class PEvalT, class DomainT, class ResultContT>//type auto derived
     inline const ResultContT&
     resize_and_evaluate_on_vertexes (const PEvalT& f, const TetraCL& tet, const DomainT& dom, ResultContT& result_container)
     {
-      result_container.resize( dom.vertex_size());
+      result_container.resize( dom.vertex_size());//discrete intergrant need some point-values to multiply to weights
       evaluate_on_vertexes( f, tet, dom, sequence_begin( result_container));
       return result_container;
     }

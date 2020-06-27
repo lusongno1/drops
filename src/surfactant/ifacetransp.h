@@ -1004,7 +1004,7 @@ public:
 
     void setup (const TetraCL& t, const InterfaceCommonDataP1CL& cdata)
     {
-        make_CompositeQuad2Domain2D ( qdom, cdata.surf, t);
+        make_CompositeQuad2Domain2D ( qdom, cdata.surf, t);//make quad 2d domain
         for (int i= 0; i < 4; ++i)
             resize_and_evaluate_on_vertexes ( cdata.p1[i], qdom, q[i]);
         for (int i= 0; i < 4; ++i)

@@ -588,8 +588,8 @@ class ptr_iter
     // default copy-ctor, copy-assignment-op and dtor
     ptr_iter (T** p) : p_( p) {}
 
-    reference operator*  () const { return **p_; }
-    pointer   operator-> () const { return *p_; }
+    reference operator*  () const { return **p_; }//const means this ptr in this function is only-read
+    pointer   operator-> () const { return *p_; }//signs reload only replace function name
 
     ptr_iter        operator+ (difference_type d) const { return p_ + d; }
     difference_type operator- (ptr_iter b)        const { return p_ - b.p_; }
