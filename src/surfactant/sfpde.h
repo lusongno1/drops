@@ -22,6 +22,8 @@
 */
 //#pragma once
 #include "misc/container.h"
+#include "geom/simplex.h"
+#include "num/discretize.h"
 
 #ifndef DROPS_SFPDE_H
 #define DROPS_SFPDE_H
@@ -37,10 +39,13 @@ void vecMinus(double a[3],double b[3],double (&result)[3]);
 void crossMul(double a[3],double b[3],double (&p)[3]);
 double dotP3(double a[3],double b[3]);
 double getBaryCoord(double tetra[4][3],int i,double x,double y,double z);
+DROPS::BaryCoordCL getBaryCoords(double tetra[4][3],double x,double y,double z);
+void GetTet2DArr(const DROPS::TetraCL& t,double tet[4][3]);
 
 extern double tet[4][3];
 extern int iG;
 extern int jG;
 extern int orderG;
 extern double gradTri[4][3];//store gradients of shape functions
+//extern DROPS::LocalP2CL<> localP2Set[10];
 #endif

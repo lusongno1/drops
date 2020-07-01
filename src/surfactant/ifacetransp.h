@@ -1173,7 +1173,7 @@ public:
     {
         double proj_norm = dotP3(v,n);
         double v_proj[3];
-        for(int i=0;i<3;i++)
+        for(int i=0; i<3; i++)
         {
             //v_proj[i] = proj_norm*n[i];
             sf_grad[i] = v[i] - proj_norm*n[i];
@@ -1188,7 +1188,7 @@ public:
         double ls_grad[3];
         lsGrad(x, y,z,ls_grad);
         double ls_grad_norm = std::sqrt(ls_grad[0]*ls_grad[0]+ls_grad[1]*ls_grad[1]+ls_grad[2]*ls_grad[2]);
-        for(int i=0;i<3;i++)
+        for(int i=0; i<3; i++)
         {
             n[i] = ls_grad[i]/ls_grad_norm;
         }
@@ -1213,11 +1213,11 @@ public:
 
         }
         P1DiscCL::GetGradients( gradTri3DCL, dummy, t);//gradient is a constant vector
-        for(int i=0;i<4;i++)
-            for(int j=0;j<3;j++)
-        {
-            gradTri[i][j] = gradTri3DCL[i][j];
-        }
+        for(int i=0; i<4; i++)
+            for(int j=0; j<3; j++)
+            {
+                gradTri[i][j] = gradTri3DCL[i][j];
+            }
 
 
         for(iG=0; iG<4; iG++)
@@ -1609,10 +1609,12 @@ public:
     {
         for (int i= 0; i < 10; ++i)
             resize_and_evaluate_on_vertexes ( cdata.p2[i], cdata.qdom, qp2[i]);
+        //caculate discrete shape function values on triangles
 
         for (int i= 0; i < 10; ++i)
         {
             coup[i][i]= quad_2D( cdata.qdom_projected.absdets()*qp2[i]*qp2[i], cdata.qdom);
+            //cal interations between differerent shape functions
             for(int j= 0; j < i; ++j)
                 coup[i][j]= coup[j][i]= quad_2D( cdata.qdom_projected.absdets()*qp2[j]*qp2[i], cdata.qdom);
         }
@@ -1620,6 +1622,67 @@ public:
 
     LocalMassP2CL () {}
 };
+
+
+static LocalP2CL<> localP2Set[10];
+//lacal mass setup high quad version
+class LocalMassP2CLHighQuad
+{
+private:
+    //std::valarray<double> qp2[10];
+    double res;
+
+public:
+    static const FiniteElementT row_fe_type= P2IF_FE,
+                                col_fe_type= P2IF_FE;
+    double coup[10][10];
+
+    static void localMassIntFunP2(double x, double y, double z, double *ff)//how to define right hand side intergrand changed by tet with fixed input ???
+    {
+        auto BCs = getBaryCoords(tet,x,y,z);
+        auto tmp = localP2Set[iG];
+        double vtxIValue =  tmp(BCs);
+        //double vtxJValue = localP2Set[jG](BCs);
+        tmp = localP2Set[jG];
+        double vtxJValue =  tmp(BCs);
+        *ff = vtxIValue*vtxJValue;
+        //std::cout<<"iG:"<<iG<<"jG"<<jG<<std::endl;
+       // getchar();
+    }
+
+    void setup (const TetraCL& t, const InterfaceCommonDataP2CL& cdata)
+    {
+        for (int i= 0; i < 10; ++i)
+            localP2Set[i] = cdata.p2[i];
+        GetTet2DArr(t,tet);
+        for(iG=0; iG<10; iG++)
+        {
+            for(jG=iG; jG<10; jG++)
+            {
+                int n = phgQuadInterface2(
+                            lsFun,		/* the level set function */
+                            2,		/* polynomial order of the level set function */
+                            lsGrad,	/* the gradient of the level set function */
+                            tet,		/* coordinates of the vertices of the tetra */
+                            localMassIntFunP2,		/* the integrand */
+                            1,		/* dimension of the integrand */
+                            DOF_PROJ_NONE,	/* projection type for surface integral */
+                            0,		/* integration type (-1, 0, 1) */
+                            orderG,		/* order of the 1D Gaussian quadrature */
+                            &res,		/* the computed integral */
+                            NULL		/* pointer returning the computed rule */
+                        );
+
+                coup[iG][jG] = res;
+                coup[jG][iG] = res;
+            }
+        }
+
+    }
+
+    LocalMassP2CLHighQuad () {}
+};
+
 
 /// \brief Compute the P2 load vector corresponding to the function f on a single tetra.
 class LocalVectorDeformP2CL

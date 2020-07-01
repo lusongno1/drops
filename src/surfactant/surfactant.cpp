@@ -721,9 +721,9 @@ double L2_error (const DROPS::VecDescCL& ls, const BndDataCL<>& lsbnd,
     double d( 0.);
     DROPS_FOR_TRIANG_CONST_TETRA( discsol.GetMG(), ls.GetLevel(), it)//go through tetra
     {
-     //   LocalP1CL<P1EvalCL<double, DROPS::NoBndDataCL<double>,
-       //           DROPS::VecDescBaseCL<DROPS::VectorBaseCL<double> > >> local_p1_f(*it,discsol);
-       //typename PEvalT::LocalFET( tet, f)
+        //   LocalP1CL<P1EvalCL<double, DROPS::NoBndDataCL<double>,
+        //           DROPS::VecDescBaseCL<DROPS::VectorBaseCL<double> > >> local_p1_f(*it,discsol);
+        //typename PEvalT::LocalFET( tet, f)
 //        const BaryCoordCL& test {1,2,3,4};
 //        LocalP1CL<double> local_p1_f(*it,discsol);
 //        std::cout<<"here:"<<local_p1_f(test)<<std::endl;
@@ -738,7 +738,7 @@ double L2_error (const DROPS::VecDescCL& ls, const BndDataCL<>& lsbnd,
 //#ifdef Debug
 
 //const DROPS::P1EvalCL<double, DROPS::NoBndDataCL<double>,
- //     DROPS::VecDescBaseCL<DROPS::VectorBaseCL<double> > > *discsol_ref;
+//     DROPS::VecDescBaseCL<DROPS::VectorBaseCL<double> > > *discsol_ref;
 LocalP1CL<double> local_p1_f;
 const P1EvalCL<double, NoBndDataCL<double>,
       VecDescBaseCL<VectorBaseCL<double> > > *discsol_ref;
@@ -746,7 +746,7 @@ LocalP1CL<double> *local_p1_f_ptr;
 void errL2IntFun(double x, double y, double z, double *ff)
 {
     double BaryCoordArr[4];
-    for(int i=0;i<4;i++)
+    for(int i=0; i<4; i++)
     {
         BaryCoordArr[i] = getBaryCoord(tet,i, x,y,z);
     }
@@ -776,21 +776,21 @@ double L2_error_high_quad (const DROPS::VecDescCL& ls, const BndDataCL<>& lsbnd,
                 //  std::cout<<tet[i][j]<<std::endl;
             }
         }
-    LocalP1CL<double> local_p1_f(*it,discsol);
-    local_p1_f_ptr = &local_p1_f;
+        LocalP1CL<double> local_p1_f(*it,discsol);
+        local_p1_f_ptr = &local_p1_f;
         int n = phgQuadInterface2(
-                lsFun,		/* the level set function */
-                2,		/* polynomial order of the level set function */
-                lsGrad,	/* the gradient of the level set function */
-                tet,		/* coordinates of the vertices of the tetra */
-                errL2IntFun,		/* the integrand */
-                1,		/* dimension of the integrand */
-                DOF_PROJ_NONE,	/* projection type for surface integral */
-                0,		/* integration type (-1, 0, 1) */
-                orderG,		/* order of the 1D Gaussian quadrature */
-                &res,		/* the computed integral */
-                NULL		/* pointer returning the computed rule */
-            );
+                    lsFun,		/* the level set function */
+                    2,		/* polynomial order of the level set function */
+                    lsGrad,	/* the gradient of the level set function */
+                    tet,		/* coordinates of the vertices of the tetra */
+                    errL2IntFun,		/* the integrand */
+                    1,		/* dimension of the integrand */
+                    DOF_PROJ_NONE,	/* projection type for surface integral */
+                    0,		/* integration type (-1, 0, 1) */
+                    orderG,		/* order of the 1D Gaussian quadrature */
+                    &res,		/* the computed integral */
+                    NULL		/* pointer returning the computed rule */
+                );
         d += res;
     }
     return std::sqrt( d);
@@ -1781,28 +1781,28 @@ public:
 void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::LevelsetP2CL& lset)
 {
     // Initialize level set and triangulation
-    adap.MakeInitialTriang();
-    lset.CreateNumbering( mg.GetLastLevel(), &lset.idx);
-    lset.Phi.SetIdx( &lset.idx);
+    adap.MakeInitialTriang();//init mg
+    lset.CreateNumbering( mg.GetLastLevel(), &lset.idx);//level set numbering
+    lset.Phi.SetIdx( &lset.idx);//set discrete lsvel set's index
     // LinearLSInit( mg, lset.Phi, &the_lset_fun);
-    LSInit( mg, lset.Phi, the_lset_fun, 0.);
+    LSInit( mg, lset.Phi, the_lset_fun, 0.);//initial level set function
 
     // Setup an interface-P2 numbering
-    DROPS::IdxDescCL ifacep2idx( P2IF_FE);
-    ifacep2idx.GetXidx().SetBound( P.get<double>("SurfTransp.XFEMReduced"));
-    ifacep2idx.CreateNumbering( mg.GetLastLevel(), mg, &lset.Phi, &lset.GetBndData());
+    DROPS::IdxDescCL ifacep2idx( P2IF_FE);//p2 element index decription class
+    ifacep2idx.GetXidx().SetBound( P.get<double>("SurfTransp.XFEMReduced"));//set boundary
+    ifacep2idx.CreateNumbering( mg.GetLastLevel(), mg, &lset.Phi, &lset.GetBndData());//consider boundary
     std::cout << "P2-NumUnknowns: " << ifacep2idx.NumUnknowns() << std::endl;
 
     // Recover the gradient of the level set function
-    IdxDescCL vecp2idx( vecP2_FE);
+    IdxDescCL vecp2idx( vecP2_FE);//vector p2 index
     vecp2idx.CreateNumbering( mg.GetLastLevel(), mg);
-    VecDescCL lsgradrec( &vecp2idx);
+    VecDescCL lsgradrec( &vecp2idx);//level set gradient recorver
     averaging_P2_gradient_recovery( mg, lset.Phi, lset.GetBndData(), lsgradrec);
 
     // Compute neighborhoods of the tetras at the interface
-    const PrincipalLatticeCL& lat= PrincipalLatticeCL::instance( 1);
-    TetraToTetrasT tetra_neighborhoods;
-    compute_tetra_neighborhoods( mg, lset.Phi, lset.GetBndData(), lat, tetra_neighborhoods);
+    const PrincipalLatticeCL& lat= PrincipalLatticeCL::instance( 1);//lattice
+    TetraToTetrasT tetra_neighborhoods;//to put tetra neighborhoods
+    compute_tetra_neighborhoods( mg, lset.Phi, lset.GetBndData(), lat, tetra_neighborhoods);//compute neighborhood
 
     QuaQuaMapperCL quaqua( mg, lset.Phi, lsgradrec, &tetra_neighborhoods,
                            P.get<int>( "LevelsetMapper.Iter"),
@@ -1824,20 +1824,27 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 //         accumulate( accus, mg, ifacep2idx.TriangLevel(), ifacep2idx.GetMatchingFunction(), ifacep2idx.GetBndInfo());
 //     }
 
-    TetraAccumulatorTupleCL accus;
-    InterfaceCommonDataP2CL cdatap2( lset.Phi, lset.GetBndData(), quaqua, lat);
-    accus.push_back( &cdatap2);
-    DROPS::MatDescCL Mp2( &ifacep2idx, &ifacep2idx);
-    InterfaceMatrixAccuCL<LocalMassP2CL, InterfaceCommonDataP2CL> accuMp2( &Mp2, LocalMassP2CL(), cdatap2, "Mp2");
+    TetraAccumulatorTupleCL accus;//init an accumulator
+    InterfaceCommonDataP2CL cdatap2( lset.Phi, lset.GetBndData(), quaqua, lat);//store p2 data
+    accus.push_back( &cdatap2);//push_back P2 data
+
+    //set up mass matrix
+    DROPS::MatDescCL Mp2( &ifacep2idx, &ifacep2idx);//mass matrix
+    //InterfaceMatrixAccuCL<LocalMassP2CL, InterfaceCommonDataP2CL> accuMp2( &Mp2, LocalMassP2CL(), cdatap2, "Mp2");
+    InterfaceMatrixAccuCL<LocalMassP2CLHighQuad, InterfaceCommonDataP2CL> accuMp2( &Mp2, LocalMassP2CLHighQuad(), cdatap2, "Mp2");
     accus.push_back( &accuMp2);
+
+    //set up stiffness matrix
     DROPS::MatDescCL Ap2( &ifacep2idx, &ifacep2idx);
     InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CL, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CL( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
     accus.push_back( &accuAp2);
+
+    //set up right hand side
     DROPS::VecDescCL bp2( &ifacep2idx);
     InterfaceVectorAccuCL<LocalVectorP2CL, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CL( the_rhs_fun, bp2.t), cdatap2);
     accus.push_back( &acculoadp2);
 
-    accumulate( accus, mg, ifacep2idx.TriangLevel(), ifacep2idx.GetBndInfo());
+    accumulate( accus, mg, ifacep2idx.TriangLevel(), ifacep2idx.GetBndInfo());//begin tetra loop
 
 //     TetraAccumulatorTupleCL mean_accus;
 //     mean_accus.push_back( &cdatap2);
@@ -1852,32 +1859,32 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 //     VectorCL Ldiag( Ap2.Data.GetDiag());
 //     bp2.Data-= dot( VectorCL( e/Ldiag), bp2.Data)/std::sqrt( dot( VectorCL( e/Ldiag), e));
 
-//     DROPS::MatrixCL Lp2;
-//     Lp2.LinComb( 1.0, Ap2.Data, 1.0, Mp2.Data);
-    MatrixCL& Lp2= Ap2.Data;
-
+//left hand matrix
+    DROPS::MatrixCL Lp2;
+    Lp2.LinComb( 1.0, Ap2.Data, 1.0, Mp2.Data);
+//   MatrixCL& Lp2= Ap2.Data;
+// keep data
     DROPS::WriteToFile( Ap2.Data, "ap2_iface.txt", "Ap2");
     DROPS::WriteToFile( Mp2.Data, "mp2_iface.txt", "Mp2");
     DROPS::WriteFEToFile( bp2, mg, "rhsp2_iface.txt", /*binary=*/ false);
-
+//define solver and solve linear equations
     typedef DROPS::SSORPcCL SurfPcT;
 //     typedef DROPS::JACPcCL SurfPcT;
     SurfPcT surfpc;
     typedef DROPS::PCGSolverCL<SurfPcT> SurfSolverT;
     SurfSolverT surfsolver( surfpc, P.get<int>("SurfTransp.Solver.Iter"), P.get<double>("SurfTransp.Solver.Tol"), true);
-
     DROPS::VecDescCL xp2( &ifacep2idx);
     surfsolver.Solve( Lp2, xp2.Data, bp2.Data, xp2.RowIdx->GetEx());
     std::cout << "Iter: " << surfsolver.GetIter() << "\tres: " << surfsolver.GetResid() << '\n';
-
-    TetraAccumulatorTupleCL err_accus;
-    err_accus.push_back( &cdatap2);
-    InterfaceL2AccuP2CL L2_accu( cdatap2, mg, "P2-solution");
+//accumulate errors on every tetrahedron
+    TetraAccumulatorTupleCL err_accus;//final tetra error accumulator
+    err_accus.push_back( &cdatap2);//push back cdata
+    InterfaceL2AccuP2CL L2_accu( cdatap2, mg, "P2-solution");//interface L2 accumulator
     L2_accu.set_grid_function( xp2);
     L2_accu.set_function( the_sol_fun, 0.);
     L2_accu.set_grad_function( the_sol_grad_fun, 0.);
     err_accus.push_back( &L2_accu);
-    accumulate( err_accus, mg, ifacep2idx.TriangLevel(), ifacep2idx.GetBndInfo());
+    accumulate( err_accus, mg, ifacep2idx.TriangLevel(), ifacep2idx.GetBndInfo());//begin accumulating
 
     {
         std::ofstream os( "quaqua_num_outer_iter.txt");
@@ -1888,7 +1895,9 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
             os << i << '\t' << quaqua.num_inner_iter[i] << '\n';
     }
 
-    if (P.get<int>( "SurfTransp.SolutionOutput.Freq") > 0)
+    //write out
+
+    if (P.get<int>( "SurfTransp.SolutionOutput.Freq") > 0)//write to file
         DROPS::WriteFEToFile( xp2, mg, P.get<std::string>( "SurfTransp.SolutionOutput.Path") + "_p2", P.get<bool>( "SurfTransp.SolutionOutput.Binary"));
 
     DROPS::NoBndDataCL<> nobnd;
