@@ -1303,43 +1303,43 @@ public:
     {
         std::cout << "InterfaceL2AccuP2CL::finalize_accumulation";
         if (name_ != std::string())
-            std::cout << " for \"" << name_ << "\":";
+            std::cout << " for \"" << name_ << "\":";//"P2-solution"
         area_acc= std::accumulate( area.begin(), area.end(), 0.);
-        std::cout << "\n\tarea: " << area_acc;
-        if (fvd != 0)
+        std::cout << "\n\tarea: " << area_acc;//output area
+        if (fvd != 0)//grid solution: norm and integral
         {
             f_grid_norm_acc=  std::sqrt( std::accumulate( f_grid_norm.begin(), f_grid_norm.end(), 0.));
             f_grid_int_acc= std::accumulate( f_grid_int.begin(), f_grid_int.end(), 0.);
             std::cout << "\n\t|| f_grid ||_L2: " << f_grid_norm_acc
                       << "\tintegral: " << f_grid_int_acc;
         }
-        if (f != 0)
+        if (f != 0)//eaxct solution
         {
             f_norm_acc=  std::sqrt( std::accumulate( f_norm.begin(), f_norm.end(), 0.));
             f_int_acc= std::accumulate( f_int.begin(), f_int.end(), 0.);
             std::cout << "\n\t|| f ||_L2: " << f_norm_acc
                       << "\t integral: " << f_int_acc;
         }
-        if (fvd != 0 && f != 0)
+        if (fvd != 0 && f != 0)//both
         {
-            err_acc=  std::sqrt( std::accumulate( err.begin(), err.end(), 0.));
+            err_acc=  std::sqrt( std::accumulate( err.begin(), err.end(), 0.));//accumulate err
             std::cout << "\n\t|| f - f_grid ||_L2: " << err_acc;
 
             const double mvf_err= std::sqrt( std::pow( err_acc, 2) - std::pow( f_grid_int_acc - f_int_acc, 2)/area_acc);
-            std:: cout << "\t|| f - c_f - (f_grid -c_{f_grid}) ||_L2: " << mvf_err;
+            std:: cout << "\t|| f - c_f - (f_grid -c_{f_grid}) ||_L2: " << mvf_err;//some kind of "mean"
         }
 
-        if (fvd != 0)
+        if (fvd != 0)//grid solution for gradient
         {
             f_grid_grad_norm_acc=  std::sqrt( std::accumulate( f_grid_grad_norm.begin(), f_grid_grad_norm.end(), 0.));
             std::cout << "\n\t|| f_grid_grad ||_L2: " << f_grid_grad_norm_acc;
         }
-        if (f_grad != 0)
+        if (f_grad != 0)//eaxct solution
         {
             f_grad_norm_acc=  std::sqrt( std::accumulate( f_grad_norm.begin(), f_grad_norm.end(), 0.));
             std::cout << "\n\t|| f_grad ||_L2: " << f_grad_norm_acc;
         }
-        if (fvd != 0 && f_grad != 0)
+        if (fvd != 0 && f_grad != 0)//both get err
         {
             grad_err_acc=  std::sqrt( std::accumulate( grad_err.begin(), grad_err.end(), 0.));
             std::cout << "\n\t|| f_grad - f_grid_grad ||_L2: " << grad_err_acc;
@@ -1347,17 +1347,17 @@ public:
         std::cout << std::endl;
     }
 
-    virtual void visit (const TetraCL& t)
+    virtual void visit (const TetraCL& t)//accumulator main function
     {
-        const InterfaceCommonDataP2CL& cdata= cdata_.get_clone();
-        if (cdata.empty())
+        const InterfaceCommonDataP2CL& cdata= cdata_.get_clone();//close cdata
+        if (cdata.empty())//empty cdata, finish
             return;
 
-        const int tid= omp_get_thread_num();
+        const int tid= omp_get_thread_num();//multithread
 
-        tid0p->area[tid]+= quad_2D( cdata.qdom_projected.absdets(), cdata.qdom);
+        tid0p->area[tid]+= quad_2D( cdata.qdom_projected.absdets(), cdata.qdom);//for parallelization
 
-        std::valarray<double> qfgrid,
+        std::valarray<double> qfgrid,//to store solution's dicrete value on triangle
             qf;
         if (fvd != 0)
         {
@@ -1372,13 +1372,13 @@ public:
         }
         if (f != 0)
         {
-            resize_and_evaluate_on_vertexes( f, cdata.qdom_projected.vertexes(), f_time, qf);
+            resize_and_evaluate_on_vertexes( f, cdata.qdom_projected.vertexes(), f_time, qf);//init qf
             tid0p->f_int[tid]+= quad_2D( cdata.qdom_projected.absdets()*qf, cdata.qdom);
             tid0p->f_norm[tid]+= quad_2D( cdata.qdom_projected.absdets()*qf*qf, cdata.qdom);
         }
         if (fvd != 0 && f != 0)
         {
-            std::valarray<double> qerr= qfgrid - qf;
+            std::valarray<double> qerr= qfgrid - qf;//valarray-type variant can be substrate directly
             tid0p->err[tid]+= quad_2D( cdata.qdom_projected.absdets()*qerr*qerr, cdata.qdom);
         }
 
@@ -1425,6 +1425,263 @@ public:
     virtual InterfaceL2AccuP2CL* clone (int /*clone_id*/)
     {
         return new InterfaceL2AccuP2CL( *this);
+    }
+};
+
+static LocalP2CL<double> localP2RhsCp;
+//err accumulator unit, high quad version
+class InterfaceL2AccuP2CLHighQuad: public TetraAccumulatorCL
+{
+private:
+    const InterfaceCommonDataP2CL& cdata_;
+    const MultiGridCL& mg;
+    std::string name_;
+
+    NoBndDataCL<> nobnddata;
+    const VecDescCL* fvd;
+
+    instat_scalar_fun_ptr f;
+    double f_time;
+
+    LocalLaplaceBeltramiP2CL loc_lb;
+
+    instat_vector_fun_ptr f_grad;
+    double f_grad_time;
+
+    InterfaceL2AccuP2CLHighQuad* tid0p; // The object in OpenMP-thread 0, in which the following variables are updated.
+    std::vector<double> f_grid_norm,
+        f_grid_int,
+        f_norm,
+        f_int,
+        err,
+        area,
+        f_grid_grad_norm,
+        f_grad_norm,
+        grad_err;
+    double res;
+
+public:
+    double f_grid_norm_acc,
+           f_grid_int_acc,
+           f_norm_acc,
+           f_int_acc,
+           err_acc,
+           area_acc,
+           f_grid_grad_norm_acc,
+           f_grad_norm_acc,
+           grad_err_acc;
+
+    InterfaceL2AccuP2CLHighQuad (const InterfaceCommonDataP2CL& cdata, const MultiGridCL& mg_arg, std::string name= std::string())
+        : cdata_( cdata), mg( mg_arg), name_( name), fvd( 0), f( 0), f_time( 0.),  loc_lb( 1.), f_grad( 0), f_grad_time( 0.) {}
+    virtual ~InterfaceL2AccuP2CLHighQuad () {}
+
+    void set_name (const std::string& n)
+    {
+        name_= n;
+    }
+    void set_grid_function (const VecDescCL& fvdarg)
+    {
+        fvd= &fvdarg;
+    }
+    void set_function (const instat_scalar_fun_ptr farg, double f_time_arg= 0.)
+    {
+        f= farg;
+        f_time= f_time_arg;
+    }
+    void set_grad_function (const instat_vector_fun_ptr farg, double f_time_arg= 0.)
+    {
+        f_grad= farg;
+        f_grad_time= f_time_arg;
+    }
+
+    virtual void begin_accumulation ()
+    {
+        std::cout << "InterfaceL2AccuP2CL::begin_accumulation";
+        if (name_ != std::string())
+            std::cout << " for \"" << name_ << "\".\n";
+
+        tid0p= this;
+        f_grid_norm.clear();
+        f_grid_norm.resize( omp_get_max_threads(), 0.);
+        f_grid_int.clear();
+        f_grid_int.resize( omp_get_max_threads(), 0.);
+
+        f_norm.clear();
+        f_norm.resize( omp_get_max_threads(), 0.);
+        f_int.clear();
+        f_int.resize( omp_get_max_threads(), 0.);
+
+        err.clear();
+        err.resize( omp_get_max_threads(), 0.);
+        area.clear();
+        area.resize( omp_get_max_threads(), 0.);
+
+        f_grid_grad_norm.clear();
+        f_grid_grad_norm.resize( omp_get_max_threads(), 0.);
+        f_grad_norm.clear();
+        f_grad_norm.resize( omp_get_max_threads(), 0.);
+        grad_err.clear();
+        grad_err.resize( omp_get_max_threads(), 0.);
+
+        f_grid_norm_acc= f_grid_int_acc= f_norm_acc= f_int_acc= err_acc= area_acc= 0.;
+        f_grid_grad_norm_acc= f_grad_norm_acc= grad_err_acc= 0.;
+    }
+
+    virtual void finalize_accumulation()
+    {
+        std::cout << "InterfaceL2AccuP2CL::finalize_accumulation";
+        if (name_ != std::string())
+            std::cout << " for \"" << name_ << "\":";//"P2-solution"
+        area_acc= std::accumulate( area.begin(), area.end(), 0.);
+        std::cout << "\n\tarea: " << area_acc;//output area
+        if (fvd != 0)//grid solution: norm and integral
+        {
+            f_grid_norm_acc=  std::sqrt( std::accumulate( f_grid_norm.begin(), f_grid_norm.end(), 0.));
+            f_grid_int_acc= std::accumulate( f_grid_int.begin(), f_grid_int.end(), 0.);
+            std::cout << "\n\t|| f_grid ||_L2: " << f_grid_norm_acc
+                      << "\tintegral: " << f_grid_int_acc;
+        }
+        if (f != 0)//eaxct solution
+        {
+            f_norm_acc=  std::sqrt( std::accumulate( f_norm.begin(), f_norm.end(), 0.));
+            f_int_acc= std::accumulate( f_int.begin(), f_int.end(), 0.);
+            std::cout << "\n\t|| f ||_L2: " << f_norm_acc
+                      << "\t integral: " << f_int_acc;
+        }
+        if (fvd != 0 && f != 0)//both
+        {
+            err_acc=  std::sqrt( std::accumulate( err.begin(), err.end(), 0.));//accumulate err
+            std::cout << "\n\t|| f - f_grid ||_L2: " << err_acc;
+
+            const double mvf_err= std::sqrt( std::pow( err_acc, 2) - std::pow( f_grid_int_acc - f_int_acc, 2)/area_acc);
+            std:: cout << "\t|| f - c_f - (f_grid -c_{f_grid}) ||_L2: " << mvf_err;//some kind of "mean"
+        }
+
+        if (fvd != 0)//grid solution for gradient
+        {
+            f_grid_grad_norm_acc=  std::sqrt( std::accumulate( f_grid_grad_norm.begin(), f_grid_grad_norm.end(), 0.));
+            std::cout << "\n\t|| f_grid_grad ||_L2: " << f_grid_grad_norm_acc;
+        }
+        if (f_grad != 0)//eaxct solution
+        {
+            f_grad_norm_acc=  std::sqrt( std::accumulate( f_grad_norm.begin(), f_grad_norm.end(), 0.));
+            std::cout << "\n\t|| f_grad ||_L2: " << f_grad_norm_acc;
+        }
+        if (fvd != 0 && f_grad != 0)//both get err
+        {
+            grad_err_acc=  std::sqrt( std::accumulate( grad_err.begin(), grad_err.end(), 0.));
+            std::cout << "\n\t|| f_grad - f_grid_grad ||_L2: " << grad_err_acc;
+        }
+        std::cout << std::endl;
+    }
+    static void localErrIntFunP2(double x, double y, double z, double *ff)
+    {
+        auto BCs = getBaryCoords(tet,x,y,z);
+        double fcal = localP2RhsCp(BCs);
+        DROPS::Point3DCL p(x,y,z);
+        double fext = xyz_rhs(p,0);
+        *ff = (fcal-fext)*(fcal-fext);
+    }
+
+    virtual void visit (const TetraCL& t)//accumulator main function
+    {
+        GetTet2DArr(t,tet);//change tetra to C-style
+        const InterfaceCommonDataP2CL& cdata= cdata_.get_clone();//close cdata
+        if (cdata.empty())//empty cdata, finish
+            return;
+
+        const int tid= omp_get_thread_num();//multithread
+
+        tid0p->area[tid]+= quad_2D( cdata.qdom_projected.absdets(), cdata.qdom);//for parallelization
+
+        std::valarray<double> qfgrid,//to store solution's dicrete value on triangle
+            qf;
+        if (fvd != 0)
+        {
+            // XXX: Check, whether incomplete P2-Data exists locally (which is allowed for P2IF_FE, but not handled correctly by this class --> Extend fvd). Likewise for P1IF_FE...
+            if (fvd->RowIdx->GetFE() == P2IF_FE)
+                resize_and_evaluate_on_vertexes( make_P2Eval( mg, nobnddata, *fvd), t, cdata.qdom, qfgrid);
+            else if (fvd->RowIdx->GetFE() == P1IF_FE)
+                resize_and_evaluate_on_vertexes( make_P1Eval( mg, nobnddata, *fvd), t, cdata.qdom, qfgrid);
+//             resize_and_evaluate_on_vertexes( make_P2Eval( mg, nobnddata, *fvd), cdata.qdom_projected, qfgrid);
+            tid0p->f_grid_int[tid]+=  quad_2D( cdata.qdom_projected.absdets()*qfgrid,        cdata.qdom);
+            tid0p->f_grid_norm[tid]+= quad_2D( cdata.qdom_projected.absdets()*qfgrid*qfgrid, cdata.qdom);
+        }
+        if (f != 0)
+        {
+            resize_and_evaluate_on_vertexes( f, cdata.qdom_projected.vertexes(), f_time, qf);//init qf
+            tid0p->f_int[tid]+= quad_2D( cdata.qdom_projected.absdets()*qf, cdata.qdom);
+            tid0p->f_norm[tid]+= quad_2D( cdata.qdom_projected.absdets()*qf*qf, cdata.qdom);
+        }
+        if (fvd != 0 && f != 0)
+        {
+            //std::valarray<double> qerr= qfgrid - qf;//valarray-type variant can be substrate directly
+            //tid0p->err[tid]+= quad_2D( cdata.qdom_projected.absdets()*qerr*qerr, cdata.qdom);
+            LocalP2CL<double> localP2Rhs(t,*fvd,nobnddata);
+            localP2RhsCp = localP2Rhs;
+            int n = phgQuadInterface2(
+                        lsFun,		/* the level set function */
+                        2,		/* polynomial order of the level set function */
+                        lsGrad,	/* the gradient of the level set function */
+                        tet,		/* coordinates of the vertices of the tetra */
+                        localErrIntFunP2,		/* the integrand */
+                        1,		/* dimension of the integrand */
+                        DOF_PROJ_NONE,	/* projection type for surface integral */
+                        0,		/* integration type (-1, 0, 1) */
+                        orderG,		/* order of the 1D Gaussian quadrature */
+                        &res,		/* the computed integral */
+                        NULL		/* pointer returning the computed rule */
+                    );
+
+
+            tid0p->err[tid]+= res;
+
+
+        }
+
+        GridFunctionCL<Point3DCL> qfgradgrid,
+                       qfgrad;
+        if (fvd != 0)
+        {
+            qfgradgrid.resize( cdata.qdom.vertex_size());
+            if (fvd->RowIdx->GetFE() == P2IF_FE)
+            {
+                LocalP2CL<> lp2( t, *fvd, nobnddata);
+                loc_lb.setup( t, cdata);
+                for (Uint i= 0; i < 10; ++i)
+                    qfgradgrid+= lp2[i]*loc_lb.get_qgradp2( i);
+            }
+            else if (fvd->RowIdx->GetFE() == P1IF_FE)
+            {
+// // XXX Implement this case.
+//                 LocalP1CL<> lp1( t, *fvd, nobnddata);
+//                 loc_lb_p1.setup( t, cdata);
+//                 for (Uint i= 0; i < 4; ++i)
+//                     qfgradgrid+= lp1[i]*loc_lb_p1.get_qgradp1( i);
+            }
+            tid0p->f_grid_grad_norm[tid]+= quad_2D( cdata.qdom_projected.absdets()*dot( qfgradgrid, qfgradgrid), cdata.qdom);
+        }
+        if (f_grad != 0)
+        {
+            resize_and_evaluate_on_vertexes( f_grad, cdata.qdom_projected.vertexes(), f_grad_time, qfgrad);
+            for (Uint i= 0; i < cdata.qdom_projected.vertexes().size(); ++i)
+            {
+                Point3DCL n= cdata.quaqua.local_ls_grad( *cdata.qdom_projected.vertexes()[i].first, cdata.qdom_projected.vertexes()[i].second);
+                n/= n.norm();
+                qfgrad[i]-= inner_prod( n, qfgrad[i])*n;
+            }
+            tid0p->f_grad_norm[tid]+= quad_2D( cdata.qdom_projected.absdets()*dot( qfgrad, qfgrad), cdata.qdom);
+        }
+        if (fvd != 0 && f_grad != 0)
+        {
+            GridFunctionCL<Point3DCL> qerr( qfgradgrid - qfgrad);
+            tid0p->grad_err[tid]+= quad_2D( cdata.qdom_projected.absdets()*dot( qerr, qerr), cdata.qdom);
+        }
+    }
+
+    virtual InterfaceL2AccuP2CLHighQuad* clone (int /*clone_id*/)
+    {
+        return new InterfaceL2AccuP2CLHighQuad( *this);
     }
 };
 
@@ -1836,12 +2093,15 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 
     //set up stiffness matrix
     DROPS::MatDescCL Ap2( &ifacep2idx, &ifacep2idx);
-    InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CL, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CL( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
+    //InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CL, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CL( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
+    InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CLHighQuad, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CLHighQuad( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
+
     accus.push_back( &accuAp2);
 
     //set up right hand side
     DROPS::VecDescCL bp2( &ifacep2idx);
-    InterfaceVectorAccuCL<LocalVectorP2CL, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CL( the_rhs_fun, bp2.t), cdatap2);
+   //InterfaceVectorAccuCL<LocalVectorP2CL, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CL( the_rhs_fun, bp2.t), cdatap2);
+    InterfaceVectorAccuCL<LocalVectorP2CLHighQuad, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CLHighQuad( the_rhs_fun, bp2.t), cdatap2);
     accus.push_back( &acculoadp2);
 
     accumulate( accus, mg, ifacep2idx.TriangLevel(), ifacep2idx.GetBndInfo());//begin tetra loop
@@ -1878,14 +2138,18 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     std::cout << "Iter: " << surfsolver.GetIter() << "\tres: " << surfsolver.GetResid() << '\n';
 //accumulate errors on every tetrahedron
     TetraAccumulatorTupleCL err_accus;//final tetra error accumulator
-    err_accus.push_back( &cdatap2);//push back cdata
-    InterfaceL2AccuP2CL L2_accu( cdatap2, mg, "P2-solution");//interface L2 accumulator
-    L2_accu.set_grid_function( xp2);
-    L2_accu.set_function( the_sol_fun, 0.);
-    L2_accu.set_grad_function( the_sol_grad_fun, 0.);
+    err_accus.push_back( &cdatap2);//push back cdata, include P2 element
+ //   InterfaceL2AccuP2CL L2_accu( cdatap2, mg, "P2-solution");//interface L2 accumulator
+    InterfaceL2AccuP2CLHighQuad L2_accu( cdatap2, mg, "P2-solution");////error accumulater high quad version
+    L2_accu.set_grid_function( xp2);//set solved solution
+    L2_accu.set_function( the_sol_fun, 0.);//set exaction solution
+    L2_accu.set_grad_function( the_sol_grad_fun, 0.);//set gradient fo exact sol
     err_accus.push_back( &L2_accu);
     accumulate( err_accus, mg, ifacep2idx.TriangLevel(), ifacep2idx.GetBndInfo());//begin accumulating
 
+
+
+//write out
     {
         std::ofstream os( "quaqua_num_outer_iter.txt");
         for (Uint i= 0; i != quaqua.num_outer_iter.size(); ++i)
@@ -1894,9 +2158,6 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
         for (Uint i= 0; i != quaqua.num_inner_iter.size(); ++i)
             os << i << '\t' << quaqua.num_inner_iter[i] << '\n';
     }
-
-    //write out
-
     if (P.get<int>( "SurfTransp.SolutionOutput.Freq") > 0)//write to file
         DROPS::WriteFEToFile( xp2, mg, P.get<std::string>( "SurfTransp.SolutionOutput.Path") + "_p2", P.get<bool>( "SurfTransp.SolutionOutput.Binary"));
 
@@ -2192,8 +2453,8 @@ int main (int argc, char* argv[])
         the_sol_fun=  inscamap[P.get<std::string>("SurfTransp.Exp.Solution")];
         the_sol_grad_fun = invecmap[P.get<std::string>("SurfTransp.Exp.SurfGradSol")];
 
-        if (P.get<std::string>("SurfTransp.Exp.Solution") == "LaplaceBeltrami0Sol")
-            the_sol_grad_fun=  &laplace_beltrami_0_sol_grad;
+        if (P.get<std::string>("SurfTransp.Exp.Solution") == "LaplaceBeltramixyzSol")
+            the_sol_grad_fun=  &laplace_beltrami_xyz_sol_grad;
         for (Uint i= 0; i < 6; ++i)
             bf_wind[i]= the_wind_fun;
 

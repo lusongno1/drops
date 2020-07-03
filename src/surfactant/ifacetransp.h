@@ -1042,18 +1042,20 @@ public:
 
     void setup (const TetraCL& t, const InterfaceCommonDataP1CL& cdata)
     {
-        for (Uint i= 0; i < 4; ++i)
-        {
-            auto vtx = t.GetVertex(i);
-            auto coord = vtx->GetCoord();
-            for(int j=0; j<4; j++)
-            {
 
-                tet[i][j] = coord[j];
-
-            }
-
-        }
+        GetTet2DArr(t,tet);
+//        for (Uint i= 0; i < 4; ++i)
+//        {
+//            auto vtx = t.GetVertex(i);
+//            auto coord = vtx->GetCoord();
+//            for(int j=0; j<4; j++)
+//            {
+//
+//                tet[i][j] = coord[j];
+//
+//            }
+//
+//        }
 
         for(iG=0; iG<4; iG++)
         {
@@ -1200,18 +1202,19 @@ public:
 
     void setup (const TetraCL& t, const InterfaceCommonDataP1CL& cdata)
     {
-        for (Uint i= 0; i < 4; ++i)
-        {
-            auto vtx = t.GetVertex(i);
-            auto coord = vtx->GetCoord();
-            for(int j=0; j<4; j++)
-            {
-
-                tet[i][j] = coord[j];
-
-            }
-
-        }
+//        for (Uint i= 0; i < 4; ++i)
+//        {
+//            auto vtx = t.GetVertex(i);
+//            auto coord = vtx->GetCoord();
+//            for(int j=0; j<4; j++)
+//            {
+//
+//                tet[i][j] = coord[j];
+//
+//            }
+//
+//        }
+        GetTet2DArr(t,tet);
         P1DiscCL::GetGradients( gradTri3DCL, dummy, t);//gradient is a constant vector
         for(int i=0; i<4; i++)
             for(int j=0; j<3; j++)
@@ -1521,6 +1524,57 @@ public:
 };
 
 
+/// \brief Compute the P2 load vector corresponding to the function f on a single tetra, High Quad version
+static LocalP2CL<> localP2RhsSet[10];
+class LocalVectorP2CLHighQuad
+{
+private:
+    instat_scalar_fun_ptr f_;
+    double time_;
+    double res;
+
+public:
+    static const FiniteElementT row_fe_type= P2IF_FE;
+    double vec[10];
+  //  LocalVectorP2CL (instat_scalar_fun_ptr f, double time) : f_( f), time_( time) {}
+    static void localRhsIntFunP2(double x, double y, double z, double *ff)
+    {
+        const DROPS::Point3DCL& p{x,y,z};
+        auto BCs = getBaryCoords(tet,x,y,z);
+        *ff = xyz_rhs(p,0)*localP2RhsSet[iG](BCs);
+    }
+
+    void setup (const TetraCL& t, const InterfaceCommonDataP2CL& cdata, const IdxT numr[10])
+    {
+        GetTet2DArr(t,tet);
+        for(Uint i=0; i<10; i++)
+            localP2RhsSet[i] = cdata.p2[i];
+        for (iG= 0; iG < 10; ++iG)
+        {
+            if (numr[iG] == NoIdx)
+                continue;
+            int n = phgQuadInterface2(
+                        lsFun,		/* the level set function */
+                        2,		/* polynomial order of the level set function */
+                        lsGrad,	/* the gradient of the level set function */
+                        tet,		/* coordinates of the vertices of the tetra */
+                        localRhsIntFunP2,		/* the integrand */
+                        1,		/* dimension of the integrand */
+                        DOF_PROJ_NONE,	/* projection type for surface integral */
+                        0,		/* integration type (-1, 0, 1) */
+                        orderG,		/* order of the 1D Gaussian quadrature */
+                        &res,		/* the computed integral */
+                        NULL		/* pointer returning the computed rule */
+                    );
+            vec[iG] = res;
+
+        }
+    }
+    LocalVectorP2CLHighQuad (instat_scalar_fun_ptr f, double time) : f_( f), time_( time) {}
+};
+
+
+
 /// \brief Trafo of the interfacial gradient on the linear interface to the quadratic iface under a QuaQuaMapperCL.
 /// Computes W from La. 5.1 of the high order paper. The transformation of the gradient in the discretization requires W^{-1}.
 void gradient_trafo (const TetraCL& tet, const BaryCoordCL& xb, const QuaQuaMapperCL& quaqua, const SurfacePatchCL& p, SMatrixCL<3,3>& W);
@@ -1594,6 +1648,72 @@ public:
         :D_( D) {}
 };
 
+static LocalP1CL<Point3DCL> gradp2[10];//to put gradients of shape function
+class LocalLaplaceBeltramiP2CLHighQuad
+{
+private:
+    double D_; // diffusion coefficient
+    double res;
+
+
+public:
+    static const FiniteElementT row_fe_type= P2IF_FE,
+                                col_fe_type= P2IF_FE;
+
+    double coup[10][10];
+    static void localLBIntFunP2(double x, double y, double z, double *ff)//how to define right hand side intergrand changed by tet with fixed input ???
+    {
+        auto BCs = getBaryCoords(tet,x,y,z);
+        Point3DCL gradiG = gradp2[iG](BCs);
+        Point3DCL gradjG = gradp2[jG](BCs);
+        double n[3];
+        getSfNormalVec(x,y,z,n);
+        double sf_grad_iG[3];
+        double sf_grad_jG[3];
+        getSurfaceGradient(gradiG,n,sf_grad_iG);
+        getSurfaceGradient(gradjG,n,sf_grad_jG);
+        *ff = dotP3(sf_grad_iG,sf_grad_jG);
+    }
+
+    void setup (const TetraCL& t, const InterfaceCommonDataP2CL& cdata)
+    {
+        //get gradient local p2 class
+        double dummy;
+        SMatrixCL<3,3> T;
+        GetTrafoTr( T, dummy, t);
+        P2DiscCL::GetGradients( gradp2, cdata.gradrefp2, T);
+        //change tet store into c-style
+        GetTet2DArr(t,tet);
+
+        for(iG=0; iG<10; iG++)
+        {
+            for(jG=iG; jG<10; jG++)
+            {
+                int n = phgQuadInterface2(
+                            lsFun,		/* the level set function */
+                            2,		/* polynomial order of the level set function */
+                            lsGrad,	/* the gradient of the level set function */
+                            tet,		/* coordinates of the vertices of the tetra */
+                            localLBIntFunP2,		/* the integrand */
+                            1,		/* dimension of the integrand */
+                            DOF_PROJ_NONE,	/* projection type for surface integral */
+                            0,		/* integration type (-1, 0, 1) */
+                            orderG,		/* order of the 1D Gaussian quadrature */
+                            &res,		/* the computed integral */
+                            NULL		/* pointer returning the computed rule */
+                        );
+
+                coup[iG][jG] = res;
+                coup[jG][iG] = res;
+            }
+
+
+        }
+    }
+    LocalLaplaceBeltramiP2CLHighQuad (double D)
+        :D_( D) {}
+};
+
 class LocalMassP2CL
 {
 private:
@@ -1647,7 +1767,7 @@ public:
         double vtxJValue =  tmp(BCs);
         *ff = vtxIValue*vtxJValue;
         //std::cout<<"iG:"<<iG<<"jG"<<jG<<std::endl;
-       // getchar();
+        // getchar();
     }
 
     void setup (const TetraCL& t, const InterfaceCommonDataP2CL& cdata)
