@@ -24,6 +24,7 @@
 #include "misc/container.h"
 #include "geom/simplex.h"
 #include "num/discretize.h"
+#include <fstream>
 
 #ifndef DROPS_SFPDE_H
 #define DROPS_SFPDE_H
@@ -45,6 +46,8 @@ void getSfNormalVec(double x,double y,double z,double (&n)[3]);
 //template <typename T>
 void getSurfaceGradient(DROPS::Point3DCL v,double n[3],double (&sf_grad)[3]);
 DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double);
+void ouput_valarray(std::valarray<double> v);
+void cout2txt(double a);
 
 extern double tet[4][3];
 extern int iG;

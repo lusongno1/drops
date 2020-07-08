@@ -1519,6 +1519,11 @@ public:
                 continue;
             evaluate_on_vertexes( cdata.p2[i], cdata.qdom, Addr( qp2));
             vec[i]= quad_2D( cdata.qdom_projected.absdets()*qf*qp2, cdata.qdom);
+          //  cout2txt(vec[i]);
+         //   ouput_valarray(qf);
+          //  ouput_valarray(qp2);
+           // getchar();
+
         }
     }
 };
@@ -1567,6 +1572,7 @@ public:
                         NULL		/* pointer returning the computed rule */
                     );
             vec[iG] = res;
+          //  cout2txt(res);
 
         }
     }

@@ -40,44 +40,44 @@
 
 
 // test case 2
-//double xyz_rhs (const DROPS::Point3DCL& p, double)
-//{
-//
-//    return 1;
-//}
-//double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
-//{
-//    return 1;
-//}
-//
-//DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
-//{
-//    DROPS::Point3DCL tmp{0,0,0};
-//    return tmp;
-//}
+double xyz_rhs (const DROPS::Point3DCL& p, double)
+{
+
+    return 1;
+}
+double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+{
+    return 1;
+}
+
+DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
+{
+    DROPS::Point3DCL tmp{0,0,0};
+    return tmp;
+}
 
 // test case 3
 //define right hand side and true solution
 //u = a*|x|^2/(12+|x|^2)*(3x1^2x2-x2^3)
 //f = a*(3x1^2x2-x2^3)
-double a(1.0);
-double xyz_rhs (const DROPS::Point3DCL& p, double)
-{
-
-    return a/std::pow( p.norm(), 3.)*(3.*p[0]*p[0]*p[1]-p[1]*p[1]*p[1]);
-}
-double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
-{
-    return (p.norm_sq()/(12.+p.norm_sq()))*xyz_rhs(p,0.);
-}
-DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
-{
- //   DROPS::Point3DCL tmp{6*a/13*p[0]*p[1],-3*a/13*p[1]*p[1],0};
-    DROPS::Point3DCL tmp= 3./std::pow( p.norm(), 3)
-    *( DROPS::MakePoint3D(2.*p[0]*p[1], p[0]*p[0] - p[1]*p[1], 0.) -
-      (3.*p[0]*p[0]*p[1] - std::pow(p[1], 3))/p.norm_sq()*p);
-    return tmp;// This equals tmp - inner_prod( p/p.norm(), tmp)*p/p.norm().
-}
+//double a(1.0);
+//double xyz_rhs (const DROPS::Point3DCL& p, double)
+//{
+//
+//    return a/std::pow( p.norm(), 3.)*(3.*p[0]*p[0]*p[1]-p[1]*p[1]*p[1]);
+//}
+//double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+//{
+//    return (p.norm_sq()/(12.+p.norm_sq()))*xyz_rhs(p,0.);
+//}
+//DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
+//{
+// //   DROPS::Point3DCL tmp{6*a/13*p[0]*p[1],-3*a/13*p[1]*p[1],0};
+//    DROPS::Point3DCL tmp= 3./std::pow( p.norm(), 3)
+//    *( DROPS::MakePoint3D(2.*p[0]*p[1], p[0]*p[0] - p[1]*p[1], 0.) -
+//      (3.*p[0]*p[0]*p[1] - std::pow(p[1], 3))/p.norm_sq()*p);
+//    return tmp;// This equals tmp - inner_prod( p/p.norm(), tmp)*p/p.norm().
+//}
 
  //test case 4
 //define right hand side and true solution
@@ -218,6 +218,22 @@ void getSurfaceGradient(DROPS::Point3DCL v,double n[3],double (&sf_grad)[3])
     }
 }
 
+
+void ouput_valarray(std::valarray<double> v)
+{
+    std::cout<<"begin output valarray:"<<std::endl;
+    for(int i=0;i<v.size();i++)
+    {
+        std::cout<<v[i]<<" ";
+    }
+    std::cout<<std::endl;
+}
+void cout2txt(double a)
+{
+std::ofstream mycout("./debug.txt",std::ios_base::app);
+mycout<<a<<std::endl;
+mycout.close();
+}
 
 double tet[4][3];
 int iG;
