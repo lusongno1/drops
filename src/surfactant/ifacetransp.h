@@ -1509,8 +1509,9 @@ public:
 
     LocalVectorP2CL (instat_scalar_fun_ptr f, double time) : f_( f), time_( time) {}
 
-    void setup (const TetraCL&, const InterfaceCommonDataP2CL& cdata, const IdxT numr[10])
+    void setup (const TetraCL& t, const InterfaceCommonDataP2CL& cdata, const IdxT numr[10])
     {
+     //   coutTet(t);
         resize_and_evaluate_on_vertexes( f_, cdata.qdom_projected.vertexes(), time_, qf);
         qp2.resize( cdata.qdom.vertex_size());
         for (Uint i= 0; i < 10; ++i)
@@ -1518,13 +1519,15 @@ public:
             if (numr[i] == NoIdx)
                 continue;
             evaluate_on_vertexes( cdata.p2[i], cdata.qdom, Addr( qp2));
+          //  std::valarray<double> qp20{1,1,1,1,1,1,1};
             vec[i]= quad_2D( cdata.qdom_projected.absdets()*qf*qp2, cdata.qdom);
-          //  cout2txt(vec[i]);
+        //    cout2txt(vec[i]);
          //   ouput_valarray(qf);
           //  ouput_valarray(qp2);
-           // getchar();
+          //
 
         }
+       // getchar();
     }
 };
 
@@ -1545,14 +1548,16 @@ public:
     static void localRhsIntFunP2(double x, double y, double z, double *ff)
     {
         const DROPS::Point3DCL& p{x,y,z};
-        auto BCs = getBaryCoords(tet,x,y,z);
-        *ff = xyz_rhs(p,0)*localP2RhsSet[iG](BCs);
+        const BaryCoordCL& BCs = getBaryCoords(tet,x,y,z);
+        //*ff = xyz_rhs(p,0)*localP2RhsSet[iG](BCs);
+        *ff = 1;
     }
 
     void setup (const TetraCL& t, const InterfaceCommonDataP2CL& cdata, const IdxT numr[10])
     {
+      //  coutTet(t);
         GetTet2DArr(t,tet);
-        for(Uint i=0; i<10; i++)
+        for(int i=0; i<10; i++)
             localP2RhsSet[i] = cdata.p2[i];
         for (iG= 0; iG < 10; ++iG)
         {
@@ -1572,9 +1577,11 @@ public:
                         NULL		/* pointer returning the computed rule */
                     );
             vec[iG] = res;
-          //  cout2txt(res);
+            cout2txt(res);
+           // getchar();
 
         }
+  //      getchar();
     }
     LocalVectorP2CLHighQuad (instat_scalar_fun_ptr f, double time) : f_( f), time_( time) {}
 };

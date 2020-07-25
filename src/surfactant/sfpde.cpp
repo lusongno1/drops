@@ -27,34 +27,39 @@
 ////define right hand side and true solution
 ////my test case，f = 3*(x+y+z) for problem -\Delta u + u = f
 ////then u = f/3
-//double xyz_rhs (const DROPS::Point3DCL& p, double)
-//{
-//
-//    return 3*(p[0]+p[1]+p[2]);//p.norm();
-//}
-////my test case u=x+y+z
-//double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
-//{
-//    return (p[0]+p[1]+p[2]);//p.norm();
-//}
-
-
-// test case 2
 double xyz_rhs (const DROPS::Point3DCL& p, double)
 {
 
-    return 1;
+    return 3*(p[0]+p[1]+p[2]);//p.norm();
 }
+//my test case u=x+y+z
 double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
 {
-    return 1;
+    return (p[0]+p[1]+p[2]);//p.norm();
 }
 
 DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
 {
-    DROPS::Point3DCL tmp{0,0,0};
+    DROPS::Point3DCL tmp{1,1,1};
     return tmp;
 }
+
+
+// test case 2
+//double xyz_rhs (const DROPS::Point3DCL& p, double)
+//{
+//    return 1;
+//}
+//double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+//{
+//    return 1;
+//}
+//
+//DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
+//{
+//    DROPS::Point3DCL tmp{0,0,0};
+//    return tmp;
+//}
 
 // test case 3
 //define right hand side and true solution
@@ -79,7 +84,7 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
 //    return tmp;// This equals tmp - inner_prod( p/p.norm(), tmp)*p/p.norm().
 //}
 
- //test case 4
+//test case 4
 //define right hand side and true solution
 //u = x*y*z
 //f = x*y*z - 12*x*y*z*(x^2 + y^2 + z^2 - 2)
@@ -91,6 +96,12 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
 //double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
 //{
 //    return p[0]*p[1]*p[2];
+//}
+//
+//DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
+//{
+//    DROPS::Point3DCL tmp{p[1]*p[2],p[0]*p[2],p[0]*p[1]};
+//    return tmp;
 //}
 
 //define level set funcion and its gradient
@@ -210,7 +221,7 @@ void getSfNormalVec(double x,double y,double z,double (&n)[3])
 void getSurfaceGradient(DROPS::Point3DCL v,double n[3],double (&sf_grad)[3])
 {
     double proj_norm = 0;
-    for(int i=0;i<3;i++)
+    for(int i=0; i<3; i++)
         proj_norm += v[i]*n[i];
     for(int i=0; i<3; i++)
     {
@@ -222,7 +233,7 @@ void getSurfaceGradient(DROPS::Point3DCL v,double n[3],double (&sf_grad)[3])
 void ouput_valarray(std::valarray<double> v)
 {
     std::cout<<"begin output valarray:"<<std::endl;
-    for(int i=0;i<v.size();i++)
+    for(int i=0; i<v.size(); i++)
     {
         std::cout<<v[i]<<" ";
     }
@@ -230,9 +241,29 @@ void ouput_valarray(std::valarray<double> v)
 }
 void cout2txt(double a)
 {
-std::ofstream mycout("./debug.txt",std::ios_base::app);
-mycout<<a<<std::endl;
-mycout.close();
+    std::ofstream mycout("./debug.txt",std::ios_base::app);
+    mycout<<a<<std::endl;
+    mycout.close();
+}
+
+int nc = 1;
+void coutTet(const DROPS::TetraCL& t)
+{
+    std::cout<<std::endl<<nc++<<":"<<std::endl;;
+    for (int i= 0; i < 4; ++i)
+    {
+        auto vtx = t.GetVertex(i);
+        auto coord = vtx->GetCoord();
+        for(int j=0; j<3; j++)
+        {
+
+            auto tmp = coord[j];
+            std::cout<<tmp<<" ";
+
+        }
+        std::cout<<std::endl;
+    }
+
 }
 
 double tet[4][3];

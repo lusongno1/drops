@@ -48,6 +48,7 @@ void getSurfaceGradient(DROPS::Point3DCL v,double n[3],double (&sf_grad)[3]);
 DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double);
 void ouput_valarray(std::valarray<double> v);
 void cout2txt(double a);
+void coutTet(const DROPS::TetraCL& t);
 
 extern double tet[4][3];
 extern int iG;

@@ -570,7 +570,8 @@ void SetupLBP1 (const MultiGridCL& mg, MatDescCL* mat, const VecDescCL& ls, cons
 
 // set up laplace beltrami P1 high quad version
 void SetupLBP1HighQuad (const MultiGridCL& mg, MatDescCL* mat, const VecDescCL& ls, const BndDataCL<>& lsetbnd, double D)
-{//input: multigrid, result matrix, dicrete level set, boundary data
+{
+    //input: multigrid, result matrix, dicrete level set, boundary data
     //ScopeTimerCL timer( "SetuLBP1");
 
     TetraAccumulatorTupleCL accus;//define tetrahedron accumulator tuple class
@@ -602,6 +603,7 @@ void SetupInterfaceRhsP1OnTriangle (const LocalP1CL<> p1[4],
         r= qf*q[i];//cal in int std unit for every basis
         v[Numb[i]]+= r.quad( det);//assign cal result to corresponding pos in b, det here is area element
         //std::cout<<r.quad(det)<<std::endl;
+        //cout2txt(r.quad( det));
 #ifdef DEBUG_
         std::cout<<std::endl;
         // for(int i=0; i<4; i++)
@@ -656,12 +658,12 @@ void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,
     std::cout << "entering SetupInterfaceRhsP1: " << num_unks << " dof... ";
 
     LocalP1CL<> p1[4];//put P1 finite element and get their value on tetra
-    p1[0][0]= p1[1][1]= p1[2][2]= p1[3][3]= 1.; // P1-Basis-Functions
-//    for(int i=0; i<4; i++)
-//    {
-//        for(int j=0; j<4; j++)
-//            p1[i][j] = 1;
-//    }
+//   p1[0][0]= p1[1][1]= p1[2][2]= p1[3][3]= 1.; // P1-Basis-Functions
+    for(int i=0; i<4; i++)
+    {
+        for(int j=0; j<4; j++)
+            p1[i][j] = 1;
+    }
 
     Quad5_2DCL<double> q[4], m;// define quad class to cal result
 
@@ -688,7 +690,7 @@ void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,
             {
                 auto vtx = (*it).GetVertex(i);
                 auto coord = vtx->GetCoord();
-                for(int j =0 ;j<3;j++)
+                for(int j =0 ; j<3; j++)
                 {
                     std::cout<<coord[j]<<" ";
                 }
@@ -705,6 +707,7 @@ void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,
                 std::cout<<(v->Data)[num[i]]<<std::endl;
             }
             getchar();
+
 #endif
         }
 
@@ -729,9 +732,9 @@ void rhsIntFunP1(double x, double y, double z, double *ff)//how to define right 
     double fValue = xyz_rhs(p,0);
     // std::cout<<pValue<<std::endl;
     //getchar();
-    *ff = pValue*fValue;
+    //*ff = pValue*fValue;
 
-    // *ff = 1;
+    *ff = 1;
 }
 
 
@@ -805,6 +808,9 @@ void SetupInterfaceRhsP1HighQuad (const MultiGridCL& mg, VecDescCL* v,
                             NULL		/* pointer returning the computed rule */
                         );
 
+                if(res!=0&&iG==0)
+                    cout2txt(res);
+
                 //std::cout<<res<<std::endl;
 
 
@@ -818,7 +824,7 @@ void SetupInterfaceRhsP1HighQuad (const MultiGridCL& mg, VecDescCL* v,
                     std::cout<<num[iG]<<":";
                     std::cout<<res<<std::endl;
                 }
-              //  getchar();
+                //  getchar();
 #endif
 
 
