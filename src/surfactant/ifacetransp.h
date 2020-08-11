@@ -1511,23 +1511,29 @@ public:
 
     void setup (const TetraCL& t, const InterfaceCommonDataP2CL& cdata, const IdxT numr[10])
     {
-     //   coutTet(t);
+        //   coutTet(t);
         resize_and_evaluate_on_vertexes( f_, cdata.qdom_projected.vertexes(), time_, qf);
         qp2.resize( cdata.qdom.vertex_size());
-        for (Uint i= 0; i < 10; ++i)
+        int IdxPos = -1;
+        for (Uint i= 0; i < 10; i++)
         {
             if (numr[i] == NoIdx)
                 continue;
+            IdxPos = i;
             evaluate_on_vertexes( cdata.p2[i], cdata.qdom, Addr( qp2));
-          //  std::valarray<double> qp20{1,1,1,1,1,1,1};
+            //  std::valarray<double> qp20{1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0};
             vec[i]= quad_2D( cdata.qdom_projected.absdets()*qf*qp2, cdata.qdom);
-        //    cout2txt(vec[i]);
-         //   ouput_valarray(qf);
-          //  ouput_valarray(qp2);
-          //
+            //    cout2txt(vec[i]);
+            //   ouput_valarray(qf);
+            //     ouput_valarray(qp20);
+            //
+            //  ouput_valarray( cdata.qdom_projected.absdets());
 
         }
-       // getchar();
+        if(IdxPos!=-1)
+            cout2txt(vec[IdxPos]);
+        //   std::cout<<cdata.qdom_projected.absdets()<<std::endl;
+        // getchar();
     }
 };
 
@@ -1544,18 +1550,18 @@ private:
 public:
     static const FiniteElementT row_fe_type= P2IF_FE;
     double vec[10];
-  //  LocalVectorP2CL (instat_scalar_fun_ptr f, double time) : f_( f), time_( time) {}
+    //  LocalVectorP2CL (instat_scalar_fun_ptr f, double time) : f_( f), time_( time) {}
     static void localRhsIntFunP2(double x, double y, double z, double *ff)
     {
         const DROPS::Point3DCL& p{x,y,z};
         const BaryCoordCL& BCs = getBaryCoords(tet,x,y,z);
-        //*ff = xyz_rhs(p,0)*localP2RhsSet[iG](BCs);
-        *ff = 1;
+        *ff = xyz_rhs(p,0)*localP2RhsSet[iG](BCs);
+        //   *ff = 1;
     }
 
     void setup (const TetraCL& t, const InterfaceCommonDataP2CL& cdata, const IdxT numr[10])
     {
-      //  coutTet(t);
+        //   coutTet(t);
         GetTet2DArr(t,tet);
         for(int i=0; i<10; i++)
             localP2RhsSet[i] = cdata.p2[i];
@@ -1577,11 +1583,12 @@ public:
                         NULL		/* pointer returning the computed rule */
                     );
             vec[iG] = res;
-            cout2txt(res);
-           // getchar();
+            //   cout2txt(res);
+            // getchar();
 
         }
-  //      getchar();
+       // cout2txt(res);
+        //      getchar();
     }
     LocalVectorP2CLHighQuad (instat_scalar_fun_ptr f, double time) : f_( f), time_( time) {}
 };
@@ -1662,11 +1669,13 @@ public:
 };
 
 static LocalP1CL<Point3DCL> gradp2[10];//to put gradients of shape function
+static GridFunctionCL<SMatrixCL<3,3> > Winv;
 class LocalLaplaceBeltramiP2CLHighQuad
 {
 private:
     double D_; // diffusion coefficient
     double res;
+
 
 
 public:
@@ -1681,15 +1690,36 @@ public:
         Point3DCL gradjG = gradp2[jG](BCs);
         double n[3];
         getSfNormalVec(x,y,z,n);
-        double sf_grad_iG[3];
-        double sf_grad_jG[3];
+//        double sf_grad_iG[3];
+//        double sf_grad_jG[3];
+        SVectorCL<3> sf_grad_iG;
+        SVectorCL<3> sf_grad_jG;
         getSurfaceGradient(gradiG,n,sf_grad_iG);
         getSurfaceGradient(gradjG,n,sf_grad_jG);
+    //    sf_grad_iG = Winv[0]*sf_grad_iG;
+     //   sf_grad_jG = Winv[0]*sf_grad_jG;
         *ff = dotP3(sf_grad_iG,sf_grad_jG);
+        //*ff  = 1;
     }
 
     void setup (const TetraCL& t, const InterfaceCommonDataP2CL& cdata)
     {
+        Winv.resize( cdata.qdom.vertex_size());
+        QRDecompCL<3,3> qr;
+        SVectorCL<3> tmp;
+        for (Uint i= 0; i < cdata.qdom.vertex_size(); ++i)
+        {
+            gradient_trafo( t, cdata.qdom.vertex_begin()[i], cdata.quaqua, cdata.surf, qr.GetMatrix());
+            qr.prepare_solve();
+            for (Uint j= 0; j < 3; ++j)
+            {
+                tmp= std_basis<3>( j + 1);
+                qr.Solve( tmp);
+                Winv[i].col( j, tmp);
+            }
+        }
+
+
         //get gradient local p2 class
         double dummy;
         SMatrixCL<3,3> T;
@@ -1781,6 +1811,7 @@ public:
         *ff = vtxIValue*vtxJValue;
         //std::cout<<"iG:"<<iG<<"jG"<<jG<<std::endl;
         // getchar();
+        // *ff = 1;
     }
 
     void setup (const TetraCL& t, const InterfaceCommonDataP2CL& cdata)
@@ -1810,6 +1841,7 @@ public:
                 coup[jG][iG] = res;
             }
         }
+        // cout2txt(res);
 
     }
 

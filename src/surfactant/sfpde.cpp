@@ -27,22 +27,22 @@
 ////define right hand side and true solution
 ////my test case，f = 3*(x+y+z) for problem -\Delta u + u = f
 ////then u = f/3
-double xyz_rhs (const DROPS::Point3DCL& p, double)
-{
-
-    return 3*(p[0]+p[1]+p[2]);//p.norm();
-}
-//my test case u=x+y+z
-double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
-{
-    return (p[0]+p[1]+p[2]);//p.norm();
-}
-
-DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
-{
-    DROPS::Point3DCL tmp{1,1,1};
-    return tmp;
-}
+//double xyz_rhs (const DROPS::Point3DCL& p, double)
+//{
+//
+//    return 3*(p[0]+p[1]+p[2]);//p.norm();
+//}
+////my test case u=x+y+z
+//double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+//{
+//    return (p[0]+p[1]+p[2]);//p.norm();
+//}
+//
+//DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
+//{
+//    DROPS::Point3DCL tmp{1,1,1};
+//    return tmp;
+//}
 
 
 // test case 2
@@ -54,7 +54,7 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
 //{
 //    return 1;
 //}
-//
+////
 //DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
 //{
 //    DROPS::Point3DCL tmp{0,0,0};
@@ -65,24 +65,24 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
 //define right hand side and true solution
 //u = a*|x|^2/(12+|x|^2)*(3x1^2x2-x2^3)
 //f = a*(3x1^2x2-x2^3)
-//double a(1.0);
-//double xyz_rhs (const DROPS::Point3DCL& p, double)
-//{
-//
-//    return a/std::pow( p.norm(), 3.)*(3.*p[0]*p[0]*p[1]-p[1]*p[1]*p[1]);
-//}
-//double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
-//{
-//    return (p.norm_sq()/(12.+p.norm_sq()))*xyz_rhs(p,0.);
-//}
-//DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
-//{
-// //   DROPS::Point3DCL tmp{6*a/13*p[0]*p[1],-3*a/13*p[1]*p[1],0};
-//    DROPS::Point3DCL tmp= 3./std::pow( p.norm(), 3)
-//    *( DROPS::MakePoint3D(2.*p[0]*p[1], p[0]*p[0] - p[1]*p[1], 0.) -
-//      (3.*p[0]*p[0]*p[1] - std::pow(p[1], 3))/p.norm_sq()*p);
-//    return tmp;// This equals tmp - inner_prod( p/p.norm(), tmp)*p/p.norm().
-//}
+double a(1.0);
+double xyz_rhs (const DROPS::Point3DCL& p, double)
+{
+
+    return a/std::pow( p.norm(), 3.)*(3.*p[0]*p[0]*p[1]-p[1]*p[1]*p[1]);
+}
+double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+{
+    return (p.norm_sq()/(12.+p.norm_sq()))*xyz_rhs(p,0.);
+}
+DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
+{
+ //   DROPS::Point3DCL tmp{6*a/13*p[0]*p[1],-3*a/13*p[1]*p[1],0};
+    DROPS::Point3DCL tmp= 3./std::pow( p.norm(), 3)
+    *( DROPS::MakePoint3D(2.*p[0]*p[1], p[0]*p[0] - p[1]*p[1], 0.) -
+      (3.*p[0]*p[0]*p[1] - std::pow(p[1], 3))/p.norm_sq()*p);
+    return tmp;// This equals tmp - inner_prod( p/p.norm(), tmp)*p/p.norm().
+}
 
 //test case 4
 //define right hand side and true solution
@@ -135,12 +135,12 @@ void crossMul(double a[3],double b[3],double (&p)[3])
     p[1] = a[2]*b[0] - a[0]*b[2];
     p[2] = a[0]*b[1] - a[1]*b[0];
 }
-
-double dotP3(double a[3],double b[3])
-{
-
-    return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
-}
+//template <typename T>
+//double dotP3(T a,T b)
+//{
+//
+//    return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+//}
 
 
 double getBaryCoord(double tetra[4][3],int i,double x,double y,double z)
@@ -219,6 +219,17 @@ void getSfNormalVec(double x,double y,double z,double (&n)[3])
 
 //template <typename T>
 void getSurfaceGradient(DROPS::Point3DCL v,double n[3],double (&sf_grad)[3])
+{
+    double proj_norm = 0;
+    for(int i=0; i<3; i++)
+        proj_norm += v[i]*n[i];
+    for(int i=0; i<3; i++)
+    {
+        sf_grad[i] = v[i] - proj_norm*n[i];
+    }
+}
+
+void getSurfaceGradient(DROPS::Point3DCL v,double n[3],DROPS::SVectorCL<3> &sf_grad)
 {
     double proj_norm = 0;
     for(int i=0; i<3; i++)

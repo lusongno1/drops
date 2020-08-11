@@ -38,13 +38,19 @@ void lsGrad(double x, double y, double z, double *grad);
 
 void vecMinus(double a[3],double b[3],double (&result)[3]);
 void crossMul(double a[3],double b[3],double (&p)[3]);
-double dotP3(double a[3],double b[3]);
+template <typename T>
+double dotP3(T a,T b)
+{
+
+    return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+}
 double getBaryCoord(double tetra[4][3],int i,double x,double y,double z);
 DROPS::BaryCoordCL getBaryCoords(double tetra[4][3],double x,double y,double z);
 void GetTet2DArr(const DROPS::TetraCL& t,double tet[4][3]);
 void getSfNormalVec(double x,double y,double z,double (&n)[3]);
 //template <typename T>
 void getSurfaceGradient(DROPS::Point3DCL v,double n[3],double (&sf_grad)[3]);
+void getSurfaceGradient(DROPS::Point3DCL v,double n[3],DROPS::SVectorCL<3> &sf_grad);
 DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double);
 void ouput_valarray(std::valarray<double> v);
 void cout2txt(double a);
