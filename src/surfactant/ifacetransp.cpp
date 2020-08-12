@@ -808,8 +808,8 @@ void SetupInterfaceRhsP1HighQuad (const MultiGridCL& mg, VecDescCL* v,
                             NULL		/* pointer returning the computed rule */
                         );
 
-                if(res!=0&&iG==0)
-                    cout2txt(res);
+             //   if(res!=0&&iG==0)
+               //     cout2txt(res);
 
                 //std::cout<<res<<std::endl;
 

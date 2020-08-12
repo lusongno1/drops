@@ -1530,8 +1530,8 @@ public:
             //  ouput_valarray( cdata.qdom_projected.absdets());
 
         }
-        if(IdxPos!=-1)
-            cout2txt(vec[IdxPos]);
+        //if(IdxPos!=-1)
+         //   cout2txt(vec[IdxPos]);
         //   std::cout<<cdata.qdom_projected.absdets()<<std::endl;
         // getchar();
     }

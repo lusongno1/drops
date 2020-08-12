@@ -161,6 +161,9 @@ namespace DROPS {
     evaluate_on_vertexes (const LocalFET& ls, const DomainT& dom, ResultIterT result_iterator)
     {
       return std::transform( dom.vertex_begin(), dom.vertex_end(), result_iterator, ls);
+     // DROPS::SArrayCL<double,4> tmp{0.3,0.4,0.5,0.6};
+  //   DROPS::SArrayCL<double,4> tmp{0.3,0.4,0.5,0.6};
+   //   std::cout<<ls(tmp)<<std::endl;
     }
         //transform imply ls operation to every element from dom.vertex_begin to end
 

@@ -1379,7 +1379,9 @@ public:
         if (fvd != 0 && f != 0)
         {
             std::valarray<double> qerr= qfgrid - qf;//valarray-type variant can be substrate directly
-            tid0p->err[tid]+= quad_2D( cdata.qdom_projected.absdets()*qerr*qerr, cdata.qdom);
+            auto tmp = quad_2D( cdata.qdom_projected.absdets()*qerr*qerr, cdata.qdom);
+            tid0p->err[tid]+= tmp;
+            cout2txt(tmp);
         }
 
         GridFunctionCL<Point3DCL> qfgradgrid,
@@ -1581,6 +1583,11 @@ public:
         DROPS::Point3DCL p(x,y,z);
         double fext = xyz_rhs(p,0);
         *ff = (fcal-fext)*(fcal-fext);
+
+   //     DROPS::BaryCoordCL tmp{0.051566846126417189,0.07044162180172904,0.1244933792872029,
+     //   0.75349815278465082};
+     //   std::cout<<localP2RhsCp(tmp)<<std::endl;
+      //  *ff = 1;
     }
 
     virtual void visit (const TetraCL& t)//accumulator main function
@@ -1617,7 +1624,8 @@ public:
         {
             //std::valarray<double> qerr= qfgrid - qf;//valarray-type variant can be substrate directly
             //tid0p->err[tid]+= quad_2D( cdata.qdom_projected.absdets()*qerr*qerr, cdata.qdom);
-            LocalP2CL<double> localP2Rhs(t,*fvd,nobnddata);
+            LocalP2CL<double> localP2Rhs(t,make_P2Eval( mg, nobnddata, *fvd));
+      //      LocalP2CL<double> localP2Rhs(t,*fvd,nobnddata);
             localP2RhsCp = localP2Rhs;
             int n = phgQuadInterface2(
                         lsFun,		/* the level set function */
@@ -1635,6 +1643,8 @@ public:
 
 
             tid0p->err[tid]+= res;
+
+            cout2txt(res);
 
 
         }
@@ -2088,23 +2098,23 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     //set up mass matrix
     DROPS::MatDescCL Mp2( &ifacep2idx, &ifacep2idx);//mass matrix
     //111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
-    InterfaceMatrixAccuCL<LocalMassP2CL, InterfaceCommonDataP2CL> accuMp2( &Mp2, LocalMassP2CL(), cdatap2, "Mp2");
-    //  InterfaceMatrixAccuCL<LocalMassP2CLHighQuad, InterfaceCommonDataP2CL> accuMp2( &Mp2, LocalMassP2CLHighQuad(), cdatap2, "Mp2");
+   // InterfaceMatrixAccuCL<LocalMassP2CL, InterfaceCommonDataP2CL> accuMp2( &Mp2, LocalMassP2CL(), cdatap2, "Mp2");
+      InterfaceMatrixAccuCL<LocalMassP2CLHighQuad, InterfaceCommonDataP2CL> accuMp2( &Mp2, LocalMassP2CLHighQuad(), cdatap2, "Mp2");
     accus.push_back( &accuMp2);
 
     //set up stiffness matrix
     DROPS::MatDescCL Ap2( &ifacep2idx, &ifacep2idx);
     //22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
-    InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CL, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CL( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
-  // InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CLHighQuad, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CLHighQuad( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
+  // InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CL, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CL( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
+   InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CLHighQuad, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CLHighQuad( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
 
     accus.push_back( &accuAp2);
 
     //set up right hand side
     DROPS::VecDescCL bp2( &ifacep2idx);
     //33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
-    InterfaceVectorAccuCL<LocalVectorP2CL, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CL( the_rhs_fun, bp2.t), cdatap2);
-   // InterfaceVectorAccuCL<LocalVectorP2CLHighQuad, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CLHighQuad( the_rhs_fun, bp2.t), cdatap2);
+  // InterfaceVectorAccuCL<LocalVectorP2CL, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CL( the_rhs_fun, bp2.t), cdatap2);
+    InterfaceVectorAccuCL<LocalVectorP2CLHighQuad, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CLHighQuad( the_rhs_fun, bp2.t), cdatap2);
     accus.push_back( &acculoadp2);
 
     accumulate( accus, mg, ifacep2idx.TriangLevel(), ifacep2idx.GetBndInfo());//begin tetra loop
@@ -2174,11 +2184,11 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     TetraAccumulatorTupleCL err_accus;//final tetra error accumulator
     err_accus.push_back( &cdatap2);//push back cdata, include P2 element
     //444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
-    InterfaceL2AccuP2CL L2_accu( cdatap2, mg, "P2-solution");//interface L2 accumulator
-    //InterfaceL2AccuP2CLHighQuad L2_accu( cdatap2, mg, "P2-solution");////error accumulater high quad version
+ //  InterfaceL2AccuP2CL L2_accu( cdatap2, mg, "P2-solution");//interface L2 accumulator
+    InterfaceL2AccuP2CLHighQuad L2_accu( cdatap2, mg, "P2-solution");//error accumulater high quad version
     L2_accu.set_grid_function( xp2);//set solved solution
     L2_accu.set_function( the_sol_fun, 0.);//set exaction solution
-    L2_accu.set_grad_function( the_sol_grad_fun, 0.);//set gradient fo exact sol
+    L2_accu.set_grad_function( the_sol_grad_fun, 0.);//set gradient for exact sol
     err_accus.push_back( &L2_accu);
     accumulate( err_accus, mg, ifacep2idx.TriangLevel(), ifacep2idx.GetBndInfo());//begin accumulating
 
