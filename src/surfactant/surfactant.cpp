@@ -1581,7 +1581,7 @@ public:
         auto BCs = getBaryCoords(tet,x,y,z);
         double fcal = localP2RhsCp(BCs);
         DROPS::Point3DCL p(x,y,z);
-        double fext = xyz_rhs(p,0);
+        double fext = laplace_beltrami_xyz_sol(p,0);
         *ff = (fcal-fext)*(fcal-fext);
 
    //     DROPS::BaryCoordCL tmp{0.051566846126417189,0.07044162180172904,0.1244933792872029,
@@ -2184,7 +2184,7 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     TetraAccumulatorTupleCL err_accus;//final tetra error accumulator
     err_accus.push_back( &cdatap2);//push back cdata, include P2 element
     //444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
- //  InterfaceL2AccuP2CL L2_accu( cdatap2, mg, "P2-solution");//interface L2 accumulator
+  // InterfaceL2AccuP2CL L2_accu( cdatap2, mg, "P2-solution");//interface L2 accumulator
     InterfaceL2AccuP2CLHighQuad L2_accu( cdatap2, mg, "P2-solution");//error accumulater high quad version
     L2_accu.set_grid_function( xp2);//set solved solution
     L2_accu.set_function( the_sol_fun, 0.);//set exaction solution

@@ -27,22 +27,24 @@
 ////define right hand side and true solution
 ////my test case，f = 3*(x+y+z) for problem -\Delta u + u = f
 ////then u = f/3
-double xyz_rhs (const DROPS::Point3DCL& p, double)
-{
-
-    return 3*(p[0]+p[1]+p[2]);//p.norm();
-}
-//my test case u=x+y+z
-double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
-{
-    return (p[0]+p[1]+p[2]);//p.norm();
-}
-
-DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
-{
-    DROPS::Point3DCL tmp{1,1,1};
-    return tmp;
-}
+//double xyz_rhs (const DROPS::Point3DCL& p, double)
+//{
+//
+//    return 3*(p[0]+p[1]+p[2]);//p.norm();
+//    //return 3*(p[0]+p[1]+p[2])/p.norm();
+//}
+////my test case u=x+y+z
+//double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+//{
+//    return (p[0]+p[1]+p[2]);//p.norm();
+//    //return (p[0]+p[1]+p[2])/p.norm();
+//}
+//
+//DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
+//{
+//    DROPS::Point3DCL tmp{1,1,1};
+//    return tmp;
+//}
 
 
 // test case 2
@@ -88,21 +90,21 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
 //define right hand side and true solution
 //u = x*y*z
 //f = x*y*z - 12*x*y*z*(x^2 + y^2 + z^2 - 2)
-//double xyz_rhs (const DROPS::Point3DCL& p, double)
-//{
-//
-//    return p[0]*p[1]*p[2]-12.*p[0]*p[1]*p[2]*(p.norm_sq()-2);
-//}
-//double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
-//{
-//    return p[0]*p[1]*p[2];
-//}
-//
-//DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
-//{
-//    DROPS::Point3DCL tmp{p[1]*p[2],p[0]*p[2],p[0]*p[1]};
-//    return tmp;
-//}
+double xyz_rhs (const DROPS::Point3DCL& p, double)
+{
+
+    return p[0]*p[1]*p[2]-12.*p[0]*p[1]*p[2]*(p.norm_sq()-2);
+}
+double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+{
+    return p[0]*p[1]*p[2];
+}
+
+DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
+{
+    DROPS::Point3DCL tmp{p[1]*p[2],p[0]*p[2],p[0]*p[1]};
+    return tmp;
+}
 
 //define level set funcion and its gradient
 //unit ball zero level set

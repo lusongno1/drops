@@ -1696,8 +1696,8 @@ public:
         SVectorCL<3> sf_grad_jG;
         getSurfaceGradient(gradiG,n,sf_grad_iG);
         getSurfaceGradient(gradjG,n,sf_grad_jG);
-    //    sf_grad_iG = Winv[0]*sf_grad_iG;
-     //   sf_grad_jG = Winv[0]*sf_grad_jG;
+       // sf_grad_iG = Winv[3]*sf_grad_iG;
+     //   sf_grad_jG = Winv[3]*sf_grad_jG;
         *ff = dotP3(sf_grad_iG,sf_grad_jG);
         //*ff  = 1;
     }
