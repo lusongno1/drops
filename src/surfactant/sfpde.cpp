@@ -282,7 +282,7 @@ void coutTet(const DROPS::TetraCL& t)
 double tet[4][3];
 int iG;
 int jG;
-int orderG = 10;
+int orderG = 2;
 double gradTri[4][3];
 //DROPS::LocalP2CL<> localP2Set[10];
 
