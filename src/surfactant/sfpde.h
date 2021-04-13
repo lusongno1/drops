@@ -25,6 +25,8 @@
 #include "geom/simplex.h"
 #include "num/discretize.h"
 #include <fstream>
+#define BOOST_NO_EXCEPTIONS
+#define BOOST_EXCEPTION_DISABLE
 
 #ifndef DROPS_SFPDE_H
 #define DROPS_SFPDE_H
@@ -55,6 +57,7 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
 void ouput_valarray(std::valarray<double> v);
 void cout2txt(double a);
 void coutTet(const DROPS::TetraCL& t);
+double level_set_function_drops (const DROPS::Point3DCL& p, double);
 
 extern double tet[4][3];
 extern int iG;
@@ -62,4 +65,8 @@ extern int jG;
 extern int orderG;
 extern double gradTri[4][3];//store gradients of shape functions
 //extern DROPS::LocalP2CL<> localP2Set[10];
+
+
+
+
 #endif

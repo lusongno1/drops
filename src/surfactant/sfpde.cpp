@@ -22,70 +22,79 @@
  * Copyright 2009 LNM/SC RWTH Aachen, Germany
 */
 #include "sfpde.h"
+#include <cmath>
+#include "misc/funcmap.h"
 
-//// test case 1
-////define right hand side and true solution
-////my test case，f = 3*(x+y+z) for problem -\Delta u + u = f
-////then u = f/3
-//double xyz_rhs (const DROPS::Point3DCL& p, double)
-//{
-//
-//    return 3*(p[0]+p[1]+p[2]);//p.norm();
-//    //return 3*(p[0]+p[1]+p[2])/p.norm();
-//}
-////my test case u=x+y+z
-//double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
-//{
-//    return (p[0]+p[1]+p[2]);//p.norm();
-//    //return (p[0]+p[1]+p[2])/p.norm();
-//}
-//
-//DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
-//{
-//    DROPS::Point3DCL tmp{1,1,1};
-//    return tmp;
-//}
+#if 0
+// test case 1
+//define right hand side and true solution
+//my test case，f = 3*(x+y+z) for problem -\Delta u + u = f
+//then u = f/3
+double xyz_rhs (const DROPS::Point3DCL& p, double)
+{
 
+    return 3*(p[0]+p[1]+p[2]);//p.norm();
+    //return 3*(p[0]+p[1]+p[2])/p.norm();
+}
+//my test case u=x+y+z
+double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+{
+    return (p[0]+p[1]+p[2]);//p.norm();
+    //return (p[0]+p[1]+p[2])/p.norm();
+}
 
+DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
+{
+    DROPS::Point3DCL tmp{1,1,1};
+    return tmp;
+}
+#endif
+
+#if 0
 // test case 2
-//double xyz_rhs (const DROPS::Point3DCL& p, double)
-//{
-//    return 1;
-//}
-//double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
-//{
-//    return 1;
-//}
-//
-//DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
-//{
-//    DROPS::Point3DCL tmp{0,0,0};
-//    return tmp;
-//}
+double xyz_rhs (const DROPS::Point3DCL& p, double)
+{
+    return 1;
+}
+double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+{
+    return 1;
+}
 
+DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
+{
+    DROPS::Point3DCL tmp{0,0,0};
+    return tmp;
+}
+#endif
+
+#if 0
 // test case 3
 //define right hand side and true solution
 //u = a*|x|^2/(12+|x|^2)*(3x1^2x2-x2^3)
 //f = a*(3x1^2x2-x2^3)
-//double a(1.0);
-//double xyz_rhs (const DROPS::Point3DCL& p, double)
-//{
-//
-//    return a/std::pow( p.norm(), 3.)*(3.*p[0]*p[0]*p[1]-p[1]*p[1]*p[1]);
-//}
-//double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
-//{
-//    return (p.norm_sq()/(12.+p.norm_sq()))*xyz_rhs(p,0.);
-//}
-//DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
-//{
-// //   DROPS::Point3DCL tmp{6*a/13*p[0]*p[1],-3*a/13*p[1]*p[1],0};
-//    DROPS::Point3DCL tmp= 3./std::pow( p.norm(), 3)
-//    *( DROPS::MakePoint3D(2.*p[0]*p[1], p[0]*p[0] - p[1]*p[1], 0.) -
-//      (3.*p[0]*p[0]*p[1] - std::pow(p[1], 3))/p.norm_sq()*p);
-//    return tmp;// This equals tmp - inner_prod( p/p.norm(), tmp)*p/p.norm().
-//}
+double a(1.0);
+double xyz_rhs (const DROPS::Point3DCL& p, double)
+{
 
+    return a/std::pow( p.norm(), 3.)*(3.*p[0]*p[0]*p[1]-p[1]*p[1]*p[1]);
+}
+double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+{
+    return (p.norm_sq()/(12.+p.norm_sq()))*xyz_rhs(p,0.);
+}
+DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
+{
+ //   DROPS::Point3DCL tmp{6*a/13*p[0]*p[1],-3*a/13*p[1]*p[1],0};
+    DROPS::Point3DCL tmp= 3./std::pow( p.norm(), 3)
+    *( DROPS::MakePoint3D(2.*p[0]*p[1], p[0]*p[0] - p[1]*p[1], 0.) -
+      (3.*p[0]*p[0]*p[1] - std::pow(p[1], 3))/p.norm_sq()*p);
+    return tmp;// This equals tmp - inner_prod( p/p.norm(), tmp)*p/p.norm().
+}
+
+#endif
+
+#if 0
 //test case 4
 //define right hand side and true solution
 //u = x*y*z
@@ -100,18 +109,41 @@ double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
     return p[0]*p[1]*p[2];
 }
 
+
 DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
 {
     DROPS::Point3DCL tmp{p[1]*p[2],p[0]*p[2],p[0]*p[1]};
     return tmp;
 }
 
+#endif
+
+#if 0
 //define level set funcion and its gradient
 //unit ball zero level set
+//#ifndef RadDrop
+//DROPS::Point3DCL RadDrop(1,1,1);
+//#endif
+//#ifndef PosDrop
+//DROPS::Point3DCL PosDrop(0,0,0);
+//#endif
+double level_set_function_drops (const DROPS::Point3DCL& p, double)
+{
+    DROPS::Point3DCL RadDrop(1,1,1);
+    DROPS::Point3DCL PosDrop(0,0,0);
+    DROPS::Point3DCL x( p - PosDrop);
+    //double value=0;
+    //lsFun(x[0], x[1], x[2], &value);
+    return x.norm() - RadDrop[0];
+    //return value;
+}
+static DROPS::RegisterScalarFunction regsca_sphere_dist_lset( "LevelSetFunDrops", level_set_function_drops);
+
 void lsFun(double x, double y, double z, double *value)
 {
     *value = x * x + y * y + z * z - 1.0;
 }
+
 
 void lsGrad(double x, double y, double z, double *grad)
 /* the gradient of the level set function */
@@ -120,6 +152,76 @@ void lsGrad(double x, double y, double z, double *grad)
     grad[1] = y + y;
     grad[2] = z + z;
 }
+
+
+#endif
+
+//test for the gyroid
+#if 1
+//double level_set_function_drops (const DROPS::Point3DCL& p, double)
+//{
+//    DROPS::Point3DCL RadDrop(1,1,1);
+//    DROPS::Point3DCL PosDrop(0,0,0);
+//    DROPS::Point3DCL x( p - PosDrop);
+//    //double value=0;
+//    //lsFun(x[0], x[1], x[2], &value);
+//    return x.norm() - RadDrop[0];
+//    //return value;
+//}
+double level_set_function_drops(const DROPS::Point3DCL& p, double)//directly modified in routine
+{
+    double phi = cos(M_PI*p[0])*sin(M_PI*p[1])+
+    cos(M_PI*p[1])*sin(M_PI*p[2])+cos(M_PI*p[2])*sin(M_PI*p[0]);
+    return phi;
+}
+static DROPS::RegisterScalarFunction regsca_sphere_dist_lset( "LevelSetFunDrops", level_set_function_drops);
+
+//void lsFun(double x, double y, double z, double *value)
+//{
+//    *value = x * x + y * y + z * z - 1.0;
+//}
+
+
+//void lsGrad(double x, double y, double z, double *grad)
+///* the gradient of the level set function */
+//{
+//    grad[0] = x + x;
+//    grad[1] = y + y;
+//    grad[2] = z + z;
+//}
+
+void lsFun(double x, double y, double z, double *value)
+{
+    *value = cos(M_PI*x)*sin(M_PI*y)+cos(M_PI*y)*sin(M_PI*z)+cos(M_PI*z)*sin(M_PI*x);
+}
+//
+void lsGrad(double x, double y, double z, double *grad)
+/* the gradient of the level set function */
+{
+    grad[0] = M_PI*cos(M_PI*x)*cos(M_PI*z) - M_PI*sin(M_PI*x)*sin(M_PI*y);
+    grad[1] = M_PI*cos(M_PI*x)*cos(M_PI*y) - M_PI*sin(M_PI*y)*sin(M_PI*z);
+    grad[2] = M_PI*cos(M_PI*y)*cos(M_PI*z) - M_PI*sin(M_PI*x)*sin(M_PI*z);
+}
+
+double xyz_rhs (const DROPS::Point3DCL& p, double)
+{
+
+    return p[0]+p[1]+p[2];
+}
+
+double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+{
+    return 1.0;
+}
+
+DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
+{
+    DROPS::Point3DCL tmp{1.0,1.0,1.0};
+    return tmp;
+}
+#endif
+
+
 
 //**********************some useful funtion********************/
 

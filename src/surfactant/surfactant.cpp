@@ -99,8 +99,11 @@ DROPS::Point3DCL constant_wind (const DROPS::Point3DCL&, double)
 }
 static RegisterVectorFunction regvec_constant_wind( "ConstantWind", constant_wind);
 
+#if 1
 DROPS::Point3DCL RadDrop;
 DROPS::Point3DCL PosDrop;
+#endif
+
 double ellipsoid (const DROPS::Point3DCL& p, double)
 {
     const DROPS::Point3DCL x= (p - PosDrop)/RadDrop;
@@ -552,6 +555,10 @@ double sphere_dist (const DROPS::Point3DCL& p, double)
     //return value;
 }
 static RegisterScalarFunction regsca_sphere_dist_lset( "SphereDist", sphere_dist);
+
+
+//static RegisterScalarFunction regsca_sphere_dist_lset( "SphereDist", sphere_dist);
+
 
 DROPS::Point3DCL d_sphere_dist (const DROPS::Point3DCL& p, double)
 {
