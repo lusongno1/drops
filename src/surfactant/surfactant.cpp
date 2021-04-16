@@ -2054,6 +2054,7 @@ public:
 
 void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::LevelsetP2CL& lset)
 {
+//std::cout << P << std::endl;
     // Initialize level set and triangulation
     adap.MakeInitialTriang();//init mg
     lset.CreateNumbering( mg.GetLastLevel(), &lset.idx);//level set numbering
@@ -2063,6 +2064,7 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 
     // Setup an interface-P2 numbering
     DROPS::IdxDescCL ifacep2idx( P2IF_FE);//p2 element index decription class
+    //std::cout<<"here:"<<P.get<double>("SurfTransp.XFEMReduced")<<std::endl;
     ifacep2idx.GetXidx().SetBound( P.get<double>("SurfTransp.XFEMReduced"));//set boundary
     ifacep2idx.CreateNumbering( mg.GetLastLevel(), mg, &lset.Phi, &lset.GetBndData());//consider boundary
     std::cout << "P2-NumUnknowns: " << ifacep2idx.NumUnknowns() << std::endl;
@@ -2112,15 +2114,15 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     //set up stiffness matrix
     DROPS::MatDescCL Ap2( &ifacep2idx, &ifacep2idx);
     //22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
-  // InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CL, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CL( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
-   InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CLHighQuad, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CLHighQuad( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
+   //InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CL, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CL( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
+    InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CLHighQuad, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CLHighQuad( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
 
     accus.push_back( &accuAp2);
 
     //set up right hand side
     DROPS::VecDescCL bp2( &ifacep2idx);
     //33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
-  // InterfaceVectorAccuCL<LocalVectorP2CL, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CL( the_rhs_fun, bp2.t), cdatap2);
+   //InterfaceVectorAccuCL<LocalVectorP2CL, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CL( the_rhs_fun, bp2.t), cdatap2);
     InterfaceVectorAccuCL<LocalVectorP2CLHighQuad, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CLHighQuad( the_rhs_fun, bp2.t), cdatap2);
     accus.push_back( &acculoadp2);
 
@@ -2138,7 +2140,7 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 //     VectorCL e( 1., bp2.Data.size());
 //     VectorCL Ldiag( Ap2.Data.GetDiag());
 //     bp2.Data-= dot( VectorCL( e/Ldiag), bp2.Data)/std::sqrt( dot( VectorCL( e/Ldiag), e));
-
+#if 1
 //left hand matrix
     DROPS::MatrixCL Lp2;
     Lp2.LinComb( 1.0, Ap2.Data, 1.0, Mp2.Data);
@@ -2226,6 +2228,7 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
         vtkwriter->Register( make_VTKVector( make_P2Eval( mg, nobnd_vec, to_iface), "to_iface") );
         vtkwriter->Write( 0.);
     }
+#endif
 }
 
 void StationaryStrategyDeformationP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::LevelsetP2CL& lset)
@@ -2488,7 +2491,8 @@ int main (int argc, char* argv[])
     {
         ScopeTimerCL timer( "main");
 
-        DROPS::read_parameter_file_from_cmdline( P, argc, argv, "../../param/surfactant/surfactant/surfactantxyz.json");
+        //DROPS::read_parameter_file_from_cmdline( P, argc, argv, "../../param/surfactant/surfactant/surfactantxyz.json");
+        P.read_json("../../param/surfactant/surfactant/surfactantxyz.json");
         std::cout << P << std::endl;
 
         DROPS::dynamicLoad(P.get<std::string>("General.DynamicLibsPrefix"), P.get<std::vector<std::string> >("General.DynamicLibs") );

@@ -116,9 +116,9 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
     return tmp;
 }
 
-#endif
 
-#if 0
+
+
 //define level set funcion and its gradient
 //unit ball zero level set
 //#ifndef RadDrop
@@ -170,9 +170,15 @@ void lsGrad(double x, double y, double z, double *grad)
 //}
 double level_set_function_drops(const DROPS::Point3DCL& p, double)//directly modified in routine
 {
-    double phi = cos(M_PI*p[0])*sin(M_PI*p[1])+
-    cos(M_PI*p[1])*sin(M_PI*p[2])+cos(M_PI*p[2])*sin(M_PI*p[0]);
+    //std::cout<<M_PI<<std::endl;
+    //double phi = cos(M_PI*p[0])*sin(M_PI*p[1])+
+    //cos(M_PI*p[1])*sin(M_PI*p[2])+cos(M_PI*p[2])*sin(M_PI*p[0]);
+    double x = p[0],y=p[1],z=p[2];
+    //double phi = 2*pow(x-0.5,2)-8*pow(y-0.5,3)-16*pow(z-0.5,4)-1/50;
+    //double phi = pow((pow(x,2)+(9/4)*pow(y,2)+pow(z,2)-1),3)-pow(x,2)*pow(z,3)-(9/80)*pow(y,2)*pow(z,3);
+    double phi = sqrt(pow(sqrt(x*x+y*y)-1.0,2.0)+z*z)-3.0/5.0;;
     return phi;
+//    return std::sqrt( std::pow( RadTorus[0] - std::sqrt(p[0]*p[0] + p[1]*p[1]), 2) + std::pow( p[2], 2)) - RadTorus[1];
 }
 static DROPS::RegisterScalarFunction regsca_sphere_dist_lset( "LevelSetFunDrops", level_set_function_drops);
 
@@ -192,21 +198,44 @@ static DROPS::RegisterScalarFunction regsca_sphere_dist_lset( "LevelSetFunDrops"
 
 void lsFun(double x, double y, double z, double *value)
 {
-    *value = cos(M_PI*x)*sin(M_PI*y)+cos(M_PI*y)*sin(M_PI*z)+cos(M_PI*z)*sin(M_PI*x);
+    double R = 1;
+    double r = 0.6;
+    //double phi = pow((pow(x,2)+(9/4)*pow(y,2)+pow(z,2)-1),3)-pow(x,2)*pow(z,3)-(9/80)*pow(y,2)*pow(z,3);
+    double phi = sqrt(pow(sqrt(x*x+y*y)-1.0,2.0)+z*z)-3.0/5.0;;
+    *value = phi;//2*pow(x-0.5,2)-8*pow(y-0.5,3)-16*pow(z-0.5,4)-1/50;
+    //cos(M_PI*x)*sin(M_PI*y)+cos(M_PI*y)*sin(M_PI*z)+cos(M_PI*z)*sin(M_PI*x);
 }
 //
 void lsGrad(double x, double y, double z, double *grad)
 /* the gradient of the level set function */
 {
-    grad[0] = M_PI*cos(M_PI*x)*cos(M_PI*z) - M_PI*sin(M_PI*x)*sin(M_PI*y);
-    grad[1] = M_PI*cos(M_PI*x)*cos(M_PI*y) - M_PI*sin(M_PI*y)*sin(M_PI*z);
-    grad[2] = M_PI*cos(M_PI*y)*cos(M_PI*z) - M_PI*sin(M_PI*x)*sin(M_PI*z);
+    grad[0] = x*1.0/sqrt(x*x+y*y)*1.0/sqrt(pow(sqrt(x*x+y*y)-1.0,2.0)+z*z)*(sqrt(x*x+y*y)-1.0);
+    grad[1] = y*1.0/sqrt(x*x+y*y)*1.0/sqrt(pow(sqrt(x*x+y*y)-1.0,2.0)+z*z)*(sqrt(x*x+y*y)-1.0);
+    grad[2] = z*1.0/sqrt(pow(sqrt(x*x+y*y)-1.0,2.0)+z*z);
+
+    //grad[0] = 6*x*pow(pow(x,2) + (9*pow(y,z))/4 + pow(z,2) - 1,2) - 2*x*pow(z,3);
+    //grad[1] =      (27*y*pow(pow(x,2) + (9*pow(y,z))/4 + pow(z,2) - 1,2))/2 - (9*y*pow(z,3))/40;
+    //grad[2] = 6*z*pow(pow(x,2) + (9*pow(y,z))/4 + pow(z,2) - 1,2) - (27*pow(y,z)*pow(z,2))/80 - 3*pow(x,2)*pow(z,2);
+    //grad[0] =   4*x - 2;
+    //grad[1]  = -24*pow(y - 1/2,2);
+    //grad[2] = -64*pow(z - 1/2,3);
+   // grad[0] = M_PI*cos(M_PI*x)*cos(M_PI*z) - M_PI*sin(M_PI*x)*sin(M_PI*y);
+   // grad[1] = M_PI*cos(M_PI*x)*cos(M_PI*y) - M_PI*sin(M_PI*y)*sin(M_PI*z);
+   // grad[2] = M_PI*cos(M_PI*y)*cos(M_PI*z) - M_PI*sin(M_PI*x)*sin(M_PI*z);
 }
 
 double xyz_rhs (const DROPS::Point3DCL& p, double)
 {
+    double x = p[0],y=p[1],z=p[2];
+    //return pow(x,2)*sin(y)*exp(z);
 
-    return p[0]+p[1]+p[2];
+    //return p[0]*p[1]*p[2]-12.*p[0]*p[1]*p[2]*(p.norm_sq()-2);
+    //double tmp = x+y+z;
+    //return std::sqrt( p[2]*p[2] + std::pow( std::sqrt( p[0]*p[0] + p[1]*p[1]) - 1.0, 2));
+    return x*sin(y)*exp(z);
+
+
+    //return tmp;
 }
 
 double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
