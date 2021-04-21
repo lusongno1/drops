@@ -1,6 +1,6 @@
 /// \file
 /// \brief Solve a non-stationary convection-diffusion-equation on a moving interface
-/// \author LNM RWTH Aachen: Joerg Grande
+/// \author LNM RWTH Aachen: Joerg Grande, LSEC: Song Lu
 
 /*
  * This file is part of DROPS.
@@ -627,11 +627,7 @@ double abs_det_sphere (const TetraCL& tet, const BaryCoordCL& xb, const SurfaceP
 //    return 3*(p[0]+p[1]+p[2])/p.norm();
 //}
 
-static RegisterScalarFunction regsca_xyz_rhs( "xyzRhs", xyz_rhs);
 
-
-
-static RegisterScalarFunction regsca_laplace_beltrami_xyz_sol( "LaplaceBeltramixyzSol", laplace_beltrami_xyz_sol);
 
 
 // ==stationary test case "LaplaceBeltrami0"==
@@ -1591,10 +1587,10 @@ public:
         double fext = laplace_beltrami_xyz_sol(p,0);
         *ff = (fcal-fext)*(fcal-fext);
 
-   //     DROPS::BaryCoordCL tmp{0.051566846126417189,0.07044162180172904,0.1244933792872029,
-     //   0.75349815278465082};
-     //   std::cout<<localP2RhsCp(tmp)<<std::endl;
-      //  *ff = 1;
+        //     DROPS::BaryCoordCL tmp{0.051566846126417189,0.07044162180172904,0.1244933792872029,
+        //   0.75349815278465082};
+        //   std::cout<<localP2RhsCp(tmp)<<std::endl;
+        //  *ff = 1;
     }
 
     virtual void visit (const TetraCL& t)//accumulator main function
@@ -1632,7 +1628,7 @@ public:
             //std::valarray<double> qerr= qfgrid - qf;//valarray-type variant can be substrate directly
             //tid0p->err[tid]+= quad_2D( cdata.qdom_projected.absdets()*qerr*qerr, cdata.qdom);
             LocalP2CL<double> localP2Rhs(t,make_P2Eval( mg, nobnddata, *fvd));
-      //      LocalP2CL<double> localP2Rhs(t,*fvd,nobnddata);
+            //      LocalP2CL<double> localP2Rhs(t,*fvd,nobnddata);
             localP2RhsCp = localP2Rhs;
             int n = phgQuadInterface2(
                         lsFun,		/* the level set function */
@@ -2107,25 +2103,23 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     //set up mass matrix
     DROPS::MatDescCL Mp2( &ifacep2idx, &ifacep2idx);//mass matrix
     //111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
-   // InterfaceMatrixAccuCL<LocalMassP2CL, InterfaceCommonDataP2CL> accuMp2( &Mp2, LocalMassP2CL(), cdatap2, "Mp2");
-      InterfaceMatrixAccuCL<LocalMassP2CLHighQuad, InterfaceCommonDataP2CL> accuMp2( &Mp2, LocalMassP2CLHighQuad(), cdatap2, "Mp2");
+    // InterfaceMatrixAccuCL<LocalMassP2CL, InterfaceCommonDataP2CL> accuMp2( &Mp2, LocalMassP2CL(), cdatap2, "Mp2");
+    InterfaceMatrixAccuCL<LocalMassP2CLHighQuad, InterfaceCommonDataP2CL> accuMp2( &Mp2, LocalMassP2CLHighQuad(), cdatap2, "Mp2");
     accus.push_back( &accuMp2);
 
     //set up stiffness matrix
     DROPS::MatDescCL Ap2( &ifacep2idx, &ifacep2idx);
     //22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
-   //InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CL, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CL( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
+    //InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CL, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CL( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
     InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CLHighQuad, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CLHighQuad( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
-
     accus.push_back( &accuAp2);
 
     //set up right hand side
     DROPS::VecDescCL bp2( &ifacep2idx);
     //33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
-   //InterfaceVectorAccuCL<LocalVectorP2CL, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CL( the_rhs_fun, bp2.t), cdatap2);
+    //InterfaceVectorAccuCL<LocalVectorP2CL, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CL( the_rhs_fun, bp2.t), cdatap2);
     InterfaceVectorAccuCL<LocalVectorP2CLHighQuad, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CLHighQuad( the_rhs_fun, bp2.t), cdatap2);
     accus.push_back( &acculoadp2);
-
     accumulate( accus, mg, ifacep2idx.TriangLevel(), ifacep2idx.GetBndInfo());//begin tetra loop
 
 //     TetraAccumulatorTupleCL mean_accus;
@@ -2140,16 +2134,17 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 //     VectorCL e( 1., bp2.Data.size());
 //     VectorCL Ldiag( Ap2.Data.GetDiag());
 //     bp2.Data-= dot( VectorCL( e/Ldiag), bp2.Data)/std::sqrt( dot( VectorCL( e/Ldiag), e));
-#if 1
+
 //left hand matrix
     DROPS::MatrixCL Lp2;
     Lp2.LinComb( 1.0, Ap2.Data, 1.0, Mp2.Data);
 //   MatrixCL& Lp2= Ap2.Data;
 // keep data
+#if 0
     DROPS::WriteToFile( Ap2.Data, "ap2_iface.txt", "Ap2");
     DROPS::WriteToFile( Mp2.Data, "mp2_iface.txt", "Mp2");
     DROPS::WriteFEToFile( bp2, mg, "rhsp2_iface.txt", /*binary=*/ false);
-
+#endif
 
 
 //define solver and solve linear equations
@@ -2193,7 +2188,7 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     TetraAccumulatorTupleCL err_accus;//final tetra error accumulator
     err_accus.push_back( &cdatap2);//push back cdata, include P2 element
     //444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
-  // InterfaceL2AccuP2CL L2_accu( cdatap2, mg, "P2-solution");//interface L2 accumulator
+    // InterfaceL2AccuP2CL L2_accu( cdatap2, mg, "P2-solution");//interface L2 accumulator
     InterfaceL2AccuP2CLHighQuad L2_accu( cdatap2, mg, "P2-solution");//error accumulater high quad version
     L2_accu.set_grid_function( xp2);//set solved solution
     L2_accu.set_function( the_sol_fun, 0.);//set exaction solution
@@ -2202,7 +2197,7 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     accumulate( err_accus, mg, ifacep2idx.TriangLevel(), ifacep2idx.GetBndInfo());//begin accumulating
 
 
-
+#if 0
 //write out
     {
         std::ofstream os( "quaqua_num_outer_iter.txt");
@@ -2491,8 +2486,8 @@ int main (int argc, char* argv[])
     {
         ScopeTimerCL timer( "main");
 
-        //DROPS::read_parameter_file_from_cmdline( P, argc, argv, "../../param/surfactant/surfactant/surfactantxyz.json");
-        P.read_json("../../param/surfactant/surfactant/surfactantxyz.json");
+        DROPS::read_parameter_file_from_cmdline( P, argc, argv, "../../param/surfactant/surfactant/surfactantxyz.json");
+        //P.read_json("../../param/surfactant/surfactant/surfactantxyz.json");
         std::cout << P << std::endl;
 
         DROPS::dynamicLoad(P.get<std::string>("General.DynamicLibsPrefix"), P.get<std::vector<std::string> >("General.DynamicLibs") );

@@ -1,9 +1,7 @@
-/*************************************************************************
-	> File Name: test_tmp.cpp
-	> Author: lusongno1
-	> Mail: lusong@lsec.cc.ac.cn
-	> Created Time: 2020年06月10日 星期三 23时28分05秒
- ************************************************************************/
+/// \file test_tmp.cpp
+/// \brief A simple test file for surfactant module
+/// \author LSEC: Song Lu
+
 #include<iostream>
 #include<surfactant/sfpde.h>
 #include "phg.h"

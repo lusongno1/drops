@@ -1,5 +1,5 @@
 /// \file
-/// \brief Some settings about PDE paras, and some global functions
+/// \brief Some settings about PDE paras, and some global variables, functions, and classes
 /// \author LSEC: Song Lu
 
 /*
@@ -24,12 +24,24 @@
 #include "sfpde.h"
 #include <cmath>
 #include "misc/funcmap.h"
+//**********************************************set global variables*******************************************************/
+double tet[4][3];
+int iG;
+int jG;
+int orderG = 10;
+double gradTri[4][3];
 
-#if 0
+//***************************************************define test case*******************************************************/
+static DROPS::RegisterScalarFunction regsca_level_set_function_drops( "LevelSetFunDrops", level_set_function_drops);
+static DROPS::RegisterScalarFunction regsca_xyz_rhs( "xyzRhs", xyz_rhs);
+static DROPS::RegisterScalarFunction regsca_laplace_beltrami_xyz_sol( "LaplaceBeltramixyzSol", laplace_beltrami_xyz_sol);
+
+
 // test case 1
 //define right hand side and true solution
 //my test case，f = 3*(x+y+z) for problem -\Delta u + u = f
 //then u = f/3
+#if 0
 double xyz_rhs (const DROPS::Point3DCL& p, double)
 {
 
@@ -50,8 +62,9 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
 }
 #endif
 
+
+// test case 2, constant
 #if 0
-// test case 2
 double xyz_rhs (const DROPS::Point3DCL& p, double)
 {
     return 1;
@@ -68,16 +81,39 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
 }
 #endif
 
-#if 0
-// test case 3
+
+// test case 3, a general test case
 //define right hand side and true solution
 //u = a*|x|^2/(12+|x|^2)*(3x1^2x2-x2^3)
 //f = a*(3x1^2x2-x2^3)
+#if 1
+double level_set_function_drops(const DROPS::Point3DCL& p, double)//directly modified in routine
+{
+
+    double x = p[0],y=p[1],z=p[2];
+    return x * x + y * y + z * z - 1.0;
+    //return p.norm()-1.0;
+}
+
+
+void lsFun(double x, double y, double z, double *value)
+{
+    *value = x * x + y * y + z * z - 1.0;
+}
+
+
+void lsGrad(double x, double y, double z, double *grad)
+///* the gradient of the level set function */
+{
+    grad[0] = x + x;
+    grad[1] = y + y;
+    grad[2] = z + z;
+}
 double a(1.0);
 double xyz_rhs (const DROPS::Point3DCL& p, double)
 {
-
-    return a/std::pow( p.norm(), 3.)*(3.*p[0]*p[0]*p[1]-p[1]*p[1]*p[1]);
+    return 3.0*p[0]*p[0]*p[1]-p[1]*p[1]*p[1];
+    //return a/std::pow( p.norm(), 3.)*(3.*p[0]*p[0]*p[1]-p[1]*p[1]*p[1]);
 }
 double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
 {
@@ -85,20 +121,21 @@ double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
 }
 DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
 {
- //   DROPS::Point3DCL tmp{6*a/13*p[0]*p[1],-3*a/13*p[1]*p[1],0};
+//   DROPS::Point3DCL tmp{6*a/13*p[0]*p[1],-3*a/13*p[1]*p[1],0};
     DROPS::Point3DCL tmp= 3./std::pow( p.norm(), 3)
-    *( DROPS::MakePoint3D(2.*p[0]*p[1], p[0]*p[0] - p[1]*p[1], 0.) -
-      (3.*p[0]*p[0]*p[1] - std::pow(p[1], 3))/p.norm_sq()*p);
+                          *( DROPS::MakePoint3D(2.*p[0]*p[1], p[0]*p[0] - p[1]*p[1], 0.) -
+                             (3.*p[0]*p[0]*p[1] - std::pow(p[1], 3))/p.norm_sq()*p);
     return tmp;// This equals tmp - inner_prod( p/p.norm(), tmp)*p/p.norm().
 }
 
 #endif
 
-#if 0
+
 //test case 4
 //define right hand side and true solution
 //u = x*y*z
 //f = x*y*z - 12*x*y*z*(x^2 + y^2 + z^2 - 2)
+#if 0
 double xyz_rhs (const DROPS::Point3DCL& p, double)
 {
 
@@ -116,17 +153,6 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
     return tmp;
 }
 
-
-
-
-//define level set funcion and its gradient
-//unit ball zero level set
-//#ifndef RadDrop
-//DROPS::Point3DCL RadDrop(1,1,1);
-//#endif
-//#ifndef PosDrop
-//DROPS::Point3DCL PosDrop(0,0,0);
-//#endif
 double level_set_function_drops (const DROPS::Point3DCL& p, double)
 {
     DROPS::Point3DCL RadDrop(1,1,1);
@@ -152,22 +178,10 @@ void lsGrad(double x, double y, double z, double *grad)
     grad[1] = y + y;
     grad[2] = z + z;
 }
-
-
 #endif
 
-//test for the gyroid
-#if 1
-//double level_set_function_drops (const DROPS::Point3DCL& p, double)
-//{
-//    DROPS::Point3DCL RadDrop(1,1,1);
-//    DROPS::Point3DCL PosDrop(0,0,0);
-//    DROPS::Point3DCL x( p - PosDrop);
-//    //double value=0;
-//    //lsFun(x[0], x[1], x[2], &value);
-//    return x.norm() - RadDrop[0];
-//    //return value;
-//}
+//test for the gyroid, heart-shape and torus, just have a thy
+#if 0
 double level_set_function_drops(const DROPS::Point3DCL& p, double)//directly modified in routine
 {
     //std::cout<<M_PI<<std::endl;
@@ -219,9 +233,9 @@ void lsGrad(double x, double y, double z, double *grad)
     //grad[0] =   4*x - 2;
     //grad[1]  = -24*pow(y - 1/2,2);
     //grad[2] = -64*pow(z - 1/2,3);
-   // grad[0] = M_PI*cos(M_PI*x)*cos(M_PI*z) - M_PI*sin(M_PI*x)*sin(M_PI*y);
-   // grad[1] = M_PI*cos(M_PI*x)*cos(M_PI*y) - M_PI*sin(M_PI*y)*sin(M_PI*z);
-   // grad[2] = M_PI*cos(M_PI*y)*cos(M_PI*z) - M_PI*sin(M_PI*x)*sin(M_PI*z);
+    // grad[0] = M_PI*cos(M_PI*x)*cos(M_PI*z) - M_PI*sin(M_PI*x)*sin(M_PI*y);
+    // grad[1] = M_PI*cos(M_PI*x)*cos(M_PI*y) - M_PI*sin(M_PI*y)*sin(M_PI*z);
+    // grad[2] = M_PI*cos(M_PI*y)*cos(M_PI*z) - M_PI*sin(M_PI*x)*sin(M_PI*z);
 }
 
 double xyz_rhs (const DROPS::Point3DCL& p, double)
@@ -252,7 +266,7 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
 
 
 
-//**********************some useful funtion********************/
+//****************************************************some useful funtions and classes*******************************************************/
 
 void vecMinus(double a[3],double b[3],double (&result)[3])
 {
@@ -410,11 +424,61 @@ void coutTet(const DROPS::TetraCL& t)
 
 }
 
-double tet[4][3];
-int iG;
-int jG;
-int orderG = 2;
-double gradTri[4][3];
+
 //DROPS::LocalP2CL<> localP2Set[10];
+
+//std::vector<double,4> v4type;
+using v3 = DROPS::SVectorCL<3>;
+using v4 = DROPS::SVectorCL<4>;
+using v43 = DROPS::SMatrixCL<4,3>;
+class TetrahedronFECL
+{
+private:
+    v43 coordinates;//(4,std::vector<double>(3));
+    v4 baryCoordTmp;
+public:
+
+    TetrahedronFECL(v43 coordinates):coordinates(coordinates) {};
+    void getBaryCoord(double x,double y,double z)
+    {
+        for(DROPS::Uint i=0; i<4; i++)
+        {
+            double pValue = 0;
+            double v0[3] = {coordinates(i,0),coordinates(i,1),coordinates(i,2)};
+            int idx = 0;
+            double vGround[3][3];
+            for(int j=0; j<4; j++)
+            {
+                if(j==i)
+                    continue;
+                for(int k=0; k<3; k++)
+                    vGround[idx][k] = coordinates(j,k);
+                idx++;
+            }
+            double vec1[3];
+            double vec2[3];
+            double n[3];
+            vecMinus(vGround[1],vGround[0],vec1);
+            vecMinus(vGround[2],vGround[0],vec2);
+            crossMul(vec1,vec2,n);
+            double n_norm = std::sqrt(n[0]*n[0]+n[1]*n[1]+n[2]*n[2]);
+            for(int j=0; j<3; j++)
+                n[j] /=n_norm;
+            double vecV[3] = {v0[0] - vGround[0][0],v0[1] - vGround[0][1],v0[2] - vGround[0][2]};
+            double vecX[3] = {x - vGround[0][0],y - vGround[0][1],z - vGround[0][2]};
+            double valXYZ = dotP3(vecX,n);
+            double valV = dotP3(vecV,n);
+            //assert((valV>=0&&valXYZ>=0)||(valV<=0&&valXYZ<=0));
+            baryCoordTmp[i] = valXYZ/valV;
+            //assert()
+        }
+    };
+};
+
+class TetrahedronP3FECL:public TetrahedronFECL
+{
+};
+
+
 
 

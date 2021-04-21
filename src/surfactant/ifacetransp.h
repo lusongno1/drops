@@ -1,6 +1,6 @@
 /// \file
 /// \brief Discretization for PDEs on an interface.
-/// \author LNM RWTH Aachen: Joerg Grande
+/// \author LNM RWTH Aachen: Joerg Grande LSEC: Song Lu
 
 /*
  * This file is part of DROPS.
