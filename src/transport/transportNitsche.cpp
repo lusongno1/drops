@@ -368,7 +368,7 @@ void TransportP1XCL::CommitStep ()
 /// Setup of all volume integral - Bi- and Linearforms (not Nitsche yet, this is in SetupNitscheSystem)
 /**
  * - For one  level only \n
- * Profiling of SetupInstatSystem (made on 2011/12/02) on a typical example (CL): \n
+ * Profiling of SetupInstatSystem (made on 1011/12/02) on a typical example (CL): \n
  *               LocalOneInterfaceSetup : 58.0 %   \n
  * Local (on each element) Preparations : 13.0 %   \n
  *                   LocalOnePhaseSetup : 13.0 %   \n

@@ -39,7 +39,7 @@
 
 //for curved
 #include "geom/deformation.h"
-#include "geom/isoparamP2.h" 
+#include "geom/isoparamP2.h"
 
 namespace DROPS
 {
@@ -383,7 +383,7 @@ Point3DCL GetWorldCoord(const TetraCL& t, const SVectorCL<3>& c)
     {
         if (!m.IsTetraCurved(t))
             return GetWorldCoord(m.GetLocalP1Deformation(t),c);
-        else    
+        else
             return GetWorldCoord(m.GetLocalP2Deformation(t),c);
     }
     else
@@ -400,7 +400,7 @@ Point3DCL GetWorldCoord(const TetraCL& t, const SVectorCL<4>& c)
     {
         if (!m.IsTetraCurved(t))
             return GetWorldCoord(m.GetLocalP1Deformation(t),c);
-        else    
+        else
             return GetWorldCoord(m.GetLocalP2Deformation(t),c);
     }
     else
@@ -425,7 +425,7 @@ Point3DCL GetWorldCoord(const TetraCL& t, Uint face, const SVectorCL<2>& c)
     {
         if (!m.IsTetraCurved(t))
             return GetWorldCoord(m.GetLocalP1Deformation(t),FaceToTetraCoord(t,face,c));
-        else    
+        else
             return GetWorldCoord(m.GetLocalP2Deformation(t),FaceToTetraCoord(t,face,c));
     }
     else

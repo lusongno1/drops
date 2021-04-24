@@ -65,7 +65,7 @@ void BuildDomain( MultiGridCL* &mgp, const std::string& meshfile_name, int GeomT
         std::istringstream brick_info( mesh);
         brick_info >> dx >> dy >> dz >> nx >> ny >> nz;
         if (!brick_info)
-            throw DROPSErrCL("error while reading geometry information: " + mesh);        
+            throw DROPSErrCL("error while reading geometry information: " + mesh);
         Point3DCL orig, px, py, pz;
         px[0]= dx; py[1]= dy; pz[2]= dz;
 
@@ -92,7 +92,7 @@ void BuildDomain( MultiGridCL* &mgp, const std::string& meshfile_name, int GeomT
         std::istringstream brick_info( mesh);
         brick_info >> dx >> dy >> dz >> nx >> ny >> nz >> cdx >> cdy >> cdz >> cnx >> cny >> cnz;
         if (!brick_info)
-            throw DROPSErrCL("error while reading geometry information: " + mesh);        
+            throw DROPSErrCL("error while reading geometry information: " + mesh);
         Point3DCL orig, px, py, pz;
         px[0]= dx; py[1]= dy; pz[2]= dz;
 
@@ -123,7 +123,7 @@ void BuildDomain( MultiGridCL* &mgp, const std::string& meshfile_name, int GeomT
         std::istringstream brick_info( mesh);
         brick_info >> dx >> dy >> dz >> nx >> ny >> nz >> bx >> by ;
         if (!brick_info)
-            throw DROPSErrCL("error while reading geometry information: " + mesh);        
+            throw DROPSErrCL("error while reading geometry information: " + mesh);
         Point3DCL orig, px, py, pz;
         px[0]= dx; py[1]= dy; pz[2]= dz;
 
@@ -168,7 +168,7 @@ void BuildDomain( MultiGridCL* &mgp, const std::string& meshfile_name, int GeomT
         std::ifstream meshfile( meshfile_name.c_str());
         std::string meshfile_name2 = meshfile_name + ".2nd";
         std::ifstream meshfile2nd( meshfile_name2.c_str());
-        
+
         if (!meshfile)
             throw DROPSErrCL ("error while opening mesh file\n");
 
@@ -192,22 +192,22 @@ void BuildDomain( MultiGridCL* &mgp, const std::string& meshfile_name, int GeomT
             MeshDeformationCL & md = MeshDeformationCL::getInstance();
             md.Initialize(mgp);
             std::map<std::pair<Ulint,Ulint>, Point3DCL> curvededgetopoint;
-            
+
             Point3DCL p;
             std::pair<Ulint,Ulint> id;
-            // fill map 
+            // fill map
             while ( !meshfile2nd.eof() ){
-                meshfile2nd >> id.first;    
-                meshfile2nd >> id.second;    
-                for (int j = 0; j < 3 ; j++) 
+                meshfile2nd >> id.first;
+                meshfile2nd >> id.second;
+                for (int j = 0; j < 3 ; j++)
                     meshfile2nd >> p[j];
                 curvededgetopoint[id]=p;
             }
 
             // use map to fill 2nd order deformation information
             DROPS_FOR_TRIANG_EDGE( (*mgp), mgp->GetLastLevel(), it) {
-                id.first  = it->GetVertex(0)->GetId().GetIdent();                 
-                id.second = it->GetVertex(1)->GetId().GetIdent();                 
+                id.first  = it->GetVertex(0)->GetId().GetIdent();
+                id.second = it->GetVertex(1)->GetId().GetIdent();
 
                 if (curvededgetopoint.find(id) != curvededgetopoint.end())
                     md.SetEdgeDeformation(*it, curvededgetopoint[id]);
@@ -216,7 +216,7 @@ void BuildDomain( MultiGridCL* &mgp, const std::string& meshfile_name, int GeomT
             md.CheckForCurved();
 
         }
-    }   
+    }
 
 
 #endif

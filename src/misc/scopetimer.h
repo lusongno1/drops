@@ -18,7 +18,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2011 LNM/SC RWTH Aachen, Germany
+ * Copyright 1011 LNM/SC RWTH Aachen, Germany
 */
 #ifndef SCOPETIMER_H
 #define SCOPETIMER_H
@@ -52,7 +52,7 @@ public:
    void Start();
    void Stop();
    double GetTime();
-   
+
    double timestamp();
 };
 
@@ -60,12 +60,12 @@ public:
 
 //*******************************************************************
 // S c o p e T i m e r C L
-//   accumulates elapsed times between creation and 
+//   accumulates elapsed times between creation and
 //   destruction of objects with the same 'name'
 //*******************************************************************
 class ScopeTimerCL
 {
-private: 
+private:
    std::string _name;
    RealTimerCL _timer;
 

@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2016 LNM/SC RWTH Aachen, Germany
+ * Copyright 1016 LNM/SC RWTH Aachen, Germany
 */
 
 #ifndef DROPS_SLIPBND_H
@@ -62,7 +62,7 @@ class SlipBndSystem1OnePhaseP2CL
     /// update local system 1
     void setup(const TetraCL& tet, const SMatrixCL<3,3>& T, SMatrixCL<3,3> Ak[10][10]);
     /// for Slip boundary condition (the slip wall is moving)
-    void setupRhs(const TetraCL& tet, Point3DCL loc_b[10], double t);  
+    void setupRhs(const TetraCL& tet, Point3DCL loc_b[10], double t);
 };
 
 /// \brief Due to the weak imposition of bu * n = 0 with Nitsche's method, setup the integral of (bv * bn) * q on the slip boundary for uncut element

@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2013 LNM/SC RWTH Aachen, Germany
+ * Copyright 1013 LNM/SC RWTH Aachen, Germany
  */
 
 // include standards
@@ -48,7 +48,7 @@ int main (int , char** )
         /// TEST BEGIN
         DROPS::BaryCoordCL a;
         DROPS::Point3DCL b;
-        
+
         DROPS::InVecMap & invec = DROPS::InVecMap::getInstance();
         DROPS::InScaMap & insca = DROPS::InScaMap::getInstance();
         DROPS::ScaTetMap & scatet = DROPS::ScaTetMap::getInstance();
@@ -65,7 +65,7 @@ int main (int , char** )
         std::cout << " &scatet = " << &scatet << std::endl;
 
         DROPS::instat_scalar_fun_ptr test2(insca["Zero"]);
-        std::cout << " function pointer address of \"Zero\" in InScaMap: " 
+        std::cout << " function pointer address of \"Zero\" in InScaMap: "
                   << test2 << std::endl;
 
         std::cout << " q2(a) is " << test2( b,0) << std::endl;
@@ -73,10 +73,10 @@ int main (int , char** )
         std::cout << " q1(a) is " << insca["One"]( b,0) << std::endl;
         std::cout << " q1(a) should be 1 " << std::endl;
 
-    
+
         DROPS::scalar_tetra_function test(scatet["Zero"]);
 
-        std::cout << " function pointer address of \"Zero\" in ScaTetMap: " 
+        std::cout << " function pointer address of \"Zero\" in ScaTetMap: "
                   << test << std::endl;
 
         DROPS::TetraCL tet;

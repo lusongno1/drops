@@ -141,7 +141,7 @@ class TwoPhaseFlowCoeffCL
             BndOutNormal = nullptr;
     }
 
-    TwoPhaseFlowCoeffCL( double rho1, double rho2, double mu1, double mu2, double surftension, Point3DCL gravity, Point3DCL framevelocity = Point3DCL(0.0), bool dimless = false, double dilatationalvisco = 0.0, double shearvisco = 0.0, 
+    TwoPhaseFlowCoeffCL( double rho1, double rho2, double mu1, double mu2, double surftension, Point3DCL gravity, Point3DCL framevelocity = Point3DCL(0.0), bool dimless = false, double dilatationalvisco = 0.0, double shearvisco = 0.0,
                          double betaL_=0, double alpha_ = 1.0, double beta1 = 0.0, double beta2 =0.0)
       : rho( dimless ? JumpCL( 1., rho2/rho1)
                      : JumpCL( rho1, rho2), H_sm, 0),
@@ -153,7 +153,7 @@ class TwoPhaseFlowCoeffCL
         DilVisco( dilatationalvisco),
         ShearVisco( shearvisco),
         betaL(betaL_),
-        alpha(alpha_), 
+        alpha(alpha_),
         g( gravity),
         framevel( framevelocity)
     {
@@ -292,7 +292,7 @@ private:
     double getGhPenStab(){ return epsP; }
     /// set Ghost Penalty stabilization factor
     void setGhPenStab( double EpsP ){ epsP = EpsP; }
-    
+
     /// Set Equilibrium Contact Angle
     void SetYoungAngle(instat_scalar_fun_ptr CtAngleFnc) { CtAngleFnc_= CtAngleFnc; }
     /// Set out normal function of the slip boundary

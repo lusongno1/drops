@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2017 LNM RWTH Aachen, Germany
+ * Copyright 1017 LNM RWTH Aachen, Germany
 */
 
 #ifndef DROPS_VOLUME_ADJUSTMENT_H
@@ -92,7 +92,7 @@ class GlobalVolumeAdjustmentCL : public VolumeAdjustmentCL
 /// Automatically handles changes in topology.
 ///
 /// Does not correct volumes of connected components which are too close together (distance has to be at least 4 P2 DOFs).
-class ComponentBasedVolumeAdjustmentCL : public VolumeAdjustmentCL 
+class ComponentBasedVolumeAdjustmentCL : public VolumeAdjustmentCL
 {
   public:
     using component_vector= std::vector<size_t>;

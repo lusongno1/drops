@@ -239,11 +239,11 @@ class VTKP1XScalarCL : public VTKVariableCL
   public:
     VTKP1XScalarCL(MultiGridCL& mg, const VecDescCL& lset, const VecDescCL& v,
                    const BndDataCL<>& bnd1, const BndDataCL<>& bnd2, std::string varName)
-        : VTKVariableCL( varName), v_( v), vneg_( &p1idx_), vpos_( &p1idx_), 
+        : VTKVariableCL( varName), v_( v), vneg_( &p1idx_), vpos_( &p1idx_),
         lset_( lset), bndneg_( bnd1), bndpos_( bnd2), mg_( mg) {}
     VTKP1XScalarCL(MultiGridCL& mg, const VecDescCL& lset, const VecDescCL& v, const BndDataCL<>& bnd,
                    std::string varName)
-        : VTKVariableCL( varName), v_( v), vneg_( &p1idx_), vpos_( &p1idx_), 
+        : VTKVariableCL( varName), v_( v), vneg_( &p1idx_), vpos_( &p1idx_),
         lset_( lset), bndneg_( bnd), bndpos_( bnd), mg_( mg) {}
     ~VTKP1XScalarCL() { if (p1idx_.NumUnknowns() != 0) p1idx_.DeleteNumbering( mg_); }
     void put( VTKOutCL& cf) const {
@@ -253,7 +253,7 @@ class VTKP1XScalarCL : public VTKVariableCL
         P1XtoP1 ( *v_.RowIdx, v_.Data, p1idx_, vpos_.Data, vneg_.Data, lset_, mg_);
         vpos_.t = lset_.t;
         vneg_.t = lset_.t;
-        cf.PutScalar( P1EvalCL<double, const BndDataCL<>, const VecDescCL>(&vneg_, &bndneg_, &mg_), varName()+ "_neg"); 
+        cf.PutScalar( P1EvalCL<double, const BndDataCL<>, const VecDescCL>(&vneg_, &bndneg_, &mg_), varName()+ "_neg");
         cf.PutScalar( P1EvalCL<double, const BndDataCL<>, const VecDescCL>(&vpos_, &bndpos_, &mg_), varName()+ "_pos");
     }
     Uint GetDim() const { return 1; }
@@ -271,7 +271,7 @@ inline  VTKP1XScalarCL&
 }
 
 inline  VTKP1XScalarCL&
-    make_VTKP1XScalar(MultiGridCL& mg, const VecDescCL& lset, const VecDescCL& v, 
+    make_VTKP1XScalar(MultiGridCL& mg, const VecDescCL& lset, const VecDescCL& v,
                       const BndDataCL<>& bnd1, const BndDataCL<>& bnd2,
                       std::string varName)
 {
@@ -366,7 +366,7 @@ template <typename DiscScalT>
             LocalP2CL<double> lp2 (*it,*f.GetSolution(),*f.GetBndData());
             std::swap(lp2[5],lp2[6]);
             for (int i = 0; i < 10; ++i){
-                locData[pos++]= (float)(lp2[i]); 
+                locData[pos++]= (float)(lp2[i]);
             }
         }
     }

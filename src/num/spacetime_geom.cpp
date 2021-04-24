@@ -1,6 +1,6 @@
 /// \file spacetime.cpp
-/// \brief classes that constitute space time geometries - 
-/// Note that in contrast to VertexCL, ..., SimplexCL, ... these geometries only appear element-local 
+/// \brief classes that constitute space time geometries -
+/// Note that in contrast to VertexCL, ..., SimplexCL, ... these geometries only appear element-local
 /// and their purpose is the decomposition of a cut space-time primitive into several uncut ones
 /// main components:
 ///  * Point4DContainer (gathered collection of unique Points)
@@ -11,8 +11,8 @@
 ///    * PentatopeCL
 /// PentatopeCL basically does all the work. With the help of levelset values a cut Pentatope
 /// can be decomposed into uncut Pentatopes, HyperTrigs and GeneralizedPrisms. Each class can
-/// decompose itself into Pentatopes. The Pentatope class also decomposes the interface into 
-/// Tetra4Ds. 
+/// decompose itself into Pentatopes. The Pentatope class also decomposes the interface into
+/// Tetra4Ds.
 /// \author LNM RWTH Aachen: Christoph Lehrenfeld
 
 /*
@@ -32,7 +32,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #include "num/spacetime_geom.h"
@@ -83,7 +83,7 @@ double PentatopeCL::AbsDet() const{
 /**
    a cut exists if the vertex values have a different sign. Here we count 0 as
    a value with a positive sign, s.t. for vertex value -1 and 0 we have a
-   (degenerate) cut. As the resulting pentas have 0-measure they will be neglected 
+   (degenerate) cut. As the resulting pentas have 0-measure they will be neglected
    anyway...
  */
 bool cutting_criteria_fulfilled(const double a, const double b)
@@ -92,13 +92,13 @@ bool cutting_criteria_fulfilled(const double a, const double b)
             ||((a < 0.0 && b > 0.0)||(b < 0.0 && a > 0.0)));
 }
 
-// decomposition into positive and negative pentatopes. The level set values already 
-// define a P1 representation. They could have been obtained via interpolation 
-// or L2-Projection or whatever... 
-void PentatopeCL::decompose_add_signed_pentas_4dtets(SArrayCL<double,5> & lsetvals, 
-                                                     std::vector<PentatopeCL> & negpentas, 
+// decomposition into positive and negative pentatopes. The level set values already
+// define a P1 representation. They could have been obtained via interpolation
+// or L2-Projection or whatever...
+void PentatopeCL::decompose_add_signed_pentas_4dtets(SArrayCL<double,5> & lsetvals,
+                                                     std::vector<PentatopeCL> & negpentas,
                                                      std::vector<PentatopeCL> & pospentas,
-                                                     std::vector<Tetra4DCL> & iftets) 
+                                                     std::vector<Tetra4DCL> & iftets)
 {
     const double eps = 1e-15;
     Uint ncuts = 0; //number of cutted edges
@@ -116,7 +116,7 @@ void PentatopeCL::decompose_add_signed_pentas_4dtets(SArrayCL<double,5> & lsetva
             }
         }
     }
-        
+
     // so far we can only deal with zero levels which are not crossing a vertex:
     if (ncuts!=0 && ncuts!=4 && ncuts!=6){
         std::cout << " ERROR-output: \n";
@@ -160,10 +160,10 @@ void PentatopeCL::decompose_add_signed_pentas_4dtets(SArrayCL<double,5> & lsetva
             b[cuts] = pcont((1-alpha) * (*x[cuts]) + alpha * x4);
             cuts++;
         }
-            
+
         GeneralizedPrism4CL genprism4(pcont,x,b);
         PentatopeCL pp(pcont,*(b[0]),*(b[1]),*(b[2]),*(b[3]),x4, /* already_in_pcont = */ true);
-        
+
         if (sign_of_sv){
             if (pp.Measure() > eps)
                 pospentas.push_back(pp);
@@ -175,7 +175,7 @@ void PentatopeCL::decompose_add_signed_pentas_4dtets(SArrayCL<double,5> & lsetva
                 negpentas.push_back(pp);
             genprism4.decompose_add_to_pentas(pospentas);
         }
-            
+
         // the interface
         Tetra4DCL tet(pcont,*(b[0]),*(b[1]),*(b[2]),*(b[3]), /*already_in_pcont = */ true);
         tet.SetHelpPoint(x4,sign_of_sv,true);
@@ -188,10 +188,10 @@ void PentatopeCL::decompose_add_signed_pentas_4dtets(SArrayCL<double,5> & lsetva
             }
         if (tet.Measure() > eps)
             iftets.push_back(tet);
-        
+
         return;
     }
-    else if (ncuts==6) // all edges leaving verts[3].second or verts[4].second 
+    else if (ncuts==6) // all edges leaving verts[3].second or verts[4].second
                        // and not connecting those two vertices are cutted
     {
         Uint sepvertex1 = verts[3].second; // the number of one of the vertices that are separated
@@ -205,8 +205,8 @@ void PentatopeCL::decompose_add_signed_pentas_4dtets(SArrayCL<double,5> & lsetva
         SArrayCL<const Point4DCL*,3> d( Uninitialized); // second group of cutpoints (new points) (connected to sepvertex2)
         SArrayCL<const Point4DCL*,3> x( Uninitialized); // basepoints (belonging to pentatope)
 
-        Uint dcuts = 0; // "double cuts" - those two cuts which are on the two edges 
-                        // connecting one vertex with the vertices sepvertex1/2 
+        Uint dcuts = 0; // "double cuts" - those two cuts which are on the two edges
+                        // connecting one vertex with the vertices sepvertex1/2
         for (Uint i = 0; i < 5; ++i)
         {
             if (i==sepvertex1 || i==sepvertex2) continue;
@@ -285,7 +285,7 @@ void PentatopeCL::decompose_add_signed_pentas_4dtets(SArrayCL<double,5> & lsetva
 }
 
 std::ostream& operator<<(std::ostream& os, PentatopeCL penta)
-{ 
+{
     os << " Output of PentatopeCL:\n vertices:\n  ";
     for (Uint i = 0; i < 5; ++i)
         os << *(penta.p[i]) << '\n';
@@ -293,13 +293,13 @@ std::ostream& operator<<(std::ostream& os, PentatopeCL penta)
     os << "absdet = " << penta.AbsDet() << "\n";
     return os;
 }
-    
+
 /**
-   Decompose the generalized prism4 into pentatopes. Depending on plattice_1d_els divide the 
+   Decompose the generalized prism4 into pentatopes. Depending on plattice_1d_els divide the
    "limit tetrahedra" x[0]-x[3] and y[0]-y[3] according to a principal lattice structure first,
    i.e. do a uniform spatial refinement.
 */
-void GeneralizedPrism4CL::decompose_add_to_pentas (std::vector<PentatopeCL> & pentas, int plattice_1d_els, int time_1d_els) const 
+void GeneralizedPrism4CL::decompose_add_to_pentas (std::vector<PentatopeCL> & pentas, int plattice_1d_els, int time_1d_els) const
 {
     const double eps = 1e-15; // for now
 
@@ -333,7 +333,7 @@ void GeneralizedPrism4CL::decompose_add_to_pentas (std::vector<PentatopeCL> & pe
         {
             Point4DCL z_x((1.0-((double)ti)/time_1d_els)* (*x[0])+(((double)ti)/time_1d_els)* (*y[0]));
             Point4DCL z_y((1.0-(ti+1.0)/time_1d_els)* (*x[0])+((ti+1.0)/time_1d_els)* (*y[0]));
-            
+
 
             const PrincipalLatticeCL& pl( PrincipalLatticeCL::instance( plattice_1d_els));
             const std::vector<BaryCoordCL>& plvertices (pl.vertices());
@@ -385,8 +385,8 @@ std::ostream& operator<<(std::ostream& os, GeneralizedPrism4CL genprism4)
 
 /**
    Decomposition of the hyper triangle into 6 pentatopes. The structure here is simpel:
-   - the "diagonal triangle" u[0],v[1],w[2] is part of each pentatope. 
-   - additionally the points which not already part of the "diagonal triangle" and 
+   - the "diagonal triangle" u[0],v[1],w[2] is part of each pentatope.
+   - additionally the points which not already part of the "diagonal triangle" and
      belong to one of 6  the "main triangles {u[0],u[1],u[2]},..,{w[0],w[1],w[2]},
      {u[0],v[0],v[0]},..,{u[2],v[2],v[2]} are added.
 */
@@ -427,7 +427,7 @@ std::ostream& operator<<(std::ostream& os, HyperTrigCL hypert)
         os <<  *(hypert.w[i]) << "\n\n";
     return os;
 }
-    
+
 
 inline void Tetra4DCL::calc_abs_determinant() const
 {
@@ -446,11 +446,11 @@ inline void Tetra4DCL::calc_abs_determinant() const
                     return;
                 }
             }
-        
+
         normal = cross_product(*(p[1])-*(p[0]),*(p[2])-*(p[0]),*(p[3])-*(p[0]));
         absdet_of_trafo = normal.norm();
         normal /= absdet_of_trafo;
-        
+
 
         // orientation - Normal should point from neg to pos
         // (works only if helppoint is prescribed)
@@ -502,7 +502,7 @@ Point4DCL Tetra4DCL::Normal() const{
     return normal;
 }
 
-// return 1.0/(sqrt(1+w_n^2)) = ||n_s|| where n_s is the spatial part of the space time normal 
+// return 1.0/(sqrt(1+w_n^2)) = ||n_s|| where n_s is the spatial part of the space time normal
 double Tetra4DCL::Nu() const{
     calc_normal();
     return std::sqrt( std::pow(normal[0],2) + std::pow(normal[1],2) + std::pow(normal[2],2));
@@ -517,7 +517,7 @@ inline void Tetra4DCL::calc_normal() const{
         // As a has full rank there holds R^T y = 0 => y = c * (0,0,0,1)
         // We consider y = (0,0,0,1) as it is normalized to ||y||_2 = 1
         // Thus there holds n = Q * y with ||n|| = 1
-        
+
         // QRDecompCL<4,3> Tmat;
         // SMatrixCL<4,3> & trafomat = Tmat.GetMatrix();
         // for (Uint i = 0; i < 4; ++i)
@@ -552,7 +552,7 @@ inline void Tetra4DCL::calc_normal() const{
 }
 
 std::ostream& operator<<(std::ostream& os, const Tetra4DCL & tet4d)
-{ 
+{
     os << " Output of Tetra4D:\n vertices:\n  ";
     for (Uint i = 0; i < 4; ++i)
         os << tet4d.p[i] << '\n';

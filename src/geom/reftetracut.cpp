@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2011 LNM/SC RWTH Aachen, Germany
+ * Copyright 1011 LNM/SC RWTH Aachen, Germany
 */
 
 #include "geom/reftetracut.h"
@@ -244,7 +244,7 @@ RefTrianglePartitionCL::RefTrianglePartitionCL(byte ls[4], Ubyte VertexNum)
                 ++j;
                 if (j > 3)
                     throw DROPSErrCL("Index of vertex of the triangle is bigger than 3");
-            }	 
+            }
         }
         //make a triangle and store its sign;
         triangle_[index] = MakeTriangle(vert[0], vert[1], vert[2]);

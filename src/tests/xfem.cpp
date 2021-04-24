@@ -283,7 +283,7 @@ int main (int argc, char** argv)
     }
 
     // Solve the linear system...
-    int max_iter= 200;
+    int max_iter= 100;
     double tol= 1e-16;
     JACPcCL pc( 1.0);
     PCG( M.Data, beta.Data, b.Data, DummyExchangeCL(), pc, max_iter, tol, /*measure_relative_tol*/ true);
@@ -320,7 +320,7 @@ int main (int argc, char** argv)
         }
     }
 
-    std::cout << std::setprecision(20);
+    std::cout << std::setprecision(10);
     std::cout << "||u_l||_0^2 = " << dot (M.Data*beta.Data, beta.Data) <<'\n';
     std::cout << "|| u ||_0^2 = " << intval << '\n';
     const double err = intval - dot (M.Data*beta.Data, beta.Data);

@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #include "spacetimetransp/stxfem.h"
@@ -42,13 +42,13 @@ namespace STXFEM
 {
 
 /// not yet sure if the old criteria is a good approach also in space-time
-void UpdateSTXNumbering( IdxDescCL* Idx, const MultiGridCL& mg, 
-                         const VecDescCL& lset_old, const VecDescCL& lset_new, 
+void UpdateSTXNumbering( IdxDescCL* Idx, const MultiGridCL& mg,
+                         const VecDescCL& lset_old, const VecDescCL& lset_new,
                          instat_scalar_fun_ptr lset_fpt, const TimeInterval ti,
                          const BndDataCL<>& lsetbnd, bool NumberingChanged, double vmax)
 {
     std::cout << " starting STXNumbering ... ";
-            
+
     const int ints_per_space_edge = P.get<double>("Transp.Quadrature.SubIntervalsPerEdge");
     const int subtimeintervals = P.get<double>("Transp.Quadrature.SubTimeIntervals");
     ExtIdxDescCL& extidxdesc = Idx->GetXidx();
@@ -87,12 +87,12 @@ void UpdateSTXNumbering( IdxDescCL* Idx, const MultiGridCL& mg,
 
         bool inside_outer_band = false;
         bool outside_inner_band = false;
-    
+
         for (int i = 0; i < 10; ++i)
         {
-            if (locPhi_old[i] < vmax*dt || locPhi_new[i] < vmax*dt) 
+            if (locPhi_old[i] < vmax*dt || locPhi_new[i] < vmax*dt)
                 inside_outer_band = true;
-            if (locPhi_old[i] > -vmax*dt || locPhi_new[i] >- vmax*dt) 
+            if (locPhi_old[i] > -vmax*dt || locPhi_new[i] >- vmax*dt)
                 outside_inner_band = true;
         }
         if (!inside_outer_band || !outside_inner_band) //not close to interface
@@ -100,7 +100,7 @@ void UpdateSTXNumbering( IdxDescCL* Idx, const MultiGridCL& mg,
 
         CompositeSTQuadCL<QuadRule> * p_cstquad;
         if (lset_fpt ==NULL)
-            p_cstquad = new CompositeSTQuadCL<QuadRule>(refprism4,locPhi_old, locPhi_new, 
+            p_cstquad = new CompositeSTQuadCL<QuadRule>(refprism4,locPhi_old, locPhi_new,
                                                                       ints_per_space_edge, subtimeintervals);
         else
             p_cstquad = new CompositeSTQuadCL<QuadRule>(*it, ti, lset_fpt,
@@ -122,9 +122,9 @@ void UpdateSTXNumbering( IdxDescCL* Idx, const MultiGridCL& mg,
             for (Uint i = 0; i < 4; ++i)
             {
                 const bool sign = cstquad.GetVertexSign(i,/* newtime? */ newtime);
-                GridFunctionCL<double> pi = newtime ? cstquad.EvalLinearOnPart( p0, ps[i], !sign) 
+                GridFunctionCL<double> pi = newtime ? cstquad.EvalLinearOnPart( p0, ps[i], !sign)
                     : cstquad.EvalLinearOnPart( ps[i], p0, !sign);
-                
+
                 GridFunctionCL<double> pi2 = pi;
                 pi2 *= pi;
                 // GridFunctionCL<double> pi2 = pi*pi;
@@ -168,7 +168,7 @@ void UpdateSTXNumbering( IdxDescCL* Idx, const MultiGridCL& mg,
     // return extIdx;
     // for (size_t i=0; i<extidxdesc.GetNumUnknownsStdFE(); ++i)
     //          std::cout << " i = " << i << ": "  << extidxdesc[i] << std::endl;
-    std::cout << " UpdateSTXNumbering: \n"; 
+    std::cout << " UpdateSTXNumbering: \n";
     std::cout << " number of std-functions: " << extidxdesc.GetNumUnknownsStdFE() << std::endl;
     std::cout << " number of x-functions: " << extIdx - extidxdesc.GetNumUnknownsStdFE() << std::endl;
 #ifdef _PAR
@@ -187,7 +187,7 @@ void GetTrace( const VecDescCL& stsol, VecDescCL& sol, const MultiGridCL& mg)
     const Uint idx = sol.RowIdx->GetIdx();
     const ExtIdxDescCL& STXidx= stsol.RowIdx->GetXidx();
     const ExtIdxDescCL& Xidx= sol.RowIdx->GetXidx();
-    DROPS_FOR_TRIANG_CONST_VERTEX( mg, lvl, it) {    
+    DROPS_FOR_TRIANG_CONST_VERTEX( mg, lvl, it) {
         if (it->Unknowns.Exist( stidx)){
             const IdxT traceunkn = it->Unknowns( stidx) + timedir; //first dof is past - second future
             const IdxT tracexunkn = STXidx[traceunkn];
@@ -198,11 +198,11 @@ void GetTrace( const VecDescCL& stsol, VecDescCL& sol, const MultiGridCL& mg)
                 sol.Data[spacexunkn] = stsol.Data[tracexunkn];
         }
     }
-    
+
 }
 
 
-void GetFutureTrace( const VecDescCL& stsol, VecDescCL& sol, const MultiGridCL& mg) 
+void GetFutureTrace( const VecDescCL& stsol, VecDescCL& sol, const MultiGridCL& mg)
 {
     GetTrace<FUTURE>(stsol,sol,mg);
 }

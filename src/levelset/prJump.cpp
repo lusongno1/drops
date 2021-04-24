@@ -231,7 +231,7 @@ void Assemble( StokesT& Stokes, LevelsetP2CL& lset, VelVecDescCL& rhs )
     Stokes.p.SetIdx( pidx );
     Stokes.InitVel( &Stokes.v, InVecMap::getInstance().find("ZeroVel")->second );
 
-    // Initialise prolongation matrices    
+    // Initialise prolongation matrices
     ParamCL PTime(P.get_child("Time") );
     StokesSolverFactoryCL<InstatStokes2PhaseP2P1CL> factory( Stokes,
                                                              PSolver,
@@ -307,7 +307,7 @@ void Solve( StokesT& Stokes, LevelsetP2CL& lset, VelVecDescCL& rhs )
 
     ParamCL PSolver(P.get_child("OseenSolver"));
     ParamCL PTime(P.get_child("Time") );
-    // Initialise prolongation matrices    
+    // Initialise prolongation matrices
     StokesSolverFactoryCL<InstatStokes2PhaseP2P1CL> factory( Stokes,
                                                              PSolver,
                                                              PTime);

@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #ifndef DROPS_STXFEM_H
@@ -37,13 +37,13 @@
 
 namespace DROPS
 {
-namespace STXFEM 
-{ // namespace for space time xfem helper functions 
+namespace STXFEM
+{ // namespace for space time xfem helper functions
 
-void UpdateSTXNumbering( IdxDescCL* Idx, const MultiGridCL& mg, const VecDescCL& lset_old, 
-                         const VecDescCL& lset_new, 
+void UpdateSTXNumbering( IdxDescCL* Idx, const MultiGridCL& mg, const VecDescCL& lset_old,
+                         const VecDescCL& lset_new,
                          instat_scalar_fun_ptr lset_fpt, const TimeInterval ti,
-                         const BndDataCL<>& lsetbnd, 
+                         const BndDataCL<>& lsetbnd,
                          bool NumberingChanged, double vmax);
 
 
@@ -57,7 +57,7 @@ enum TIMEDIRECTION
 template <TIMEDIRECTION timedir>
 void GetTrace( const VecDescCL& stsol, VecDescCL& sol, const MultiGridCL& mg);
 void GetFutureTrace( const VecDescCL& stsol, VecDescCL& sol, const MultiGridCL& mg);
-void GetPastTrace( const VecDescCL& stsol, VecDescCL& sol, const MultiGridCL& mg); 
+void GetPastTrace( const VecDescCL& stsol, VecDescCL& sol, const MultiGridCL& mg);
 
 
 }//end of namespace DROPS::STXFEM

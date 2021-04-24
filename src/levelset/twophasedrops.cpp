@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 //multigrid
@@ -113,7 +113,7 @@ void Strategy( InstatNavierStokes2PhaseP2P1CL& Stokes, LsetBndDataCL& lsetbnddat
     Stokes.SetYoungAngle(Young_angle);
     Stokes.SetBndOutNormal(bnd_outnormal);
     Stokes.SetSurfTension(sf);
-    
+
     if (is_periodic) /// \todo Periodic directions (used for reparam) should be set based on Mesh.PeriodicBnd. Export to function!
     {
         int n = 0;
@@ -168,7 +168,7 @@ void Strategy( InstatNavierStokes2PhaseP2P1CL& Stokes, LsetBndDataCL& lsetbnddat
 
     PermutationT lset_downwind;
 
-    ///\todo Is this really necessary? Already done ~20 lines above!
+    ///\todo Is this really necessary? Already done ~10 lines above!
     if ( StokesSolverFactoryHelperCL().VelMGUsed(PSolver))
         Stokes.SetNumVelLvl ( Stokes.GetMG().GetNumLevel());
     if ( StokesSolverFactoryHelperCL().PrMGUsed(PSolver))
@@ -180,7 +180,7 @@ void Strategy( InstatNavierStokes2PhaseP2P1CL& Stokes, LsetBndDataCL& lsetbnddat
     std::string InitialLSet= P.get("Levelset.InitialValue", std::string("Ellipsoid"));
     if ( (InitialLSet == "Ellipsoid"     || InitialLSet == "Cylinder" || InitialLSet == "ContactDroplet"
         || InitialLSet == "HalfEllipsoid" || InitialLSet == "TaylorFlowDistance"))
-    {  
+    {
         if (P.get<double>("Levelset.InitialVolume",-1.0) > 0 )
             Vol = P.get<double>("Levelset.InitialVolume");
         if (InitialLSet == "Ellipsoid")
@@ -294,7 +294,7 @@ void Strategy( InstatNavierStokes2PhaseP2P1CL& Stokes, LsetBndDataCL& lsetbnddat
         surfTransp->SetInitialValue( inscamap["surf_sol"]);
     }
 
-    // Stokes-Solver    
+    // Stokes-Solver
     ParamCL PTime( P.get_child("Time") );
     StokesSolverFactoryCL<InstatNavierStokes2PhaseP2P1CL> stokessolverfactory(Stokes, PSolver, PTime );
     StokesSolverBaseCL* stokessolver;
@@ -335,7 +335,7 @@ void Strategy( InstatNavierStokes2PhaseP2P1CL& Stokes, LsetBndDataCL& lsetbnddat
     typedef JACPcCL LsetPcT;
 #endif
     LsetPcT lset_pc;
-    GMResSolverCL<LsetPcT>* gm = new GMResSolverCL<LsetPcT>( lset_pc, 200, P.get<int>("CouplingSolver.LevelsetSolver.Iter"), P.get<double>("CouplingSolver.LevelsetSolver.Tol"));
+    GMResSolverCL<LsetPcT>* gm = new GMResSolverCL<LsetPcT>( lset_pc, 100, P.get<int>("CouplingSolver.LevelsetSolver.Iter"), P.get<double>("CouplingSolver.LevelsetSolver.Tol"));
 
     LevelsetModifyCL lsetmod( P.get<int>("Levelset.Reparam.Freq"), P.get<int>("Levelset.Reparam.Method"), P.get<double>("Levelset.Reparam.MaxGrad"), P.get<double>("Levelset.Reparam.MinGrad"), is_periodic);
 

@@ -35,7 +35,7 @@ double Special (const DROPS::Point3DCL& p, double )
     DROPS::Point3DCL X = p-x0-shift;
 
     DROPS::Point3DCL Y(std::abs(X[0]),std::abs(X[1]),std::abs(X[2]));
-    
+
     int order[3];
     for (int i = 0; i < 3; ++i)
         order[i] = i;

@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2014, 2015, 2016 Joerg Grande, Aachen, Germany
+ * Copyright 1014, 1015, 1016 Joerg Grande, Aachen, Germany
 */
 
 

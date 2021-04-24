@@ -1,5 +1,5 @@
 /// \file progressaccu.h
-/// \brief accumulator which displays progress of accumulation 
+/// \brief accumulator which displays progress of accumulation
 /// \author LNM RWTH Aachen: Christoph Lehrenfeld
 
 /*
@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #ifndef DROPS_PROGRESS_ACCU_H
@@ -35,23 +35,23 @@ namespace DROPS
 
 class ProgressBarTetraAccumulatorCL : public TetraAccumulatorCL
 {
-    protected:   
+    protected:
     Uint * tetprog;
     int * prog;
     Uint ntet;
     const std::string name;
     bool isterm;
-public: 
+public:
 
     static bool active;
 
     static void Activate(){ active = true; }
     static void Deactivate(){ active = false; }
-    
-    ProgressBarTetraAccumulatorCL (const MultiGridCL& MG, 
+
+    ProgressBarTetraAccumulatorCL (const MultiGridCL& MG,
                                    const std::string aname = std::string("accumulator"), int lvl = -1);
 
-    ProgressBarTetraAccumulatorCL (int tets, 
+    ProgressBarTetraAccumulatorCL (int tets,
                                    const std::string aname = std::string("accumulator"));
 
     ///\brief Initializes matrix-builders and load-vectors
@@ -59,10 +59,10 @@ public:
     ///\brief Builds the matrices
     void finalize_accumulation();
 
-    virtual void visit (const TetraCL&); 
+    virtual void visit (const TetraCL&);
 
     virtual TetraAccumulatorCL* clone (int /*tid*/) { return new ProgressBarTetraAccumulatorCL ( *this); }
-    
+
 };
 
 void MaybeAddProgressBar ( const MultiGridCL & MG, const std::string name, TetraAccumulatorTupleCL & accutup, int lvl);

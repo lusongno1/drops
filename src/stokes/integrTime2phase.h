@@ -133,12 +133,12 @@ class InstatStokes2phaseThetaSchemeCL : public TimeDiscStokes2phaseCL< StokesT, 
 
     void SetTimeStep( double dt)
     {
-        _dt= dt;        
-        _mat.LinComb( 1./_dt, _Stokes.M.Data, _theta, _Stokes.A.Data);        
+        _dt= dt;
+        _mat.LinComb( 1./_dt, _Stokes.M.Data, _theta, _Stokes.A.Data);
     }
 
     void SetTimeStep( double dt, double theta)
-    {        
+    {
         _theta= theta;
         SetTimeStep( dt );
     }
@@ -174,11 +174,11 @@ void InstatStokes2phaseThetaSchemeCL<StokesT,SolverT,LsetT>::DoStep( VectorCL& v
 
 
     _rhs.resize( vidx->NumUnknowns() );
-    _b->SetIdx( vidx );    
+    _b->SetIdx( vidx );
     _cplM->SetIdx( vidx );
-    _old_cplM->SetIdx( vidx );        
+    _old_cplM->SetIdx( vidx );
 
-    //get _old_cplM    
+    //get _old_cplM
     _Stokes.SetupCplM( _old_cplM, _lset, oldTime );
 
     /*
@@ -193,7 +193,7 @@ void InstatStokes2phaseThetaSchemeCL<StokesT,SolverT,LsetT>::DoStep( VectorCL& v
     VectorCL v1 =  _cpl_tst->Data ;
     VectorCL v2 =  _old_cplM->Data ;
     VectorCL res( v1.size() );
-    res = v1-v2;    
+    res = v1-v2;
 
     double scalprod = norm(res);
 
@@ -208,7 +208,7 @@ void InstatStokes2phaseThetaSchemeCL<StokesT,SolverT,LsetT>::DoStep( VectorCL& v
     _Stokes.SetupSystem1( &_Stokes.A, &_Stokes.M, _b, _b, _cplM, _lset, _Stokes.v.t);
     _Stokes.SetupSystem2( &_Stokes.B, &_Stokes.C, &_Stokes.c, _lset, _Stokes.v.t );
 
-    // if moving interface: uncomment the following lines        
+    // if moving interface: uncomment the following lines
     _Stokes.SetupPrMass ( &_Stokes.prM, _lset );
     _Stokes.SetupPrStiff( &_Stokes.prA, _lset, P.get<double>("Stokes.lambda",1.0) );
 
@@ -216,7 +216,7 @@ void InstatStokes2phaseThetaSchemeCL<StokesT,SolverT,LsetT>::DoStep( VectorCL& v
     // create matrix mat
     SetTimeStep(_dt);
 
-    // compute surface tension integral for rhs    
+    // compute surface tension integral for rhs
     VelVecDescCL surften( &_Stokes.vel_idx );
     _lset.AccumulateBndIntegral( surften );
     _b->Data += surften.Data;

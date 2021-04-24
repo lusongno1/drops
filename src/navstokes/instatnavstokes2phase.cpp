@@ -72,12 +72,12 @@ void LocalNonlConvSystemOnePhase_P2CL::setup (const SMatrixCL<3,3>& T, double ab
 
 
 /// \brief Setup of the local (nonl.) convection term on a tetra with two phases
-///  using smoothed versions of disc. density 
+///  using smoothed versions of disc. density
 class LocalNonlConvSystemSmoothedJumps_P2CL
 {
   private:
     const SmoothedJumpCL & rho_;
-    
+
     Quad5CL<Point3DCL> Grad[10], GradRef[10];
     Quad5CL<Point3DCL> vel_;
     Quad5CL<double> lset_;
@@ -87,16 +87,16 @@ class LocalNonlConvSystemSmoothedJumps_P2CL
   public:
     LocalNonlConvSystemSmoothedJumps_P2CL (const SmoothedJumpCL & rho_arg)
         : rho_( rho_arg), Ones( 1.)
-    { 
-        P2DiscCL::GetGradientsOnRef( GradRef); 
+    {
+        P2DiscCL::GetGradientsOnRef( GradRef);
 
     }
 
     void   velocity  (const LocalP2CL<Point3DCL> & velp2) { vel_.assign(velp2); }
     const Quad5CL<Point3DCL> & velocity  () const   { return vel_;        }
 
-    void   levelset  (const LocalP2CL<double> & lsetp2) { 
-        lset_.assign(lsetp2); 
+    void   levelset  (const LocalP2CL<double> & lsetp2) {
+        lset_.assign(lsetp2);
         qrho_ = lset_;
         qrho_.apply( rho_);
     }
@@ -162,7 +162,7 @@ void LocalNonlConvSystemTwoPhase_P2CL::setup (const SMatrixCL<3,3>& T, double ab
     resize_and_evaluate_on_vertexes( velp2, q5dom, velocity);
     for (int i= 0; i < 10; ++i) {
         p2[i]= 1.; p2[i==0 ? 9 : i - 1]= 0.;
-        resize_and_evaluate_on_vertexes( p2,      q5dom,  qshape[i]); // shape 
+        resize_and_evaluate_on_vertexes( p2,      q5dom,  qshape[i]); // shape
         resize_and_evaluate_on_vertexes( Grad[i], q5dom, qdshape[i]); // gradient shape
     }
     for (int i= 0; i < 10; ++i) {
@@ -213,7 +213,7 @@ class NonlConvSystemAccumulator_P2CL : public TetraAccumulatorCL
     void update_global_system ();
 
   public:
-    NonlConvSystemAccumulator_P2CL (const TwoPhaseFlowCoeffCL& Coeff, const MultiGridCL& MG_, const StokesBndDataCL& BndData_, 
+    NonlConvSystemAccumulator_P2CL (const TwoPhaseFlowCoeffCL& Coeff, const MultiGridCL& MG_, const StokesBndDataCL& BndData_,
                                     const VelVecDescCL& vel_, const VecDescCL& ls, const LsetBndDataCL& ls_bnd, IdxDescCL& RowIdx_,
                                     MatrixCL& N_, VecDescCL* cplN_, double t, bool smoothed=false);
 
@@ -232,7 +232,7 @@ NonlConvSystemAccumulator_P2CL::NonlConvSystemAccumulator_P2CL (const TwoPhaseFl
                                                                 MatrixCL& N_, VecDescCL* cplN_, double t_, bool smoothed_)
     : smoothed(smoothed_), Coeff( Coeff_), BndData( BndData_), MG(MG_),
       vel(vel_), lset( lset_arg), lset_bnd(lset_arg_bnd), t( t_),
-      RowIdx( RowIdx_), N( N_), cplN( cplN_), 
+      RowIdx( RowIdx_), N( N_), cplN( cplN_),
       local_twophase( Coeff.rho( 1.0), Coeff.rho( -1.0)),
       local_smoothed_twophase( Coeff.rho)
 {}
@@ -288,7 +288,7 @@ void NonlConvSystemAccumulator_P2CL::local_setup (const TetraCL& tet)
             local_smoothed_twophase.setup( T, absdet, loc, Coeff.framevel);
         }
     }
-    
+
     if (cplN != 0) {
         for (int i= 0; i < 10; ++i) {
             if (!n.WithUnknowns( i)) {
@@ -303,8 +303,8 @@ void NonlConvSystemAccumulator_P2CL::local_setup (const TetraCL& tet)
 
 void NonlConvSystemAccumulator_P2CL::update_global_system ()
 {
-    SparseMatBuilderCL<double, SDiagMatrixCL<3> >& mN= *mN_;    
-    
+    SparseMatBuilderCL<double, SDiagMatrixCL<3> >& mN= *mN_;
+
     for(int i= 0; i < 10; ++i)    // assemble row Numb[i]
         if (n.WithUnknowns( i)) { // dof i is not on a Dirichlet boundary
             for(int j= 0; j < 10; ++j) {

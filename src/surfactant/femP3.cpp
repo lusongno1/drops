@@ -201,9 +201,9 @@ void ExtendP1onChild( const LocalP3CL<T>& isoP3, int child, LocalP3CL<T>& P1onPa
         P1onParent[e+4]= 0.5*(P1onParent[VertOfEdge(e,0)] + P1onParent[VertOfEdge(e,1)]);
 }
 
-void P3DiscCL::GetGradientsOnRef( LocalP1CL<Point3DCL> GRef[20])
+void P3DiscCL::GetGradientsOnRef( LocalP1CL<Point3DCL> GRef[10])
 {
-    for (int i= 0; i < 20; ++i)
+    for (int i= 0; i < 10; ++i)
     {
         GRef[i][0]= FE_P3CL::DHRef( i, 0,0,0);//FE_P2CL
         GRef[i][1]= FE_P3CL::DHRef( i, 1,0,0);
@@ -212,9 +212,9 @@ void P3DiscCL::GetGradientsOnRef( LocalP1CL<Point3DCL> GRef[20])
     }
 }
 
-void P3DiscCL::GetGradientsOnRef( Quad2CL<Point3DCL> GRef[20])
+void P3DiscCL::GetGradientsOnRef( Quad2CL<Point3DCL> GRef[10])
 {
-    for (int i=0; i<20; ++i)
+    for (int i=0; i<10; ++i)
     {
         GRef[i][0]= FE_P3CL::DHRef( i, 0,0,0);
         GRef[i][1]= FE_P3CL::DHRef( i, 1,0,0);
@@ -224,9 +224,9 @@ void P3DiscCL::GetGradientsOnRef( Quad2CL<Point3DCL> GRef[20])
     }
 }
 
-void P3DiscCL::GetGradientsOnRef( Quad5CL<Point3DCL> GRef[20])
+void P3DiscCL::GetGradientsOnRef( Quad5CL<Point3DCL> GRef[10])
 {
-    for (int i=0; i<20; ++i)
+    for (int i=0; i<10; ++i)
         for (int j=0; j<Quad5DataCL::NumNodesC; ++j)
         {
             const BaryCoordCL& Node= Quad5DataCL::Node[j];
@@ -234,28 +234,28 @@ void P3DiscCL::GetGradientsOnRef( Quad5CL<Point3DCL> GRef[20])
         }
 }
 
-void P3DiscCL::GetGradientsOnRef( Quad5_2DCL<Point3DCL> GRef[20],
+void P3DiscCL::GetGradientsOnRef( Quad5_2DCL<Point3DCL> GRef[10],
     const BaryCoordCL* const p)
 {
     BaryCoordCL NodeInTetra[Quad5_2DDataCL::NumNodesC];
     Quad5_2DCL<Point3DCL>::SetInterface( p, NodeInTetra);
-    for (int i= 0; i < 20; ++i)
+    for (int i= 0; i < 10; ++i)
         for (int j= 0; j < Quad5_2DDataCL::NumNodesC; ++j) {
             const BaryCoordCL& Node= NodeInTetra[j];
             GRef[i][j]= FE_P3CL::DHRef( i, Node[1], Node[2], Node[3]);
         }
 }
 
-void P3DiscCL::GetP3Basis( LocalP3CL<> p3[20])
+void P3DiscCL::GetP3Basis( LocalP3CL<> p3[10])
 {
-    for (int i= 0; i < 20; ++i) {
-        for (int j= 0; j < 20; ++j)
+    for (int i= 0; i < 10; ++i) {
+        for (int j= 0; j < 10; ++j)
             p3[i][j]= 0;
         p3[i][i]= 1;
     }
 }
 
-void P3DiscCL::GetP3Basis( Quad5_2DCL<> p3[20], const BaryCoordCL* const p)
+void P3DiscCL::GetP3Basis( Quad5_2DCL<> p3[10], const BaryCoordCL* const p)
 {
     BaryCoordCL NodeInTetra[Quad5_2DDataCL::NumNodesC];
     Quad5_2DCL<>::SetInterface( p, NodeInTetra);
@@ -281,7 +281,7 @@ void LocalP3GradientCL::set_tetra (const TetraCL* t)
     P3DiscCL::GetGradients( GradLP1, GradRefLP1, M);
     p3.assign( *t, f_, fbnd_);
     p1grad= Point3DCL();
-    for (Uint i= 0; i < 20; ++i)
+    for (Uint i= 0; i < 10; ++i)
         p1grad+= p3[i]*GradLP1[i];
     for (Uint i= 0; i < 4; ++i)
         p3grad[i]= p1grad[i];
@@ -305,7 +305,7 @@ LocalNumbP3CL::assign_indices_only (const TetraCL& s, const IdxDescCL& idx)
     else
     {
         Uint first = s.Unknowns(sys);
-        for (int i = 0; i < 20; ++i)
+        for (int i = 0; i < 10; ++i)
             num[i] = first++;
     }
 }
@@ -346,7 +346,7 @@ InterfaceCommonDataP3CL::InterfaceCommonDataP3CL (const VecDescCL& ls_arg, const
 {
     qdom_projected.compute_absdets( true);
     P3DiscCL::GetGradientsOnRef( gradrefp3);
-    for (Uint i= 0; i < 20 ; ++i)
+    for (Uint i= 0; i < 10 ; ++i)
         p3[i][i]= 1.; // P3-Basis-Functions
 }
 

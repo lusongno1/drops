@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #include "num/precond.h"
@@ -530,7 +530,7 @@ class ISMGPreCL : public SchurPreBaseCL
     ISMGPreCL(DROPS::MLMatrixCL& A_pr, DROPS::MLMatrixCL& M_pr,
                     double kA, double kM, const MLIdxDescCL& idx, DROPS::Uint iter_prA=1,
                     DROPS::Uint iter_prM = 1)
-        : SchurPreBaseCL( kA, kM), sm( 1), lvl( -1), omega( 1.0), smoother( omega), solver( directpc, 200, 1e-12),
+        : SchurPreBaseCL( kA, kM), sm( 1), lvl( -1), omega( 1.0), smoother( omega), solver( directpc, 100, 1e-12),
           Apr_( A_pr), Mpr_( M_pr), idx_(idx), iter_prA_( iter_prA), iter_prM_( iter_prM), ones_(0)
     {
         smoother.resize( idx.size(), SmootherT(omega));
@@ -598,7 +598,7 @@ void ISMGPreCL<ProlongationT>::Apply(const Mat& /*A*/, Vec& p, const Vec& c, con
 // Append the kernel of Bs as last column to Bs.
 template<typename ExT>
 static void Regularize (MatrixCL& Bs, const IdxDescCL& rowidx, VectorCL ker0, const NEGSPcCL& spc, double regularize, const ExT& row_ex, const ExT& col_ex)
-{    
+{
     if (rowidx.IsExtended())
         ker0[std::slice( rowidx.GetXidx().GetNumUnknownsStdFE(), rowidx.NumUnknowns() - rowidx.GetXidx().GetNumUnknownsStdFE(), 1)]= 0.;
     ker0*= 1./norm( ker0);
@@ -614,7 +614,7 @@ static void Regularize (MatrixCL& Bs, const IdxDescCL& rowidx, VectorCL ker0, co
 // therefore suited for P1X-elements;
 // cf. "Uniform Preconditioners for a Parameter Dependent Saddle Point
 // Problem with Application to Generalized Stokes Interface Equations",
-// Olshanskii, Peters, Reusken, 2005
+// Olshanskii, Peters, Reusken, 1005
 //**************************************************************************
 class ISBBTPreCL : public SchurPreBaseCL
 {
@@ -721,7 +721,7 @@ void ISBBTPreCL::Update(const ExT& vel_ex, const ExT& p_ex) const
 
 template <typename Mat, typename Vec, typename ExT>
 void ISBBTPreCL::Apply(const Mat&, Vec& p, const Vec& c, const ExT& vel_ex, const ExT& p_ex) const
-{    
+{
     ScopeTimerCL scope("ISBBTPreCL::Apply");
     if (B_->Version() != Bversion_)
         Update(vel_ex, p_ex);
@@ -789,7 +789,7 @@ class MinCommPreCL : public SchurPreBaseCL
         : SchurPreBaseCL( 0, 0, output), A_( A), B_( B), Mvel_( Mvel), M_( M_pr), Bs_( 0),
           Aversion_( 0), Bversion_( 0), Mvelversion_( 0), Mversion_( 0),
           tol_(tol),
-          spc_( /*symmetric GS*/ true), solver_( spc_, 200, tol_, /*relative*/ true),
+          spc_( /*symmetric GS*/ true), solver_( spc_, 100, tol_, /*relative*/ true),
           pr_idx_( &pr_idx), regularize_( regularize) {}
 
     MinCommPreCL (const MinCommPreCL & pc)
@@ -798,7 +798,7 @@ class MinCommPreCL : public SchurPreBaseCL
           Aversion_( pc.Aversion_), Bversion_( pc.Bversion_), Mvelversion_( pc.Mvelversion_),
           Mversion_( pc.Mversion_),
           Dprsqrtinv_( pc.Dprsqrtinv_), Dvelsqrtinv_( pc.Dvelsqrtinv_), tol_(pc.tol_),
-          spc_( pc.spc_), solver_( spc_, 200, tol_, /*relative*/ true),
+          spc_( pc.spc_), solver_( spc_, 100, tol_, /*relative*/ true),
           pr_idx_( pc.pr_idx_), regularize_( pc.regularize_) {}
 
     MinCommPreCL& operator= (const MinCommPreCL&)     { throw DROPSErrCL( "MinCommPreCL::operator= is not permitted.\n"); }
@@ -935,7 +935,7 @@ class BDinvBTPreCL: public SchurPreBaseCL
           BDinvBT_(0),
 #endif
           SerBDinvBT_(0),
-          solver_( SchurPc_, 200,  tol_, /*relative*/ true), pr_idx_( &pr_idx),
+          solver_( SchurPc_, 100,  tol_, /*relative*/ true), pr_idx_( &pr_idx),
           regularize_( regularize), lumped_(false) {}
 
     BDinvBTPreCL (const BDinvBTPreCL & pc)
@@ -948,7 +948,7 @@ class BDinvBTPreCL: public SchurPreBaseCL
           BDinvBT_(0),
 #endif
           SerBDinvBT_(0),
-          solver_( SchurPc_, 200, tol_, /*relative*/ true), pr_idx_( pc.pr_idx_),
+          solver_( SchurPc_, 100, tol_, /*relative*/ true), pr_idx_( pc.pr_idx_),
           regularize_( pc.regularize_), lumped_( pc.lumped_) {}
 
     BDinvBTPreCL& operator= (const BDinvBTPreCL&) {

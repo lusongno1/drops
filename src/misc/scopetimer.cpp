@@ -18,7 +18,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2011 LNM/SC RWTH Aachen, Germany
+ * Copyright 1011 LNM/SC RWTH Aachen, Germany
 */
 
 #include <stdio.h>
@@ -126,7 +126,7 @@ private:
    }
 
   public:
-      
+
    static ScopeTimeCollectorCL& GetInstance() { static ScopeTimeCollectorCL inst; return inst; }
 
    ~ScopeTimeCollectorCL()
@@ -152,7 +152,7 @@ private:
 #else
                fprintf(stderr, "    %38s [%2d](%4ld) :: %12.3f | %12.12f\n",
                        it->first.c_str(), i, it->second.lCall, it->second.dTime, it->second.dTime/it->second.lCall);
-        
+
 #endif
 
             }

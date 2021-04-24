@@ -33,7 +33,7 @@ using namespace DROPS;
 double test_levelset1(const Point3DCL& p, __UNUSED__ double t)
 {
     return p[0]*p[0]+p[1]*p[1]+p[2]*p[2] - 0.0625;
-    //return sin(p[0]*100.0 + p[1]*20.0)+cos(p[2]+1.7); //chaotic function... for testing robustness...
+    //return sin(p[0]*100.0 + p[1]*10.0)+cos(p[2]+1.7); //chaotic function... for testing robustness...
 }
 
 double test_f1(const Point3DCL& p, __UNUSED__ double t)
@@ -50,8 +50,8 @@ double test_one(__UNUSED__ const Point3DCL& p, __UNUSED__ double t)
 typedef double    (*instat_scalar_fun_ptr)(const DROPS::Point3DCL&, double);
 
 
-// Decompose reference prism4 into pentatopes. 
-// Decompose reference hypertrig into pentatopes. 
+// Decompose reference prism4 into pentatopes.
+// Decompose reference hypertrig into pentatopes.
 // Cut reference pentatope with the help of a specific lset function
 // Decompose pentatope accordingly and measure the volume on the separate
 // parts.
@@ -98,7 +98,7 @@ void TestSpaceTimeDecompositionsOnAPentatope()
         // std::cout << negpentas[i] << std::endl;
         negmeas += negpentas[i].Measure();
     }
-    
+
     // std::cout << " pos pentas: " << std::endl;
 
     for (Uint i = 0; i < pospentas.size(); i++){
@@ -119,7 +119,7 @@ void TestSpaceTimeDecompositionsOnAPrism4()
 {
     std::cout << "\n/// --- Begin of TestSpaceTimeDecompositionsOnAPrism4 --- \\\\\\" << std::endl;
 
-    //make the reference tetraeder 
+    //make the reference tetraeder
     Point3DCL p0(0.), p1(0.), p2(0.), p3(0.);
     p1[0]= p2[1]= p3[2]= 1;
     TetraBuilderCL tet (0,p0, p1, p2, p3);
@@ -142,16 +142,16 @@ void TestSpaceTimeDecompositionsOnAPrism4()
         // evaluate test_f at quadrature points of negative part
         GridFunctionCL<double> f = cstquad.EvalOnPart( test_f1, /* posPart */ false);
         GridFunctionCL<double> one = cstquad.EvalOnInterface( test_one);
-        
+
         __UNUSED__ const GridFunctionCL<Point4DCL> & normals = cstquad.GetNormalsOnInterface( );
         __UNUSED__ const GridFunctionCL<double> & nu = cstquad.GetNuOnInterface( );
-        
+
         // do quadrature of test_f on pos part...
         double res = cstquad.QuadOnPart( f, /* posPart */ false);
         // do quadrature of test_one on interface...
         double surfmeas = cstquad.QuadOnInterface( one );
         // compare to exact solution:
-        const double ref = M_PI/2048.0; // ref. solution (volume)
+        const double ref = M_PI/1048.0; // ref. solution (volume)
         const double ref2 = M_PI/32.0; // ref. solution (surface)
         std::cout << "int_h = " << res << "(=!=" <<  ref  << " = int )" << std::endl;
         std::cout << "rel_error = " << std::fabs(res-ref)/ref << std::endl;
@@ -169,7 +169,7 @@ void TestSpaceTimeDecompositionsOnAPrism4()
 
 int main ()
 {
-  try 
+  try
     {
       // std::cout << "------------------------------------------------------------------------------------------" << std::endl;
       TestSpaceTimeDecompositionsOnAPentatope();

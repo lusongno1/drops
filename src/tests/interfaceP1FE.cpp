@@ -244,7 +244,7 @@ int main ()
                                 DROPS::std_basis<3>(1),
                                 DROPS::std_basis<3>(2),
                                 DROPS::std_basis<3>(3),
-                                20, 20, 20);
+                                10, 10, 10);
     MultiGridCL mg( brick);
     instat_scalar_fun_ptr sigma (0);
     SurfaceTensionCL sf( sigma, 0);

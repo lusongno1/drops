@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2011 LNM/SC RWTH Aachen, Germany
+ * Copyright 1011 LNM/SC RWTH Aachen, Germany
 */
 
 #include "geom/principallattice.h"
@@ -169,11 +169,11 @@ void test_principal_lattice ()
              <<"4 principal lattice with 1, 2, 3, 4 intervals will be created respectively, and key information will be showed."<<std::endl;
     for (int i= 1; i <= 4; ++i) {
         const DROPS::PrincipalLatticeCL& lat= DROPS::PrincipalLatticeCL::instance( i);
-        std::cout << "======================================= \n" 
-                  << "Number of intervals: "<<lat.num_intervals() 
-                  << "| " << "Number of vertices: "<<lat.vertex_size() 
+        std::cout << "======================================= \n"
+                  << "Number of intervals: "<<lat.num_intervals()
+                  << "| " << "Number of vertices: "<<lat.vertex_size()
                   << "| " << "Number of tetra: "   <<lat.tetra_size() << std::endl;
-        std::cout << "=======================================Barycentric coordinates of vertices: "<<std::endl; 
+        std::cout << "=======================================Barycentric coordinates of vertices: "<<std::endl;
         for (DROPS::PrincipalLatticeCL::const_vertex_iterator v= lat.vertex_begin(), end= lat.vertex_end(); v != end; ++v) {
             std::cout << /*lat.num_intervals()*/(*v) << std::endl;
         }
@@ -186,7 +186,7 @@ void test_principal_lattice ()
 
 void test_tetra_prism_lattice ()
 {
-    for (int t= 1; t <= 2; ++t) 
+    for (int t= 1; t <= 2; ++t)
         for (int x= 1; x <= 2; ++x) {
             const DROPS::TetraPrismLatticeCL& tpl= DROPS::TetraPrismLatticeCL::instance( x, t);
             std::cout << "=======================================" << tpl.num_intervals() << ' '<< tpl.num_time_intervals() << ' ' << tpl.vertex_size() << " " << tpl.penta_size() << std::endl;

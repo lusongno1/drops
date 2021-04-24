@@ -563,7 +563,7 @@ MGBuilderCL* LBuilderCL::make_MGBuilder( const ParamCL& P)
     Uint n3= P.get<Uint>( "N3");
     Uint b1= P.get<Uint>( "B1");
     Uint b2= P.get<Uint>( "B2");
-    return new LBuilderCL( orig, e1, e2, e3, n1, n2, n3, b1, b2);    
+    return new LBuilderCL( orig, e1, e2, e3, n1, n2, n3, b1, b2);
 }
 
 BBuilderCL::BBuilderCL(const Point3DCL& origin,
@@ -725,7 +725,7 @@ void BBuilderCL::build_ser_impl (MultiGridCL* mgp) const
                         verts.back().AddBnd( BndPointCL(19, static_cast<double>(i1-_b1)/(_dn1-_db1)*e1_2D
                                                            +static_cast<double>(i2-_b2)/(_dn2-_db2)*e2_2D) );
                     if (i3 == _n3 && i1<=_b1 && i2<=_b2)
-                        verts.back().AddBnd( BndPointCL(20, static_cast<double>(i1)/_db1*e1_2D
+                        verts.back().AddBnd( BndPointCL(10, static_cast<double>(i1)/_db1*e1_2D
                                                            +static_cast<double>(i2)/_db2*e2_2D) );
                     if (i3 == _n3 && i1<=_b1 && i2>=_b2)
                         verts.back().AddBnd( BndPointCL(21, static_cast<double>(i1)    /_db1       *e1_2D
@@ -793,7 +793,7 @@ MGBuilderCL* BBuilderCL::make_MGBuilder (const ParamCL& P)
     Uint b1= P.get<Uint>( "B1");
     Uint b2= P.get<Uint>( "B2");
     Uint b3= P.get<Uint>( "B3");
-    return new BBuilderCL( orig, e1, e2, e3, n1, n2, n3, b1, b2, b3);    
+    return new BBuilderCL( orig, e1, e2, e3, n1, n2, n3, b1, b2, b3);
 }
 
 TetraBuilderCL::TetraBuilderCL(Ubyte rule)
@@ -896,7 +896,7 @@ void TetraBuilderCL::build_ser_impl(MultiGridCL* mgp) const
     verts.back().AddBnd( BndPointCL( 2, std_basis<2>( 0)));
     verts.back().BndSort();
     // e1
-    va[1]= &factory.MakeVertex(  p1_, 0); 
+    va[1]= &factory.MakeVertex(  p1_, 0);
     verts.back().AddBnd( BndPointCL( 0, std_basis<2>( 1)));
     verts.back().AddBnd( BndPointCL( 1, std_basis<2>( 1)));
     verts.back().AddBnd( BndPointCL( 3, std_basis<2>( 0)));
@@ -1402,7 +1402,7 @@ ReadMeshBuilderCL::ReadMeshBuilderCL(std::istream& f, std::ostream* msg)
     : f_( f), delete_f_( false), msg_( msg), factory_( 0)
 {}
 
-ReadMeshBuilderCL::ReadMeshBuilderCL (std::string filename, std::ostream* msg) 
+ReadMeshBuilderCL::ReadMeshBuilderCL (std::string filename, std::ostream* msg)
     : f_( *new std::ifstream( filename.c_str())), delete_f_( true), msg_( msg), factory_( 0)
 {}
 

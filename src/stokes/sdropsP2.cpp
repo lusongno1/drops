@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2010 LNM/SC RWTH Aachen, Germany
+ * Copyright 1010 LNM/SC RWTH Aachen, Germany
 */
 
  // include geometric computing
@@ -263,7 +263,7 @@ void Strategy( StokesProblemT& Stokes)
     // -------------------------------------------------------------------------
     std::cout << line << "Solve the linear equation system ...\n";
 
-    // type of preconditioner and solver    
+    // type of preconditioner and solver
     ParamCL PTime( P.get_child("Time") );
     StokesSolverFactoryCL< StokesProblemT>         factory( Stokes, PSolver, PTime );
     StokesSolverBaseCL* stokessolver = factory.CreateStokesSolver();

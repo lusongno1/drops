@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
  */
 
 #include "spacetimetransp/stxfem.h"
@@ -32,7 +32,7 @@ namespace DROPS
 
 using namespace STXFEM;
 
-void debug_kappa(LocalP2CL<> & lsold, LocalP2CL<> & lsnew, const GridFunctionCL<Point4DCL> & points, 
+void debug_kappa(LocalP2CL<> & lsold, LocalP2CL<> & lsnew, const GridFunctionCL<Point4DCL> & points,
                    GridFunctionCL<> & kappa_neg, GridFunctionCL<> & kappa_pos)
 {
     ScopeTimer scopetiming("debug_kappa");
@@ -49,12 +49,12 @@ void debug_kappa(LocalP2CL<> & lsold, LocalP2CL<> & lsnew, const GridFunctionCL<
     {
         // kappa_neg[k] = 0.5;
         // kappa_pos[k] = 0.5;
-        
+
         const double time = points[k][3];
         LocalP2CL<> lsetcur = lsnew;
         lsetcur *= time;
         lsetcur += (1.0-time) * lsold;
-        
+
         std::valarray<double> ls_loc_( ((ints_per_space_edge+1) * (ints_per_space_edge+2) * (ints_per_space_edge+3)) / 6);
         evaluate_on_vertexes(lsetcur, lat, Addr( ls_loc_));
         partition_.make_partition<SortedVertexPolicyCL, MergeCutPolicyCL>( lat, ls_loc_);
@@ -63,7 +63,7 @@ void debug_kappa(LocalP2CL<> & lsold, LocalP2CL<> & lsnew, const GridFunctionCL<
         kappa_neg[k] = quad( ones , 6.0 , q2dom_ , NegTetraC);
         kappa_pos[k] = 1.0 - kappa_neg[k];
     }
-    
+
 }
 
 
@@ -91,7 +91,7 @@ void STVolumeAccumulator_P1SP1TXCL::update_global_matrix_without_x()
             for(Uint ti = PAST; ti<= FUTURE; ti++)
             {
                 const IdxT idx_i= UnknownIdx[i]+ti;
-                
+
                 if (b_ != NULL)
                     b_->Data[idx_i] += elvec[i+4*ti];
 
@@ -101,11 +101,11 @@ void STVolumeAccumulator_P1SP1TXCL::update_global_matrix_without_x()
                         {
                             {
                                 const IdxT idx_j= UnknownIdx[j]+tj;
-                                (*A_)( idx_i,  idx_j)+=coup_s_s[i+4*ti][j+4*tj];    
+                                (*A_)( idx_i,  idx_j)+=coup_s_s[i+4*ti][j+4*tj];
                             }
                         }
             }
-        } 
+        }
 }
 
 void STVolumeAccumulator_P1SP1TXCL::update_global_matrix_with_x()
@@ -131,16 +131,16 @@ void STVolumeAccumulator_P1SP1TXCL::update_global_matrix_with_x()
                         {
                             const IdxT idx_j= UnknownIdx[j]+tj;
                             const IdxT xidx_j= Xidx[idx_j];
-                            (*A_)( idx_i,  idx_j)+=coup_s_s[i+4*ti][j+4*tj];    
+                            (*A_)( idx_i,  idx_j)+=coup_s_s[i+4*ti][j+4*tj];
                             if (xidx_i != NoIdx)
-                                (*A_)(xidx_i,  idx_j)+=coup_x_s[i+4*ti][j+4*tj];    
+                                (*A_)(xidx_i,  idx_j)+=coup_x_s[i+4*ti][j+4*tj];
                             if (xidx_j != NoIdx)
-                                (*A_)( idx_i, xidx_j)+=coup_s_x[i+4*ti][j+4*tj];    
+                                (*A_)( idx_i, xidx_j)+=coup_s_x[i+4*ti][j+4*tj];
                             if (xidx_i != NoIdx && xidx_j != NoIdx)
-                                (*A_)(xidx_i, xidx_j)+=coup_x_x[i+4*ti][j+4*tj];    
+                                (*A_)(xidx_i, xidx_j)+=coup_x_x[i+4*ti][j+4*tj];
                         }
                     }
-            } 
+            }
 }
 
 void STVolumeAccumulator_P1SP1TXCL::update_coupling(const TetraCL& sit, bool with_x)
@@ -176,20 +176,20 @@ void STVolumeAccumulator_P1SP1TXCL::update_coupling(const TetraCL& sit, bool wit
                             }
                         }
                     }
-                } 
+                }
 }
 
 
-STVolumeAccumulator_P1SP1TXCL::STVolumeAccumulator_P1SP1TXCL(const MultiGridCL& MG, const BndDataCL<> * BndData_neg_in, 
-                                                             const BndDataCL<> * BndData_pos_in, 
+STVolumeAccumulator_P1SP1TXCL::STVolumeAccumulator_P1SP1TXCL(const MultiGridCL& MG, const BndDataCL<> * BndData_neg_in,
+                                                             const BndDataCL<> * BndData_pos_in,
                                                              const LevelsetP2CL * lsetp2old_in,
                                                              const LevelsetP2CL * lsetp2new_in,
-                                                             MatrixCL* Amat, VecDescCL* b, 
-                                                             const IdxDescCL& RowIdx, const IdxDescCL& ColIdx, 
+                                                             MatrixCL* Amat, VecDescCL* b,
+                                                             const IdxDescCL& RowIdx, const IdxDescCL& ColIdx,
                                                              const double t1, const double t2,
                                                              const ParamCL::ptree_type & P):
-MG_(MG), BndData_neg(BndData_neg_in), BndData_pos(BndData_pos_in), 
-    Amat_(Amat), b_(b), RowIdx_(RowIdx), ColIdx_(ColIdx), 
+MG_(MG), BndData_neg(BndData_neg_in), BndData_pos(BndData_pos_in),
+    Amat_(Amat), b_(b), RowIdx_(RowIdx), ColIdx_(ColIdx),
     lsetp2old(lsetp2old_in),lsetp2new(lsetp2new_in),
     A_(0),
     Xidx(RowIdx_.GetXidx()),
@@ -201,7 +201,7 @@ MG_(MG), BndData_neg(BndData_neg_in), BndData_pos(BndData_pos_in),
     beta_neg(P.get<double>("HNeg",1.0)),
     beta_pos(P.get<double>("HPos",1.0))
 {
-    
+
     for(int i=0; i<4; i++)
     {
         LocalP1CL<> test = 0.0;
@@ -213,13 +213,13 @@ MG_(MG), BndData_neg(BndData_neg_in), BndData_pos(BndData_pos_in),
     for(int i=0; i<4; i++)
         for(int j=0; j<4; j++)
             phi_i_phi_j[i][j] = phi[i]*phi[j];
-   
+
 }
 
 void STVolumeAccumulator_P1SP1TXCL::begin_accumulation ()
 {
     if (b_ != 0) b_->Clear( tnew);
-    if (Amat_)    
+    if (Amat_)
         A_ = new MatrixBuilderCL( Amat_, RowIdx_.NumUnknowns(), ColIdx_.NumUnknowns());
 }
 
@@ -227,8 +227,8 @@ void STVolumeAccumulator_P1SP1TXCL::finalize_accumulation ()
 {
     if (A_ != 0){
         A_->Build();
-        delete A_;   
-    }     
+        delete A_;
+    }
 }
 
 void STVolumeAccumulator_P1SP1TXCL::visit (const TetraCL& sit)
@@ -237,19 +237,19 @@ void STVolumeAccumulator_P1SP1TXCL::visit (const TetraCL& sit)
     ScopeTimer scopetiming("STVolumeAccumulator_P1SP1TXCL::visit without local_setup");
     if (A_ != 0)
     {
-        if (iscut)  
+        if (iscut)
         {
             transform_comp_elmats_to_xelmats();
             update_global_matrix_with_x();
         }
         else
-            update_global_matrix_without_x();          
+            update_global_matrix_without_x();
         // output_elmats();
         // getchar();
     }
-    if (b_ != 0 && BndData_neg != 0 && BndData_pos != 0) 
+    if (b_ != 0 && BndData_neg != 0 && BndData_pos != 0)
     {
-        if (iscut)  
+        if (iscut)
             update_coupling(sit, /* with_x: */ true);
         else
             update_coupling(sit, /* with_x: */ false);
@@ -261,7 +261,7 @@ void STVolumeAccumulator_P1SP1TXCL::visit (const TetraCL& sit)
 void STVolumeAccumulator_P1SP1TXCL::output_elmats ()
 {
     if (iscut){
-   
+
         std::cout << " coup_s_s_neg = \n";
         for (Uint i = 0; i < 8; ++i)
         {
@@ -360,7 +360,7 @@ void STVolumeAccumulator_P1SP1TXCL::output_elmats ()
 
 /* --------------- Mass test -------------- */
 void MassTestAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
-{    
+{
     ScopeTimer scopetiming("MassTestAccumulator_P1SP1TXCL::local_setup - total");
 
 
@@ -374,7 +374,7 @@ void MassTestAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
             intf_coup_x_x[i][j] = 0.0;
             coup_s_s_pos [i][j] = 0.0;
             coup_s_s_neg [i][j] = 0.0;
-            
+
         }
 
 
@@ -383,7 +383,7 @@ void MassTestAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
     const double st_absdet= absdet * (tnew-told);
     //quad_a.assign( sit, &Coeff::DiffusionCoeff, 0.0);                  //for variable diffusion coefficient
     //const double int_a= quad_a.quad( absdet);
-    
+
     LocalP2CL<> locPhi_old, locPhi_new;
 
     locPhi_old.assign( sit, lsetp2old->Phi, lsetp2old->GetBndData());
@@ -398,17 +398,17 @@ void MassTestAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
         sign[i] = locPhi_old[i] > 0;
         sign[i+4] = locPhi_new[i] > 0;
     }
-    
+
     LocalP2CL<> p0; // values for other time level are zero
 
-    CompositeSTQuadCL<QuadRule> 
+    CompositeSTQuadCL<QuadRule>
         cstquad(refprism4,locPhi_old, locPhi_new, ints_per_space_edge, subtimeintervals);
-    
+
     iscut = cstquad.HasInterface();
 
     TPSpaceTimeMapping stmap(sit, TimeInterval(told,tnew));
-    GridFunctionCL<double> rhspos = cstquad.EvalOnPart( rhs_pos, true, &stmap); 
-    GridFunctionCL<double> rhsneg = cstquad.EvalOnPart( rhs_neg, false, &stmap); 
+    GridFunctionCL<double> rhspos = cstquad.EvalOnPart( rhs_pos, true, &stmap);
+    GridFunctionCL<double> rhsneg = cstquad.EvalOnPart( rhs_neg, false, &stmap);
 
     if (!iscut)
     {
@@ -416,17 +416,17 @@ void MassTestAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
         for(Uint ti = PAST; ti<= FUTURE; ti++)
             for(Uint i=0; i<4; ++i)
             {
-                GridFunctionCL<double> pi = ti == FUTURE ? cstquad.EvalLinearOnPart( p0, phi[i], sign[0]) 
+                GridFunctionCL<double> pi = ti == FUTURE ? cstquad.EvalLinearOnPart( p0, phi[i], sign[0])
                     : cstquad.EvalLinearOnPart( phi[i], p0, sign[0]);
                 if (b_ != NULL)
                 {
                     GridFunctionCL<double> rhspi (sign[0]?rhspos*pi:rhsneg*pi);
                     elvec[ti*4+i] = cstquad.QuadOnPart( rhspi, sign[0]) * st_absdet;
                 }
-                    
+
                 for(Uint tj = PAST; tj<=FUTURE; tj++)
                     for(Uint j=0; j<4; ++j){
-                        GridFunctionCL<double> pj = tj == FUTURE ? cstquad.EvalLinearOnPart( p0, phi[j], sign[0]) 
+                        GridFunctionCL<double> pj = tj == FUTURE ? cstquad.EvalLinearOnPart( p0, phi[j], sign[0])
                             : cstquad.EvalLinearOnPart( phi[j], p0, sign[0]);
                         GridFunctionCL<double> pij (pi * pj);
                         coup_s_s[ti*4+i][tj*4+j] = cstquad.QuadOnPart( pij, sign[0]) * st_absdet;
@@ -436,7 +436,7 @@ void MassTestAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
     else
     {
         ScopeTimer scopetiming("MassTestAccumulator_P1SP1TXCL::local_setup - cut");
-        for(Uint s = 0; s < 2; s++) // both cases: sign = false and sign = true 
+        for(Uint s = 0; s < 2; s++) // both cases: sign = false and sign = true
         {
             const bool csign = s==1;
             double (* coup_s_s_cur)[8][8] = csign ? &coup_s_s_pos : &coup_s_s_neg;
@@ -444,7 +444,7 @@ void MassTestAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
             for(Uint ti = PAST; ti<= FUTURE; ti++)
                 for(Uint i=0; i<4; ++i)
                 {
-                    GridFunctionCL<double> pi = ti == FUTURE ? cstquad.EvalLinearOnPart( p0, phi[i], csign) 
+                    GridFunctionCL<double> pi = ti == FUTURE ? cstquad.EvalLinearOnPart( p0, phi[i], csign)
                         : cstquad.EvalLinearOnPart( phi[i], p0, csign);
 
                     if (b_ != NULL)
@@ -455,7 +455,7 @@ void MassTestAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
 
                     for(Uint tj = PAST; tj<=FUTURE; tj++)
                         for(Uint j=0; j<4; ++j){
-                            GridFunctionCL<double> pj = tj == FUTURE ? cstquad.EvalLinearOnPart( p0, phi[j], csign) 
+                            GridFunctionCL<double> pj = tj == FUTURE ? cstquad.EvalLinearOnPart( p0, phi[j], csign)
                                 : cstquad.EvalLinearOnPart( phi[j], p0, csign);
                             GridFunctionCL<double> pij (pi * pj);
                             (*coup_s_s_cur)[ti*4+i][tj*4+j] = cstquad.QuadOnPart( pij, csign) * st_absdet;
@@ -470,7 +470,7 @@ void MassTestAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
 
 /* --------------- Spatial Laplace -------------- */
 void SpatialLaplaceAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
-{    
+{
     ScopeTimer scopetiming("SpatialLaplaceAccumulator_P1SP1TXCL::local_setup - total");
 
     P1DiscCL::GetGradients(G,det,sit);
@@ -478,7 +478,7 @@ void SpatialLaplaceAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
     const double st_absdet= absdet * (tnew-told);
     //quad_a.assign( sit, &Coeff::DiffusionCoeff, 0.0);                  //for variable diffusion coefficient
     //const double int_a= quad_a.quad( absdet);
-    
+
     LocalP2CL<> locPhi_old, locPhi_new;
 
     locPhi_old.assign( sit, lsetp2old->Phi, lsetp2old->GetBndData());
@@ -493,18 +493,18 @@ void SpatialLaplaceAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
         sign[i] = locPhi_old[i] > 0;
         sign[i+4] = locPhi_new[i] > 0;
     }
-    
-    CompositeSTQuadCL<QuadRule> 
+
+    CompositeSTQuadCL<QuadRule>
         cstquad(refprism4,locPhi_old, locPhi_new, ints_per_space_edge, subtimeintervals);
-    
+
     iscut = cstquad.HasInterface();
 
     TPSpaceTimeMapping stmap(sit, TimeInterval(told,tnew));
-    GridFunctionCL<double> rhspos = cstquad.EvalOnPart( rhs_pos, true, &stmap); 
-    GridFunctionCL<double> rhsneg = cstquad.EvalOnPart( rhs_neg, false, &stmap); 
+    GridFunctionCL<double> rhspos = cstquad.EvalOnPart( rhs_pos, true, &stmap);
+    GridFunctionCL<double> rhsneg = cstquad.EvalOnPart( rhs_neg, false, &stmap);
 
     const double alpha = 1.0;
-    
+
     if (!iscut)
     {
         ScopeTimer scopetiming("SpatialLaplaceAccumulator_P1SP1TXCL::local_setup - uncut");
@@ -522,7 +522,7 @@ void SpatialLaplaceAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
             for(Uint i=0; i<4; ++i)
                 for(Uint tj = PAST; tj<=FUTURE; tj++)
                     for(Uint j=0; j<4; ++j)
-                        coup_s_s[ti*4+i][tj*4+j] = coup_s_s_space[i][j] * mass_1D_p1p1[ti][tj] * st_absdet; 
+                        coup_s_s[ti*4+i][tj*4+j] = coup_s_s_space[i][j] * mass_1D_p1p1[ti][tj] * st_absdet;
     }
     else
     {
@@ -533,12 +533,12 @@ void SpatialLaplaceAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
         // {
         //     gradi[i] = G[i];
         // }
-    
+
         LocalP2CL<> p0; // values for other time level are zero
         LocalP2CL<Point3DCL> vecp0; // values for other time level are zero
         LocalP2CL<> constone(1.0);
 
-        for(Uint s = 0; s < 2; s++) // both cases: sign = false and sign = true 
+        for(Uint s = 0; s < 2; s++) // both cases: sign = false and sign = true
         {
             const bool csign = s==1;
             const double alpha_cur = 1.0; //csign ? alpha_pos : alpha_neg;
@@ -546,7 +546,7 @@ void SpatialLaplaceAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
             // double (* elvec_cur)[8] = csign ? &elvec_pos : &elvec_neg;
             for(Uint ti = PAST; ti<= FUTURE; ti++)
             {
-                GridFunctionCL<double> pti = ti == FUTURE ? cstquad.EvalLinearOnPart( p0, constone, csign) 
+                GridFunctionCL<double> pti = ti == FUTURE ? cstquad.EvalLinearOnPart( p0, constone, csign)
                     : cstquad.EvalLinearOnPart( constone, p0, csign);
 
                 // if (b_ != NULL)
@@ -557,7 +557,7 @@ void SpatialLaplaceAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
 
                 for(Uint tj = PAST; tj<=FUTURE; tj++)
                 {
-                    GridFunctionCL<double> ptj = tj == FUTURE ? cstquad.EvalLinearOnPart( p0, constone, csign) 
+                    GridFunctionCL<double> ptj = tj == FUTURE ? cstquad.EvalLinearOnPart( p0, constone, csign)
                         : cstquad.EvalLinearOnPart( constone, p0, csign);
                     GridFunctionCL<double> ptitj (pti * ptj);
                     const double stint_t = cstquad.QuadOnPart( ptitj, csign) * st_absdet;
@@ -574,17 +574,17 @@ void SpatialLaplaceAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
 }
 
 STTransportVolumeAccumulator_P1SP1TXCL::
-STTransportVolumeAccumulator_P1SP1TXCL (const MultiGridCL& MG, 
-                                        const BndDataCL<> * BndData_neg_in, 
-                                        const BndDataCL<> * BndData_pos_in, 
+STTransportVolumeAccumulator_P1SP1TXCL (const MultiGridCL& MG,
+                                        const BndDataCL<> * BndData_neg_in,
+                                        const BndDataCL<> * BndData_pos_in,
                                         const LevelsetP2CL * lsetp2old_in,
                                         const LevelsetP2CL * lsetp2new_in,
                                         instat_scalar_fun_ptr lset_fpt_in,
                                         instat_scalar_fun_ptr rhs_neg_in,
                                         instat_scalar_fun_ptr rhs_pos_in,
                                         STVelocityContainer& convection_in,
-                                        MatrixCL* Amat, VecDescCL* b, 
-                                        const IdxDescCL& RowIdx, const IdxDescCL& ColIdx, 
+                                        MatrixCL* Amat, VecDescCL* b,
+                                        const IdxDescCL& RowIdx, const IdxDescCL& ColIdx,
                                         const double t1, const double t2,
                                         const VecDescCL & oldsol_neg, const VecDescCL & oldsol_pos,
                                         const ParamCL::ptree_type & P)
@@ -611,9 +611,9 @@ STTransportVolumeAccumulator_P1SP1TXCL (const MultiGridCL& MG,
 
 /* --------------- STVolume Transport term (time deriv., convection, diffusion)  -------------- */
 void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
-{    
+{
 //    ScopeTimer scopetiming("STTranspVolAccu_P1SP1TXCL::local_setup - total");
-    
+
     GetTrafoTr( T, det, sit);
     P1DiscCL::GetGradients(G,det,sit);
 
@@ -622,7 +622,7 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
     const double h = std::pow(absdet,1.0/3.0);
     const double dt = tnew-told;
     const double st_absdet= absdet * dt;
-    
+
     LocalP2CL<> locPhi_old, locPhi_new;
 
     locPhi_old.assign( sit, lsetp2old->Phi, lsetp2old->GetBndData());
@@ -640,12 +640,12 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
 
     bool inside_outer_band = false;
     bool outside_inner_band = false;
-    
+
     for (int i = 0; i < 10; ++i)
     {
-        if (locPhi_old[i] < dt*vmax || locPhi_new[i] < dt*vmax) 
+        if (locPhi_old[i] < dt*vmax || locPhi_new[i] < dt*vmax)
             inside_outer_band = true;
-        if (locPhi_old[i] > -dt*vmax || locPhi_new[i] >- dt*vmax) 
+        if (locPhi_old[i] > -dt*vmax || locPhi_new[i] >- dt*vmax)
             outside_inner_band = true;
     }
 
@@ -659,7 +659,7 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
             p_cstquad = new CompositeSTQuadCL<QuadRule>(refprism4,locPhi_old, locPhi_new,
                                                                       ints_per_space_edge, subtimeintervals);
         else
-            p_cstquad = new CompositeSTQuadCL<QuadRule>(sit, TimeInterval(told,tnew), lset_fpt, 
+            p_cstquad = new CompositeSTQuadCL<QuadRule>(sit, TimeInterval(told,tnew), lset_fpt,
                                                                       ints_per_space_edge, subtimeintervals);
         iscut = p_cstquad->HasInterface();
     }
@@ -674,8 +674,8 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
 
         const double & alpha (sign[0] ? alpha_pos : alpha_neg);
         const double & beta (sign[0] ? beta_pos : beta_neg);
-        
-        // only spatial integrals 
+
+        // only spatial integrals
         double coup_s_s_space_lap[4][4];
         for(Uint i=0; i<4; ++i)
         {
@@ -690,13 +690,13 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
         }
 
         //values for  \int_T f^(t_tl) phi_i dx where t_tl is told, tmid or tnew
-        double f_tl_phi_i [quad1d_max_n_points][4]; 
+        double f_tl_phi_i [quad1d_max_n_points][4];
         //values for  \int_T b^(t_tl) \nabla phi_j phi_i dx where t_tl is told, tmid or tnew
-        double b_tl_phi_i_grad_phi_j [quad1d_max_n_points][4][4]; 
+        double b_tl_phi_i_grad_phi_j [quad1d_max_n_points][4][4];
 
-        //values for  bstar^(t_tl) where t_tl is told, tmid or tnew 
-        Quad5CL<double> dirdev_star [quad1d_max_n_points][8]; 
-        
+        //values for  bstar^(t_tl) where t_tl is told, tmid or tnew
+        Quad5CL<double> dirdev_star [quad1d_max_n_points][8];
+
         for (int k = 0; k < quad1d_rhs_order+1; k++)
         {
             const double time = told + MomentsQuad1D::GetPoint(quad1d_rhs_order,k)*(tnew-told);
@@ -724,7 +724,7 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
                 q_b_now.assign(sit, convection.GetVelocityAsFunctionPointer(), time);
             else
                 q_b_now = (1.0-w)* q_b_old + w * q_b_new;
-            
+
             for (Uint ip = 0; ip < Quad5DataCL::NumNodesC; ++ip)
                 vmax = std::max(vmax, q_b_now[ip].norm());
 
@@ -746,7 +746,7 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
                     }
             }
 
-            
+
         }
 
         //SD param calculation
@@ -762,12 +762,12 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
                 // std::cout << " gT = " << gT << std::endl;
                 SD_stab_param = SD_stab * gT;
             }
-            else 
+            else
                 SD_stab_param = 0.0;
         }
 
 
-        // only space-time integrals 
+        // only space-time integrals
         for(Uint ti = PAST; ti<= FUTURE; ti++)
         {
             for(Uint i=0; i<4; ++i)
@@ -777,15 +777,15 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
                     for(Uint j=0; j<4; ++j)
                     {
                         if (adjoint)
-                            coup_s_s[ti*4+i][tj*4+j] = -coup_s_s_space[j][i] * dudtv_1D_p1p1[tj][ti]; 
+                            coup_s_s[ti*4+i][tj*4+j] = -coup_s_s_space[j][i] * dudtv_1D_p1p1[tj][ti];
                         else
-                            coup_s_s[ti*4+i][tj*4+j] = coup_s_s_space[i][j] * dudtv_1D_p1p1[ti][tj]; 
+                            coup_s_s[ti*4+i][tj*4+j] = coup_s_s_space[i][j] * dudtv_1D_p1p1[ti][tj];
                         coup_s_s[ti*4+i][tj*4+j] += coup_s_s_space_lap[i][j] * mass_1D_p1p1[ti][tj]  * st_absdet;
-                        
+
                         for (int k = 0; k < quad1d_conv_order+1; ++k)
-                            coup_s_s[ti*4+i][tj*4+j] += dt * 1.0/beta * b_tl_phi_i_grad_phi_j[k][i][j] * 
+                            coup_s_s[ti*4+i][tj*4+j] += dt * 1.0/beta * b_tl_phi_i_grad_phi_j[k][i][j] *
                                 MomentsQuad1D::GetIntegralPkP1P1(quad1d_conv_order,k,ti,tj);
-                        
+
                         // STREAMLIN DIFFUSION STABILIZATION
                         if (SD_stab > 0 && SD_stab_param > 0)
                             for (int k = 0; k < quad1d_conv_order+1; ++k)
@@ -793,7 +793,7 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
                                 const double spaceint = Quad5CL<double>(dirdev_star[k][ti*4+i]*dirdev_star[k][tj*4+j]).quad(absdet);
                                 coup_s_s[ti*4+i][tj*4+j] += SD_stab_param * dt * 1.0/beta * MomentsQuad1D::GetIntegrationWeight(quad1d_conv_order,k) * spaceint;
                             }
-                        
+
                     }
                 }
 
@@ -802,22 +802,22 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
                 {
                     elvec[ti*4+i] = 0;
                     for (int k = 0; k < quad1d_rhs_order+1; ++k)
-                        elvec[ti*4+i] += dt * f_tl_phi_i[k][i] * 
+                        elvec[ti*4+i] += dt * f_tl_phi_i[k][i] *
                             MomentsQuad1D::GetIntegralPkP1(quad1d_rhs_order,k,ti);
                 }
 
             }
         }
 
-        
+
         // upwind term l.h.s.
         for(Uint i=0; i<4; ++i)
             for(Uint j=0; j<4; ++j)
                 if (adjoint)
-                    coup_s_s[4+i][4+j] += coup_s_s_space[i][j]; 
+                    coup_s_s[4+i][4+j] += coup_s_s_space[i][j];
                 else
-                    coup_s_s[i][j] += coup_s_s_space[i][j]; 
-        
+                    coup_s_s[i][j] += coup_s_s_space[i][j];
+
         // upwind term r.h.s.
         if (b_ != NULL)
         {
@@ -828,7 +828,7 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
             {
                 LocalP1CL<> pip1; pip1[i] = 1.0;
                 Quad5CL<> pi(pip1);
-                elvec_space_old[i] = Quad5CL<>(pi*fold).quad(absdet); 
+                elvec_space_old[i] = Quad5CL<>(pi*fold).quad(absdet);
             }
 
             for(Uint i=0; i<4; ++i)
@@ -847,12 +847,12 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
 
         CompositeSTQuadCL<QuadRule> & cstquad = *p_cstquad;
 
-        GridFunctionCL<double> rhspos = cstquad.EvalOnPart( rhs_pos, true, &stmap); 
+        GridFunctionCL<double> rhspos = cstquad.EvalOnPart( rhs_pos, true, &stmap);
         GridFunctionCL<double> rhsneg = cstquad.EvalOnPart( rhs_neg, false, &stmap);
- 
-        GridFunctionCL<double> gfone_neg = cstquad.EvalLinearOnPart( constone, constone, false); 
-        GridFunctionCL<double> gfone_pos = cstquad.EvalLinearOnPart( constone, constone, true); 
-        
+
+        GridFunctionCL<double> gfone_neg = cstquad.EvalLinearOnPart( constone, constone, false);
+        GridFunctionCL<double> gfone_pos = cstquad.EvalLinearOnPart( constone, constone, true);
+
         GridFunctionCL<double> kappa_neg;
         GridFunctionCL<double> kappa_pos;
 
@@ -873,7 +873,7 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
 
         const GridFunctionCL<double> av_alpha (alpha_neg/beta_neg*kappa_neg + alpha_pos/beta_pos*kappa_pos);
         // this is used for { a \nabla u \cdot \bn } = {a} \nabla u \cdot n for continuous functions!
-        
+
         const double alphamean = 0.5 * alpha_neg/beta_neg + 0.5 * alpha_pos/beta_pos;
 
         // integration of space-time 4D-measure
@@ -885,19 +885,19 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
             if (convection.VelocityAsFunctionPointer())
             {
                 velneg = cstquad.EvalOnPart( convection.GetVelocityAsFunctionPointer(), false, &stmap);
-                velpos = cstquad.EvalOnPart( convection.GetVelocityAsFunctionPointer(), true, &stmap); 
+                velpos = cstquad.EvalOnPart( convection.GetVelocityAsFunctionPointer(), true, &stmap);
             }
             else
             {
                 LocalP2CL<Point3DCL> veloldp2 (sit, convection.GetVelocityAsP2_Old());
                 LocalP2CL<Point3DCL> velnewp2 (sit, convection.GetVelocityAsP2_New());
-                velneg = cstquad.EvalLinearOnPart( veloldp2, velnewp2, false); 
-                velpos = cstquad.EvalLinearOnPart( veloldp2, velnewp2, true); 
+                velneg = cstquad.EvalLinearOnPart( veloldp2, velnewp2, false);
+                velpos = cstquad.EvalLinearOnPart( veloldp2, velnewp2, true);
             }
 
 
             ScopeTimer scopetiming("STTranspVolAccu_P1SP1TXCL::local_setup - cut - 4Dvols");
-            for(Uint s = 0; s < 2; s++) // both cases: sign = false and sign = true 
+            for(Uint s = 0; s < 2; s++) // both cases: sign = false and sign = true
             {
                 const bool csign = s==1;
 
@@ -908,7 +908,7 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
                 const double & beta (csign ? beta_pos : beta_neg);
 
                 GridFunctionCL<double> psi_PAST = cstquad.EvalLinearOnPart( constone, p0, csign);
-                GridFunctionCL<double> psi_FUTURE = cstquad.EvalLinearOnPart( p0, constone, csign); 
+                GridFunctionCL<double> psi_FUTURE = cstquad.EvalLinearOnPart( p0, constone, csign);
 
 
                 GridFunctionCL<double> stphi[8] =
@@ -931,7 +931,7 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
                     {cstquad.EvalLinearOnPart( phi[0], phi[0], csign),
                      cstquad.EvalLinearOnPart( phi[1], phi[1], csign),
                      cstquad.EvalLinearOnPart( phi[2], phi[2], csign),
-                     cstquad.EvalLinearOnPart( phi[3], phi[3], csign)}; 
+                     cstquad.EvalLinearOnPart( phi[3], phi[3], csign)};
 
 
                 double vmax = 0.0;
@@ -949,7 +949,7 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
                         // std::cout << " gT = " << gT << std::endl;
                         SD_stab_param = 100.0 * gT;
                     }
-                    else 
+                    else
                         SD_stab_param = 0.0;
                 }
 
@@ -1078,11 +1078,11 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
             ScopeTimer scopetiming("STTranspVolAccu_P1SP1TXCL::local_setup - cut - stintface");
 
             //space time normals on reference prism pointing fr. neg to pos :
-            const GridFunctionCL<Point4DCL> & n_st_ref (cstquad.GetNormalsOnInterface()); 
+            const GridFunctionCL<Point4DCL> & n_st_ref (cstquad.GetNormalsOnInterface());
             //not correctly scaled space time normals on physical prism pointing fr. neg to pos :
             GridFunctionCL<Point4DCL> n_st = eval(transform_normals_in_spacetime,T,absdet,dt,n_st_ref);
-            //after next call space time normal is now correctly scaled (||n||=1) 
-            //and the ratio between the measure on the physical prism to reference prism 
+            //after next call space time normal is now correctly scaled (||n||=1)
+            //and the ratio between the measure on the physical prism to reference prism
             //calculated. Additionally the space-measure-correction-factor nu is mulitplied.
             GridFunctionCL<double> meas_nu = apply_and_eval(calc_nu_measure_and_normalize,n_st);
             //The corresponding space normal is extracted from the (phys.) space time normals
@@ -1096,7 +1096,7 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
                     intf_coup_x_s[i][j] = 0.0;
                     intf_coup_x_x[i][j] = 0.0;
                 }
-            
+
             const GridFunctionCL<double> phi_tr[8] =
                 { cstquad.EvalLinearOnInterface( phi[0], p0),
                   cstquad.EvalLinearOnInterface( phi[1], p0),
@@ -1125,11 +1125,11 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
                     const GridFunctionCL<double> & gradni = gradn[i];
                     const GridFunctionCL<double> & phi_i_tr = phi_tr[ti*4+i];
                     const GridFunctionCL<double> & psi_ti_tr = ti == FUTURE ? psi_tr_FUTURE : psi_tr_PAST;
-                
+
                     const double beta_not_i = sign[i+4*ti] ? beta_neg : beta_pos;
                     const double alpha_not_i = sign[i+4*ti] ? -alpha_neg : alpha_pos;
                     const double const_kappa_not_i = sign[i+4*ti] ? const_kappa_neg : const_kappa_pos;
-                    
+
                     for(Uint tj = PAST; tj<=FUTURE; tj++)
                         for(Uint j=0; j<4; ++j)
                         {
@@ -1153,9 +1153,9 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
                             A = (lambda_stab*alphamean/h) * cstquad.QuadOnInterface(intfparts_A);
 
                             //const GridFunctionCL<double> intfparts_B (gradnj*meas_nu*phi_i_tr*psi_tj_tr);
-                        
-                            //\int nu * alpha/beta * lambda/h [u] * [v] ds 
-                            
+
+                            //\int nu * alpha/beta * lambda/h [u] * [v] ds
+
                             // the following four lines are only interesting for the "untransformed" case
                             // intf_coup_s_s[4*ti+i][4*tj+j] += delta_beta*delta_beta*A;
                             // intf_coup_s_x[4*ti+i][4*tj+j] += delta_beta*beta_not_j*A;
@@ -1172,7 +1172,7 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
                                 const double B = cstquad.QuadOnInterface(intfparts_B);
                                 const double BT = cstquad.QuadOnInterface(intfparts_BT);
 
-                                //\int nu * {a/b dudn} * [v] ds 
+                                //\int nu * {a/b dudn} * [v] ds
                                 intf_coup_x_s[4*ti+i][4*tj+j] += const_av_alpha * B;
                                 intf_coup_x_x[4*ti+i][4*tj+j] += const_kappa_not_j*alpha_not_j/beta_not_j * B;
 
@@ -1180,7 +1180,7 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
                                 intf_coup_s_x[4*ti+i][4*tj+j] += const_av_alpha * BT ;
                                 intf_coup_x_x[4*ti+i][4*tj+j] += const_kappa_not_i*alpha_not_i/beta_not_i * BT;
 
-                                
+
                             }
                             else // should be standard (sadly)
                             {
@@ -1197,7 +1197,7 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
                                 const double B_knj = cstquad.QuadOnInterface(intfparts_B_knj);
                                 const double BT_av = cstquad.QuadOnInterface(intfparts_BT_av);
                                 const double BT_kni = cstquad.QuadOnInterface(intfparts_BT_kni);
-                                //\int nu * {a/b dudn} * [v] ds 
+                                //\int nu * {a/b dudn} * [v] ds
                                 intf_coup_x_s[4*ti+i][4*tj+j] += B_av;
                                 intf_coup_x_x[4*ti+i][4*tj+j] += alpha_not_j/beta_not_j * B_knj;
 
@@ -1229,10 +1229,10 @@ void STTransportVolumeAccumulator_P1SP1TXCL::local_setup (const TetraCL& sit)
 
 // -----------------------------------------------------------------------------
 
-STGeomApproxTestAccumulatorCL::STGeomApproxTestAccumulatorCL(const MultiGridCL& MG, 
+STGeomApproxTestAccumulatorCL::STGeomApproxTestAccumulatorCL(const MultiGridCL& MG,
                                                              const LevelsetP2CL * lsetp2old_in,
-                                                             const LevelsetP2CL * lsetp2new_in, 
-                                                             instat_scalar_fun_ptr lset_fpt_in, 
+                                                             const LevelsetP2CL * lsetp2new_in,
+                                                             instat_scalar_fun_ptr lset_fpt_in,
                                                              const double t1, const double t2,
                                                              const ParamCL::ptree_type & P):
     MG_(MG), lsetp2old(lsetp2old_in),lsetp2new(lsetp2new_in),
@@ -1241,7 +1241,7 @@ STGeomApproxTestAccumulatorCL::STGeomApproxTestAccumulatorCL(const MultiGridCL& 
     subtimeintervals(P.get<int>("Quadrature.SubTimeIntervals")),
     told(t1), tnew(t2)
 {
-    
+
 }
 
 void STGeomApproxTestAccumulatorCL::begin_accumulation ()
@@ -1285,7 +1285,7 @@ void STGeomApproxTestAccumulatorCL::visit (const TetraCL& sit)
     const double h = std::pow(absdet,1.0/3.0);
     const double dt = tnew-told;
     const double st_absdet= absdet * dt;
-    
+
     LocalP2CL<> locPhi_old, locPhi_new;
     locPhi_old.assign( sit, lsetp2old->Phi, lsetp2old->GetBndData());
     locPhi_new.assign( sit, lsetp2new->Phi, lsetp2new->GetBndData());
@@ -1299,15 +1299,15 @@ void STGeomApproxTestAccumulatorCL::visit (const TetraCL& sit)
         sign[i] = locPhi_old[i] > 0;
         sign[i+4] = locPhi_new[i] > 0;
     }
-    
+
     bool inside_outer_band = false;
     bool outside_inner_band = false;
-    
+
     for (int i = 0; i < 10; ++i)
     {
-        if (locPhi_old[i] < h || locPhi_new[i] < h) 
+        if (locPhi_old[i] < h || locPhi_new[i] < h)
             inside_outer_band = true;
-        if (locPhi_old[i] > -h || locPhi_new[i] >- h) 
+        if (locPhi_old[i] > -h || locPhi_new[i] >- h)
             outside_inner_band = true;
     }
 
@@ -1320,22 +1320,22 @@ void STGeomApproxTestAccumulatorCL::visit (const TetraCL& sit)
             p_cstquad = new CompositeSTQuadCL<QuadRule>(refprism4,locPhi_old, locPhi_new,
                                                                       ints_per_space_edge, subtimeintervals);
         else
-            p_cstquad = new CompositeSTQuadCL<QuadRule>(sit, TimeInterval(told,tnew), lset_fpt, 
+            p_cstquad = new CompositeSTQuadCL<QuadRule>(sit, TimeInterval(told,tnew), lset_fpt,
                                                                       ints_per_space_edge, subtimeintervals);
         iscut = p_cstquad->HasInterface();
     }
     else
         iscut = false;
-    
+
     if (!iscut)
     {
         ScopeTimer scopetiming("GeomApproxTestAccumulatorCL::visit - uncut");
 
         if (!sign[0])
-#pragma omp critical(negvol)            
+#pragma omp critical(negvol)
             *negvol += 1.0/6.0*st_absdet;
         else
-#pragma omp critical(posvol)            
+#pragma omp critical(posvol)
             *posvol += 1.0/6.0*st_absdet;
     }
     else
@@ -1346,15 +1346,15 @@ void STGeomApproxTestAccumulatorCL::visit (const TetraCL& sit)
         static LocalP2CL<> constone(1.0);
 
         LocalP2CL<> p0; // values for other time level are zero
-    
+
 
         {
             ScopeTimer scopetiming("GeomApproxTestAccumulatorCL::visit_setup - cut");
-            GridFunctionCL<double> gfone_neg = cstquad.EvalLinearOnPart( constone, constone, false); 
-            GridFunctionCL<double> gfone_pos = cstquad.EvalLinearOnPart( constone, constone, true); 
-#pragma omp critical(negvol)            
+            GridFunctionCL<double> gfone_neg = cstquad.EvalLinearOnPart( constone, constone, false);
+            GridFunctionCL<double> gfone_pos = cstquad.EvalLinearOnPart( constone, constone, true);
+#pragma omp critical(negvol)
             *negvol += cstquad.QuadOnPart(gfone_neg,false)*st_absdet;
-#pragma omp critical(posvol)            
+#pragma omp critical(posvol)
             *posvol += cstquad.QuadOnPart(gfone_pos,true)*st_absdet;
 
         }
@@ -1362,11 +1362,11 @@ void STGeomApproxTestAccumulatorCL::visit (const TetraCL& sit)
         {
             ScopeTimer scopetiming("GeomApproxTestAccumulatorCL::visit_setup - cut - stintface");
             //space time normals on reference prism pointing fr. neg to pos :
-            const GridFunctionCL<Point4DCL> & n_st_ref (cstquad.GetNormalsOnInterface()); 
+            const GridFunctionCL<Point4DCL> & n_st_ref (cstquad.GetNormalsOnInterface());
             //not correctly space time normals on physical prism pointing fr. neg to pos :
             GridFunctionCL<Point4DCL> n_st = eval(transform_normals_in_spacetime,T,absdet,dt,n_st_ref);
-            //after next call space time normal is now correctly scaled (||n||=1) 
-            //and the ratio between the measure on the physical prism to reference prism 
+            //after next call space time normal is now correctly scaled (||n||=1)
+            //and the ratio between the measure on the physical prism to reference prism
             //calculated. Additionally the space-measure-correction-factor nu is mulitplied.
             const GridFunctionCL<double> meas = eval(calc_norm,n_st);
             const GridFunctionCL<double> meas_nu = apply_and_eval(calc_nu_measure_and_normalize,n_st);
@@ -1374,13 +1374,13 @@ void STGeomApproxTestAccumulatorCL::visit (const TetraCL& sit)
             const GridFunctionCL<Point3DCL> spacenormals = eval(calc_spacenormal_from_stnormal,n_st);
             const GridFunctionCL<Point3DCL> normnu = spacenormals * meas_nu;
             const GridFunctionCL<Point4DCL> meas_norm4d = n_st * meas;
-#pragma omp critical(intnorm4d)            
+#pragma omp critical(intnorm4d)
             *intnorm4d += cstquad.QuadOnInterface(meas_norm4d);
-#pragma omp critical(intnorm)            
+#pragma omp critical(intnorm)
             *intnorm += cstquad.QuadOnInterface(normnu);
-#pragma omp critical(surfarea)            
+#pragma omp critical(surfarea)
             *surfarea += cstquad.QuadOnInterface(meas_nu);
-#pragma omp critical(stsurfarea)            
+#pragma omp critical(stsurfarea)
             *stsurfarea += cstquad.QuadOnInterface(meas);
         }
     }
@@ -1390,10 +1390,10 @@ void STGeomApproxTestAccumulatorCL::visit (const TetraCL& sit)
 
 //-----------------------------------------------------------------------------
 
-InterfaceJumpAccumulatorCL::InterfaceJumpAccumulatorCL(const MultiGridCL& MG, 
+InterfaceJumpAccumulatorCL::InterfaceJumpAccumulatorCL(const MultiGridCL& MG,
                                                        const LevelsetP2CL * lsetp2old_in,
-                                                       const LevelsetP2CL * lsetp2new_in, 
-                                                       instat_scalar_fun_ptr lset_fpt_in, 
+                                                       const LevelsetP2CL * lsetp2new_in,
+                                                       instat_scalar_fun_ptr lset_fpt_in,
                                                        const double t1, const double t2,
                                                        const VecDescCL & old_sol_neg_in,
                                                        const VecDescCL & old_sol_pos_in,
@@ -1416,7 +1416,7 @@ InterfaceJumpAccumulatorCL::InterfaceJumpAccumulatorCL(const MultiGridCL& MG,
     beta_neg(P.get<double>("HNeg")),beta_pos(P.get<double>("HPos")),
     lambda_stab(P.get<double>("NitschePenalty"))
 {
-    
+
 }
 
 void InterfaceJumpAccumulatorCL::begin_accumulation ()
@@ -1458,7 +1458,7 @@ void InterfaceJumpAccumulatorCL::visit (const TetraCL& sit)
     const double h = std::pow(absdet,1.0/3.0);
     const double dt = tnew-told;
     //const double st_absdet= absdet * dt;
-    
+
     LocalP2CL<> locPhi_old, locPhi_new;
     locPhi_old.assign( sit, lsetp2old->Phi, lsetp2old->GetBndData());
     locPhi_new.assign( sit, lsetp2new->Phi, lsetp2new->GetBndData());
@@ -1475,12 +1475,12 @@ void InterfaceJumpAccumulatorCL::visit (const TetraCL& sit)
 
     bool inside_outer_band = false;
     bool outside_inner_band = false;
-    
+
     for (int i = 0; i < 10; ++i)
     {
-        if (locPhi_old[i] < h || locPhi_new[i] < h) 
+        if (locPhi_old[i] < h || locPhi_new[i] < h)
             inside_outer_band = true;
-        if (locPhi_old[i] > -h || locPhi_new[i] >- h) 
+        if (locPhi_old[i] > -h || locPhi_new[i] >- h)
             outside_inner_band = true;
     }
 
@@ -1492,18 +1492,18 @@ void InterfaceJumpAccumulatorCL::visit (const TetraCL& sit)
         p_cstquad = new CompositeSTQuadCL<QuadRule>(refprism4,locPhi_old, locPhi_new,
                                                                   ints_per_space_edge, subtimeintervals);
     else
-        p_cstquad = new CompositeSTQuadCL<QuadRule>(sit, TimeInterval(told,tnew), lset_fpt, 
+        p_cstquad = new CompositeSTQuadCL<QuadRule>(sit, TimeInterval(told,tnew), lset_fpt,
                                                                   ints_per_space_edge, subtimeintervals);
-    
+
     CompositeSTQuadCL<QuadRule> & cstquad = *p_cstquad;
-    
+
     iscut = cstquad.HasInterface();
 
     static LocalP2CL<Point3DCL> vecp0; // values for other time level are zero
     static LocalP2CL<> constone(1.0);
 
     LocalP2CL<> p0; // values for other time level are zero
-    
+
 
     LocalP1CL<> oldtrnegp1(sit,old_sol_neg,Bnd_neg);
     LocalP2CL<> oldtrneg(oldtrnegp1);
@@ -1558,10 +1558,10 @@ void InterfaceJumpAccumulatorCL::visit (const TetraCL& sit)
             const double add = quad_2D( diff ,q2Ddomain);
 
             if (ti == FUTURE)
-#pragma omp critical(ifjump)            
+#pragma omp critical(ifjump)
                 *ifjump += add;
             else
-#pragma omp critical(ifjump_past)            
+#pragma omp critical(ifjump_past)
                 *ifjump_past += add;
 
         }
@@ -1569,11 +1569,11 @@ void InterfaceJumpAccumulatorCL::visit (const TetraCL& sit)
         {
             ScopeTimer scopetiming("InterfaceJumpAccumulatorCL::visit_setup - cut - stintface");
             //space time normals on reference prism pointing fr. neg to pos :
-            const GridFunctionCL<Point4DCL> & n_st_ref (cstquad.GetNormalsOnInterface()); 
+            const GridFunctionCL<Point4DCL> & n_st_ref (cstquad.GetNormalsOnInterface());
             //not correctly space time normals on physical prism pointing fr. neg to pos :
             GridFunctionCL<Point4DCL> n_st = eval(transform_normals_in_spacetime,T,absdet,dt,n_st_ref);
-            //after next call space time normal is now correctly scaled (||n||=1) 
-            //and the ratio between the measure on the physical prism to reference prism 
+            //after next call space time normal is now correctly scaled (||n||=1)
+            //and the ratio between the measure on the physical prism to reference prism
             //calculated. Additionally the space-measure-correction-factor nu is mulitplied.
 
             const GridFunctionCL<double> meas = eval(calc_norm,n_st);
@@ -1587,15 +1587,15 @@ void InterfaceJumpAccumulatorCL::visit (const TetraCL& sit)
             GridFunctionCL<double> gfdiff2_nu(gfdiff.size());
             for (Uint k = 0; k < gfdiff2.size(); k++)
                 gfdiff2_nu[k] = gfdiff[k]*gfdiff[k] * meas_nu[k];
-            
+
             const double add = cstquad.QuadOnInterface(gfdiff2);
-#pragma omp critical(st_ifjump)            
+#pragma omp critical(st_ifjump)
             *st_ifjump += add;
 
             const double add2 = cstquad.QuadOnInterface(gfdiff2_nu);
-#pragma omp critical(st_ifjump_nu)            
+#pragma omp critical(st_ifjump_nu)
             *st_ifjump_nu += add2;
-            
+
         }
     }
 

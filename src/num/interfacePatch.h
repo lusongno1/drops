@@ -77,7 +77,7 @@ class InterfacePatchCL
       void Init( const TetraCL& t, const VecDescCL& ls, const BndDataCL<>& lsetbnd, double translation= 0.);
       void Init( const TetraCL& t, const LocalP2CL<double>& ls, double translation= 0.);
       void Init( const TetraCL& t, const SubTetraT& st, const LocalP2CL<double>& ls, double translation);
-      ///< Wird nur von masstransport P1X verwendet      
+      ///< Wird nur von masstransport P1X verwendet
       void Init( const SubTetraT& st, const LocalP2CL<double>& ls, double translation);
 
       /// \name Use after Init
@@ -164,7 +164,7 @@ class InterfaceTriangleCL : public InterfacePatchCL
     double GetAreaFrac()   const { return intersec_==4 ? ab_[0]+ab_[1]-1 : 0; }                   ///< Quotient of the areas of the first and the second triangle.
     template<class ValueT>
     ValueT quad2D( const LocalP2CL<ValueT>&, Uint tri= 0) const;  ///< integrate on triangle \p tri, quadrature exact up to degree 2
-    const Point3DCL& GetGradId( Uint i) const { return B_[i]; }   ///< Returns the projection of the i-th standard-basis-vector of \f$R^3\f$ on the patch.    
+    const Point3DCL& GetGradId( Uint i) const { return B_[i]; }   ///< Returns the projection of the i-th standard-basis-vector of \f$R^3\f$ on the patch.
     Point3DCL GetNormal () const;                         ///< Returns the unit normal to the linear approximation of \f$\Gamma\f$, that points from \f$\{\varphi<0\}\f$ to \f$\{\varphi<0\}\f$.
     Quad5_2DCL<Point3DCL> GetImprovedNormal(Uint) const;  ///< Returns the improved unit normal
     Point3DCL ApplyProj( const Point3DCL& grad) const { return grad[0]*B_[0] + grad[1]*B_[1] + grad[2]*B_[2]; }
@@ -195,8 +195,8 @@ class InterfaceLineCL : public InterfacePatchCL
                                                                                                        /// set the BaryCoord and Point3D of two end nodes
     Quad9_1DCL<Point3DCL> GetImprovedNormalAtMCL(Uint v) const;  ///< Returns the improved unit normal of the interface at the moving contact line
     Quad9_1DCL<Point3DCL> GetImprovedMCLNormalOnSlipBnd(const TetraCL& t, Uint v) const;    ///< Returns the unit outer normal at the contact line which lies on the slip boundary                                                           ///computed in an improved way using levelset function
-                                                                            /// v denotes the v-th contact line. 
-                                                                            /// It must be called after SetBndOutNormal() 
+                                                                            /// v denotes the v-th contact line.
+                                                                            /// It must be called after SetBndOutNormal()
     Quad9_1DCL<double> GetDynamicCtAngle(const TetraCL& t, Uint v) const;   ///< Returns the contact angle
 
 };

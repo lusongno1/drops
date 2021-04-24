@@ -1,6 +1,6 @@
 /// \file combiner.cpp
 /// \brief tests implementation for the StrategyCombinerCL
-/// \author LNM RWTH Aachen: Matthias Kirchhart; SC RWTH Aachen: 
+/// \author LNM RWTH Aachen: Matthias Kirchhart; SC RWTH Aachen:
 
 /*
  * This file is part of DROPS.
@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2014 LNM/SC RWTH Aachen, Germany
+ * Copyright 1014 LNM/SC RWTH Aachen, Germany
 */
 
 #include <iostream>
@@ -42,7 +42,7 @@ int main()
 {
     try
     {
-    const double L = 1; 
+    const double L = 1;
     Point3DCL orig(-L), e1, e2, e3;
     e1[0] = e2[1] = e3[2] = 2*L;
 
@@ -51,7 +51,7 @@ int main()
     MultiGridCL MG( builder );
 
     StrategyCombinerCL    marker;
-    DistMarkingStrategyCL marker1( lset1, 0.1, 0, 5 ); 
+    DistMarkingStrategyCL marker1( lset1, 0.1, 0, 5 );
     DistMarkingStrategyCL marker2( lset2, 0.1, 0, 5 );
 
     marker.push_back( marker1 );
@@ -64,7 +64,7 @@ int main()
     VTKOutCL vtk( MG, "combiner", 21, ".", "combiner", "combiner", true );
     vtk.Write( 0 );
 
-    for ( int i = 1; i <= 20; ++i )
+    for ( int i = 1; i <= 10; ++i )
     {
         pos1 += 0.05;
         pos2 -= 0.05;

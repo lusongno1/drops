@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2011,2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1011,1012 LNM/SC RWTH Aachen, Germany
 */
 
 #include "geom/principallattice.h"

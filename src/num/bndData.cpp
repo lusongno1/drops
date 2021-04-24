@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2013 LNM, Germany
+ * Copyright 1013 LNM, Germany
 */
 
 

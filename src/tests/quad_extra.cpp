@@ -37,13 +37,13 @@ double exactint[56] = { // with maple
   0.008333333333333333333333333, 0.001388888888888888888888889,
   0.0003968253968253968253968254, 0.0001488095238095238095238095,
   0.002777777777777777777777778, 0.0003968253968253968253968254,
-  0.00009920634920634920634920635, 0.001190476190476190476190476,
+  0.00009910634910634910634910635, 0.001190476190476190476190476,
   0.0001488095238095238095238095, 0.0005952380952380952380952381,
   0.01666666666666666666666667, 0.002777777777777777777777778,
   0.0007936507936507936507936508, 0.0002976190476190476190476190,
   0.002777777777777777777777778, 0.0003968253968253968253968254,
-  0.00009920634920634920634920635, 0.0007936507936507936507936508,
-  0.00009920634920634920634920635, 0.0002976190476190476190476190,
+  0.00009910634910634910634910635, 0.0007936507936507936507936508,
+  0.00009910634910634910634910635, 0.0002976190476190476190476190,
   0.008333333333333333333333333, 0.001190476190476190476190476,
   0.0002976190476190476190476190, 0.001190476190476190476190476,
   0.0001488095238095238095238095, 0.0002976190476190476190476190,
@@ -52,7 +52,7 @@ double exactint[56] = { // with maple
 };
 
 void TestExactness_extrapolation(int num_extrapolation)
-{   
+{
     std::cout << "\nTesting 3D quadrature on unit tetrahedron:" << std::endl;
     DROPS::TetraBuilderCL tet( 0);
     DROPS::MultiGridCL mg( tet);
@@ -68,9 +68,9 @@ void TestExactness_extrapolation(int num_extrapolation)
     //TetraPartitionCL partition;
     //partition.make_partition< SortedVertexPolicyCL,MergeCutPolicyCL>(2, ones);
     //make_CompositeQuad5Domain( qdom, partition);
-    
+
     DROPS::GridFunctionCL<> integrand;
-    
+
     size_t c= 0;
     for (degz= 0; degz <= 5; ++degz) {
         for (degy= 0; degy + degz <= 5; ++degy) {
@@ -105,10 +105,10 @@ int binomi (int n, int k)
 {
     return fakultaet(n)/(fakultaet(k)*fakultaet(n-k));
 }
-   
+
 
 void TestExactness_extrapolation2D(int num_extrapolation)
-{  
+{
     std::cout << "\nTesting 2D quadrature on cut of unit tetrahedron with plane {z=0}:" << std::endl;
     DROPS::TetraBuilderCL tet( 0);
     DROPS::MultiGridCL mg( tet);
@@ -128,7 +128,7 @@ void TestExactness_extrapolation2D(int num_extrapolation)
                 double exactint_surf= 0.;
                 for (int k = 0; k<= degy+1; ++k) {
                     exactint_surf+= std::pow(-1,k)*binomi(degy+1,k)/(degx+k+1);
-                }    
+                }
                 exactint_surf*= 1./(degy+1)/std::pow( 2, degx+degy+2);
                 resize_and_evaluate_on_vertexes (f, s, qdom, 0., integrand);
                 std::cout << "degz: " << degz << "\tdegy: " << degy << "\tdegx: " << degx

@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #include "spacetimetransp/spacetime_sol.h"
@@ -35,7 +35,7 @@
 // #include "geom/simplex.h"
 // #include "geom/principallattice.h"
 // #include "num/unknowns.h"
-// 
+//
 
 
 namespace DROPS
@@ -98,13 +98,13 @@ void SpaceTimeXSolutionCL::EvalFutureTrace()
     future_vec_neg.RowIdx = &p1idxn;
     future_vec_pos.RowIdx = &p1idxp;
 
-    P1XtoP1 ( fut_x_idx_, futurevec.Data, p1idxn, future_vec_pos.Data, 
+    P1XtoP1 ( fut_x_idx_, futurevec.Data, p1idxn, future_vec_pos.Data,
               future_vec_neg.Data, lsetp2new->Phi, mg_);
     future_vec_neg.Data *= 1.0/weight_neg_;
     future_vec_pos.Data *= 1.0/weight_pos_;
     future_vec_neg.t = lsetp2new->Phi.t;
     future_vec_pos.t = lsetp2new->Phi.t;
-    
+
 
 }
 
@@ -119,7 +119,7 @@ void SpaceTimeXSolutionCL::EvalPastTrace()
 
     p1idxn.CreateNumbering( mg_.GetLastLevel(), mg_, past_x_idx_);
     p1idxp.CreateNumbering( mg_.GetLastLevel(), mg_, past_x_idx_);
-    P1XtoP1 ( past_x_idx_, pastvec.Data, p1idxn, past_vec_pos.Data, 
+    P1XtoP1 ( past_x_idx_, pastvec.Data, p1idxn, past_vec_pos.Data,
               past_vec_neg.Data, lsetp2old->Phi, mg_);
     past_vec_neg.Data *= 1.0/weight_neg_;
     past_vec_pos.Data *= 1.0/weight_pos_;

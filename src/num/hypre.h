@@ -1,5 +1,5 @@
 /// \file hypre.h
-/// \brief Interface to HYPRE (high performance preconditioners), Lawrence Livermore Nat. Lab. 
+/// \brief Interface to HYPRE (high performance preconditioners), Lawrence Livermore Nat. Lab.
 /// \author LNM RWTH Aachen: Sven Gross; SC RWTH Aachen: Oliver Fortmeier
 
 /*
@@ -120,12 +120,12 @@ class HypreMatrixCL
 
     /// \brief Generate the MPI datatype for sending a NonZeroST
     void CreateSendMPIType();
-    /// \brief Generate the HYPRE matrix 
+    /// \brief Generate the HYPRE matrix
     void Init();
 
   public:
     HypreMatrixCL( const MatrixCL& M, const IdxDescCL& rowIdx, const IdxDescCL& colIdx)
-        : M_(M), colidx_(colIdx), rowidx_(rowIdx), sendMPItype_(ProcCL::NullDataType), tag_(1001) 
+        : M_(M), colidx_(colIdx), rowidx_(rowIdx), sendMPItype_(ProcCL::NullDataType), tag_(1001)
     { Init();  Generate(); }
     ~HypreMatrixCL() { ProcCL::Free(sendMPItype_); }
 
@@ -159,14 +159,14 @@ class HypreVectorCL
     const HypreIndexCL& idx_;       ///< corresponding indexing
     HYPRE_IJVector      ijVec_;     ///< type of the HYPRE vector
     HYPRE_ParVector     parVec_;    ///< HYPRE vector
-    
+
     void Init();
-    
+
   public:
     HypreVectorCL( VectorCL& v, const HypreIndexCL& idx)
       : v_(v), idx_(idx) { Init(); Generate(); }
     ~HypreVectorCL();
-    
+
     /// \brief generate the HYPRE vector
     void Generate();
     /// \brief generate an accumulated DROPS vector from the HYPRE vector
@@ -192,10 +192,10 @@ class HypreAMGSolverCL : public SolverBaseCL
     HypreAMGSolverCL( const IdxDescCL& idx, int maxiter= 100, double tol=1e-7)
         : baseT(maxiter, tol), idx_(idx), dummy_(idx_) { Init(); }
     ~HypreAMGSolverCL();
-    
+
     void SetTol( double tol)   { _tol= tol; HYPRE_BoomerAMGSetTol( solver_, tol); }
     void SetMaxIter( int iter) { _maxiter= iter; HYPRE_BoomerAMGSetMaxIter( solver_, iter); }
-      
+
     void Setup( const HypreMatrixCL& A, const HypreVectorCL& x, const HypreVectorCL& b) const;
     /// \name Solve a system of linear equations
     //@{
@@ -205,7 +205,7 @@ class HypreAMGSolverCL : public SolverBaseCL
     void Solve( const MLMatrixCL& A, VectorCL& x, const VectorCL& b) { SetupAndSolve(A.GetFinest(),x,b,idx_); }
     ParDummyPcCL GetPC() { return dummy_; }
     //@}
-};   
+};
 
 }    // end of namespace DROPS
 

@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #include "num/spacetime_geom.h"
@@ -31,35 +31,35 @@ namespace DROPS
 
 // explicit template instantiations for Quad3_4DDataCL, Quad3DataCL and the corresponding tuple:
 
-template 
+template
 void Gather4DIntegrationPoints<QuadRule::Volume>(const std::vector<PentatopeCL> &, GridFunctionCL<Point4DCL> & );
-template 
+template
 void Gather4DIntegrationWeights<QuadRule::Volume>(const std::vector<PentatopeCL> &, GridFunctionCL<double> &);
-template 
+template
 void Gather4DIntegrationPoints<QuadRule::Surface>(const std::vector<Tetra4DCL> &, GridFunctionCL<Point4DCL> & );
-template 
+template
 void Gather4DIntegrationWeights<QuadRule::Surface>(const std::vector<Tetra4DCL> &, GridFunctionCL<double> &);
-template 
+template
 void Gather4DNormals<QuadRule::Surface>(const std::vector<Tetra4DCL> &, GridFunctionCL<Point4DCL> &);
-template 
+template
 void Gather4DNu<QuadRule::Surface>(const std::vector<Tetra4DCL> &, GridFunctionCL<double> &);
 // -
-template 
+template
 SArrayCL<Point4DCL,QuadRule::Volume::NumNodesC> Transform4DIntegrationPoints<QuadRule::Volume>(const PentatopeCL & penta);
-template 
+template
 SArrayCL<Point4DCL,QuadRule::Surface::NumNodesC> Transform4DIntegrationPoints<QuadRule::Surface>(const Tetra4DCL & penta);
-template 
+template
 SArrayCL<double,QuadRule::Volume::NumNodesC> Transform4DIntegrationWeights<QuadRule::Volume>(const PentatopeCL & penta);
-template 
+template
 SArrayCL<double,QuadRule::Surface::NumNodesC> Transform4DIntegrationWeights<QuadRule::Surface>(const Tetra4DCL & tet);
 // -
 
 
 template class CompositeSTQuadCL<QuadRule >;
-/* template instationations for T = double and T = Point3DCL */ 
-template double CompositeSTQuadCL<QuadRule >::QuadOnPart ( const GridFunctionCL<double> & f, 
+/* template instationations for T = double and T = Point3DCL */
+template double CompositeSTQuadCL<QuadRule >::QuadOnPart ( const GridFunctionCL<double> & f,
                                                                          bool posPart) const;
-template Point3DCL CompositeSTQuadCL<QuadRule>::QuadOnPart ( const GridFunctionCL<Point3DCL> & f, 
+template Point3DCL CompositeSTQuadCL<QuadRule>::QuadOnPart ( const GridFunctionCL<Point3DCL> & f,
                                                                            bool posPart) const;
 template double CompositeSTQuadCL<QuadRule >::QuadOnInterface ( const GridFunctionCL<double> & f) const;
 template Point3DCL CompositeSTQuadCL<QuadRule>::QuadOnInterface ( const GridFunctionCL<Point3DCL> & f) const;

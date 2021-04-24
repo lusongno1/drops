@@ -234,10 +234,10 @@ class MultiGridCL
 
 
     ~MultiGridCL()
-    { 
-#ifdef _PAR            
+    {
+#ifdef _PAR
         DiST::InfoCL::Instance().Destroy();
-#endif 
+#endif
     }
 
     const BoundaryCL& GetBnd     () const { return Bnd_; }

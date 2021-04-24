@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #ifndef DROPS_SPACETIME_QUAD_H
@@ -58,9 +58,9 @@ SArrayCL<Point4DCL,IntRuleData::NumNodesC> Transform4DIntegrationPoints(const Ge
 
 
 // class decomposing given prism, evaluating level set, decomposing into
-// decomposition of uncut geometries and afterwards gathering all the 
+// decomposition of uncut geometries and afterwards gathering all the
 // data for integration on this geometry, including quadrature rules
-// template argument is a 4D quadrature rule which is applied on each 
+// template argument is a 4D quadrature rule which is applied on each
 // uncut pentatope after the decomposition phase.
 // Most work (decomposition, generating quad. rule) is done in Initialize
 template <class IntRuleData4D>
@@ -87,28 +87,28 @@ protected:
     GridFunctionCL<Point3DCL> Eval ( instat_vector_fun_ptr f, const GridFunctionCL<Point4DCL> & points,
                                   const SpaceTimeMapping * map = &SpaceTimeIdentity::getInstance()) const;
     template <class T>
-    GridFunctionCL<T> EvalLinear ( const LocalP2CL<T> & fold, const LocalP2CL<T> & fnew, 
+    GridFunctionCL<T> EvalLinear ( const LocalP2CL<T> & fold, const LocalP2CL<T> & fnew,
                                         const GridFunctionCL<Point4DCL> & points) const;
-    template <class T> 
+    template <class T>
     T Quad ( const GridFunctionCL<T> & f, const GridFunctionCL<double> & weights) const;
 
-    std::valarray<bool> p1p1signs; //signs for P1(space)-P1(time)-ext. finite elements 
+    std::valarray<bool> p1p1signs; //signs for P1(space)-P1(time)-ext. finite elements
     // [TODO: find a place to put that into]
 
 public:
-    void Initialize(const TetraCL* tet, const TimeInterval* ti, 
+    void Initialize(const TetraCL* tet, const TimeInterval* ti,
                     const GeneralizedPrism4CL* refprism4,
-                    const LocalP2CL<double>* lsetold, const LocalP2CL<double>* lsetnew, 
+                    const LocalP2CL<double>* lsetold, const LocalP2CL<double>* lsetnew,
                     instat_scalar_fun_ptr f, Uint ints_per_space_edge = 2, Uint subtimeintervals = 1);
 
-    CompositeSTQuadCL(const TetraCL& tet, const TimeInterval& ti, instat_scalar_fun_ptr f, 
+    CompositeSTQuadCL(const TetraCL& tet, const TimeInterval& ti, instat_scalar_fun_ptr f,
                       Uint ints_per_space_edge = 2, Uint subtimeintervals = 1);
 
-    CompositeSTQuadCL(const TetraCL& tet, const TimeInterval& ti, 
+    CompositeSTQuadCL(const TetraCL& tet, const TimeInterval& ti,
                       const LocalP2CL<double>& lsetold, const LocalP2CL<double>& lsetnew,
                       Uint ints_per_space_edge = 2, Uint subtimeintervals = 1);
 
-    CompositeSTQuadCL(const GeneralizedPrism4CL& refprism4, instat_scalar_fun_ptr f, 
+    CompositeSTQuadCL(const GeneralizedPrism4CL& refprism4, instat_scalar_fun_ptr f,
                       Uint ints_per_space_edge = 2, Uint subtimeintervals = 1);
 
     CompositeSTQuadCL(const GeneralizedPrism4CL& refprism4,
@@ -131,11 +131,11 @@ public:
     GridFunctionCL<double> EvalOnInterface ( instat_scalar_fun_ptr f,
                                              const SpaceTimeMapping * map = &SpaceTimeIdentity::getInstance()) const;
     template <class T>
-    GridFunctionCL<T> EvalLinearOnPart ( const LocalP2CL<T>& fold, 
+    GridFunctionCL<T> EvalLinearOnPart ( const LocalP2CL<T>& fold,
                                          const LocalP2CL<T>& fnew, bool posPart) const;
 
     template <class T>
-    GridFunctionCL<T> EvalLinearOnInterface ( const LocalP2CL<T>& fold, 
+    GridFunctionCL<T> EvalLinearOnInterface ( const LocalP2CL<T>& fold,
                                               const LocalP2CL<T>& fnew) const;
     const GridFunctionCL<Point4DCL> & GetNormalsOnInterface ( ) const;
     const GridFunctionCL<Point3DCL> & GetSpaceNormalsOnInterface ( ) const;
@@ -146,10 +146,10 @@ public:
     bool GetVertexSign (Uint i, bool newtime) const; //only needed for P1P1-XFEM so far
                                                      //(could be removed if p1p1signs is removed)
 
-    template <class T> 
+    template <class T>
     T QuadOnPart ( const GridFunctionCL<T> & f, bool posPart) const;
 
-    template <class T> 
+    template <class T>
     T QuadOnInterface ( const GridFunctionCL<T> & f) const;
 
     void Report(std::ostream & out, std::string linehead="", std::string linetail="") const;

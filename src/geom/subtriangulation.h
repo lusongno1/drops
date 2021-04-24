@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2011 LNM/SC RWTH Aachen, Germany
+ * Copyright 1011 LNM/SC RWTH Aachen, Germany
 */
 
 #ifndef DROPS_SUBTRIANGULATION_H
@@ -106,7 +106,7 @@ class TetraPartitionCL
     TetraContT tetras_;          ///< All tetras of the partition.
     Uint       pos_tetra_begin_; ///< begin of the subsequence of positive tetras
 
-    VertexContT vertexes_;         ///< All vertices of the partition. 
+    VertexContT vertexes_;         ///< All vertices of the partition.
     Uint        pos_vertex_begin_; ///< begin of the subsequence of vertexes of positive tetras
     Uint        neg_vertex_end_;   ///< end of the subsequence of of vertexes of negative tetras
 
@@ -364,7 +364,7 @@ class BndTriangPartitionCL
   public:
     /// Empty default-interface
 
-    ///\brief partition a cut face on the special boundary 
+    ///\brief partition a cut face on the special boundary
     template <class VertexPartitionPolicyT, template <Uint Dim> class VertexCutMergingPolicyT>
     void make_partition2D (const PrincipalLatticeCL& lat, Uint face, const std::valarray<double>& ls);
 
@@ -375,9 +375,9 @@ class BndTriangPartitionCL
 
     /// Random-access to the triangles and vertices, order of vertices and triangles: first the negative, then the positve
     ///@{
-    const_triangle_iterator triangle_begin (TetraSignEnum s= AllTetraC) const 
+    const_triangle_iterator triangle_begin (TetraSignEnum s= AllTetraC) const
         { return triangles_.begin() + (s == PosTetraC ? pos_triangles_begin_ : 0); }
-    const_triangle_iterator triangle_end   (TetraSignEnum s= AllTetraC) const 
+    const_triangle_iterator triangle_end   (TetraSignEnum s= AllTetraC) const
         { return s == NegTetraC ? triangles_.begin() + pos_triangles_begin_ : triangles_.end(); }
 
     // Vertices are not sorted like TetraPartitionCL

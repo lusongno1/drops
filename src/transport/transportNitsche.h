@@ -151,7 +151,7 @@ class TransportP1XCL
         theta_( theta), dt_( dt),
         lambda_(lambda), H_( H), v_( v), oldv_(oldv),
         lset_( lset), oldlset_(oldlset),
-        gm_( pc_, 20, iter, tol, false, false, RightPreconditioning),
+        gm_( pc_, 10, iter, tol, false, false, RightPreconditioning),
         f_(rhs)
     {
         std::memcpy( D_, D, 2*sizeof( double));
@@ -165,7 +165,7 @@ class TransportP1XCL
         theta_( P.get<double>("Time.Theta")), dt_( P.get<double>("Time.FinalTime")/P.get<int>("Time.NumSteps")),
         lambda_(P.get<double>("Transp.NitschePenalty")), H_( P.get<double>("Transp.HNeg")/P.get<double>("Transp.HPos")),
         lset_( lset), oldlset_(oldlset),
-        gm_( pc_, 20, P.get<int>("Transp.Solver.Iter"), P.get<double>("Transp.Solver.Tol"), false, false, RightPreconditioning),
+        gm_( pc_, 10, P.get<int>("Transp.Solver.Iter"), P.get<double>("Transp.Solver.Tol"), false, false, RightPreconditioning),
         f_(rhs), c_(reac), omit_bound_( P.get<double>("Transp.XFEMReduced")), sdstab_(P.get<double>("Transp.SD")),
         oldt_(initialtime), t_( initialtime),
         idx( P1X_FE, 1, Bndt, omit_bound_),

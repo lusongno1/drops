@@ -1521,11 +1521,11 @@ public:
                 continue;
             IdxPos = i;
             evaluate_on_vertexes( cdata.p2[i], cdata.qdom, Addr( qp2));
-            //  std::valarray<double> qp20{1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0};
+            //  std::valarray<double> qp10{1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0};
             vec[i]= quad_2D( cdata.qdom_projected.absdets()*qf*qp2, cdata.qdom);
             //    cout2txt(vec[i]);
             //   ouput_valarray(qf);
-            //     ouput_valarray(qp20);
+            //     ouput_valarray(qp10);
             //
             //  ouput_valarray( cdata.qdom_projected.absdets());
 

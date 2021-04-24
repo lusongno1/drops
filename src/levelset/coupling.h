@@ -82,7 +82,7 @@ class TimeDisc2PhaseCL
 
     // update after grid has changed
     virtual void Update() = 0;
-    
+
     void SetSchurPrePtr( SchurPreBaseCL* ptr) { ispc_ = ptr; }
 };
 

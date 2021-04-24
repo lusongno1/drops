@@ -443,7 +443,7 @@ void VarObliqueLaplaceBeltramiAccuCL::visit (const TetraCL& t)
     for (Uint i= 0; i < q_.vertex_size(); ++i)
         qnt_[i]/= norm( qnt_[i]);
     GridFunctionCL<> qalpha( dot( qnh_, qnt_));
-    // If a triangle has zero area, its normal is returned as 0; we avoid 
+    // If a triangle has zero area, its normal is returned as 0; we avoid
     // division by zero... the value will not matter later as the func-det in quad_2D is also 0.
     for (size_t i=0; i < qalpha.size(); ++i)
         if (std::fabs( qalpha[i]) == 0.)

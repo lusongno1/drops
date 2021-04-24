@@ -65,54 +65,54 @@ double Reaction (const DROPS::Point3DCL& , double )
 }
 
 double ZeroFct (const DROPS::Point3DCL& ,  double )
-{  
+{
     return 0.;
 }
 
 double tid_ZeroFct (const DROPS::Point3DCL& ,  double )
-{  
+{
     return 0.;
 }
 
 double Rhs (const DROPS::Point3DCL& ,  double )
-{  
+{
     return 0.;
 }
 
 
 double linear_in_t (const DROPS::Point3DCL&,  double t )
-{  
+{
     return t;
 }
 
 double linear_in_x (const DROPS::Point3DCL& p,  double  )
-{  
+{
     return p[0];
 }
 
 double linear_in_y (const DROPS::Point3DCL& p,  double  )
-{  
+{
     return p[1];
 }
 
 double linear_in_z (const DROPS::Point3DCL& p,  double  )
-{  
+{
     return p[2];
 }
 
 
 double Ten (const DROPS::Point3DCL&,  double )
-{  
+{
     return 10;
 }
 
 double LinT (const DROPS::Point3DCL& p,  double t)
-{  
+{
     return 10*t*p[1];
 }
 
 double LinmT (const DROPS::Point3DCL& p,  double t)
-{  
+{
     return 10.0*(1.0-t)*p[1];
 }
 
@@ -122,8 +122,8 @@ double Dirichlet (const DROPS::Point3DCL& p, double )
   static double y0 = P.get<DROPS::Point3DCL>("Levelset.PosDrop")[1];
   static double R = P.get<DROPS::Point3DCL>("Levelset.RadDrop")[0];  */
 //  double x = p[0];
-  double y = p[1];  
-  
+  double y = p[1];
+
   int c= (int) (y * 2.0);
   switch(c)
   {
@@ -133,10 +133,10 @@ double Dirichlet (const DROPS::Point3DCL& p, double )
 /*    case 1:
     case 2:
             return (y-0.5)*(1.5-y);
-*/    case 3: 
+*/    case 3:
     default:
         return 0;
-        break; 
+        break;
   }
 }
 
@@ -167,7 +167,7 @@ double DirichletConstt (const DROPS::Point3DCL& p, double )
 }
 
 DROPS::SVectorCL<3> PotentialFlowfield (const DROPS::Point3DCL& p, double )
-{  
+{
     extern DROPS::ParamCL P;
     DROPS::SVectorCL<3> ret(0.);
     double x=p[0]-P.get<DROPS::Point3DCL>("Levelset.PosDrop")[0]; double y=p[1]-P.get<DROPS::Point3DCL>("Levelset.PosDrop")[1];
@@ -189,7 +189,7 @@ DROPS::SVectorCL<3> PotentialFlowfield (const DROPS::Point3DCL& p, double )
 
 template<int i>
 DROPS::SVectorCL<3> StraightFlowfield (const DROPS::Point3DCL&, double )
-{  
+{
     DROPS::SVectorCL<3> ret(0.);
     ret[i] = 1.0;
     return ret;
@@ -197,7 +197,7 @@ DROPS::SVectorCL<3> StraightFlowfield (const DROPS::Point3DCL&, double )
 
 template<int i>
 DROPS::SVectorCL<3> CounterFlowfield (const DROPS::Point3DCL&, double )
-{  
+{
     extern DROPS::ParamCL P;
     double c=P.get<double>("Exp.CounterFlowVel");
     DROPS::SVectorCL<3> ret(0.);
@@ -208,7 +208,7 @@ DROPS::SVectorCL<3> CounterFlowfield (const DROPS::Point3DCL&, double )
 
 template<int i>
 DROPS::SVectorCL<3> StraightSinus (const DROPS::Point3DCL&, double t)
-{  
+{
     DROPS::SVectorCL<3> ret(0.);
     ret[i] = cos(t);
     return ret;
@@ -331,7 +331,7 @@ double testcase1_shift( double v, double t)
 }
 
 DROPS::Point3DCL TestCase1_vel (const DROPS::Point3DCL& ,  double t )
-{  
+{
     extern DROPS::ParamCL P;
     static double v (P.get<double>("TestCase1.v"));
     static DROPS::Point3DCL vel( DROPS::MakePoint3D(v,0,0));
@@ -344,7 +344,7 @@ DROPS::Point3DCL TestCase1_vel (const DROPS::Point3DCL& ,  double t )
     }
     else
     {
-        if (t > r) 
+        if (t > r)
             vel = DROPS::MakePoint3D(-v,0,0);
     }
     return vel;
@@ -394,9 +394,9 @@ double TestCase1_lset( const DROPS::Point3DCL& p ,  double t )
 
 
 double TestCase1_rhs_positive (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
-    
+
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     // static double hpos (P.get<double>("Transp.HPos"));
     static double apos (P.get<double>("Transp.DiffPos"));
@@ -422,9 +422,9 @@ double TestCase1_rhs_positive (const DROPS::Point3DCL& p ,  double t)
 
 
 double TestCase1_rhs_negative (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
-    
+
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     // static double hpos (P.get<double>("Transp.HPos"));
     // static double apos (P.get<double>("Transp.DiffPos"));
@@ -452,9 +452,9 @@ double TestCase1_rhs_negative (const DROPS::Point3DCL& p ,  double t)
 }
 
 double TestCase1_sol_positive (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
-    
+
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     // static double k (P.get<double>("TestCase1.k"));
     static double C (P.get<double>("TestCase1.C"));
@@ -470,9 +470,9 @@ double TestCase1_sol_positive (const DROPS::Point3DCL& p ,  double t)
 }
 
 double TestCase1_sol_negative (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
-    
+
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     // static double k (P.get<double>("TestCase1.k"));
     TestCase1_push();
@@ -514,13 +514,13 @@ double testcase2_shift( double v, double t)
 }
 
 DROPS::Point3DCL TestCase2_vel (const DROPS::Point3DCL& ,  double t )
-{  
+{
     extern DROPS::ParamCL P;
     static double v (P.get<double>("TestCase2.v"));
     static DROPS::Point3DCL vel( DROPS::MakePoint3D(v,0,0));
     static double r (P.get<double>("TestCase2.r"));
 
-    if (t > r) 
+    if (t > r)
         vel = DROPS::MakePoint3D(-v,0,0);
     return vel;
 }
@@ -543,7 +543,7 @@ double TestCase2_lset( const DROPS::Point3DCL& p ,  double t )
 
 
 double TestCase2_rhs_positive (const DROPS::Point3DCL& ,  double )
-{  
+{
     // extern DROPS::ParamCL P;
     // static double v (P.get<double>("TestCase2.v"));
     return 1.0;
@@ -551,19 +551,19 @@ double TestCase2_rhs_positive (const DROPS::Point3DCL& ,  double )
 
 
 double TestCase2_rhs_negative (const DROPS::Point3DCL&  ,  double )
-{  
+{
     // extern DROPS::ParamCL P;
     // static double v (P.get<double>("TestCase2.v"));
     return 2;
 }
 
 double TestCase2_sol_positive (const DROPS::Point3DCL&  ,  double t)
-{  
+{
     return t;
 }
 
 double TestCase2_sol_negative (const DROPS::Point3DCL&  ,  double t)
-{  
+{
     return 2*t;
 }
 
@@ -586,13 +586,13 @@ double testcase3_shift( double v, double t)
 }
 
 DROPS::Point3DCL TestCase3_vel (const DROPS::Point3DCL& ,  double t )
-{  
+{
     extern DROPS::ParamCL P;
     static double v (P.get<double>("TestCase3.v"));
     static DROPS::Point3DCL vel( DROPS::MakePoint3D(v,0,0));
     static double r (P.get<double>("TestCase3.r"));
 
-    if (t > r) 
+    if (t > r)
         vel = DROPS::MakePoint3D(-v,0,0);
     return vel;
 }
@@ -615,7 +615,7 @@ double TestCase3_lset( const DROPS::Point3DCL& p ,  double t )
 
 
 double TestCase3_rhs_positive (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     static double apos (P.get<double>("Transp.DiffPos"));
     static double v (P.get<double>("TestCase3.v"));
@@ -635,7 +635,7 @@ double TestCase3_rhs_positive (const DROPS::Point3DCL& p ,  double t)
 
 
 double TestCase3_rhs_negative (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     static double hneg (P.get<double>("Transp.HNeg"));
     static double hpos (P.get<double>("Transp.HPos"));
@@ -655,7 +655,7 @@ double TestCase3_rhs_negative (const DROPS::Point3DCL& p ,  double t)
 }
 
 double TestCase3_sol_positive (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     static double v (P.get<double>("TestCase3.v"));
     static double C (P.get<double>("TestCase3.C"));
@@ -663,7 +663,7 @@ double TestCase3_sol_positive (const DROPS::Point3DCL& p ,  double t)
 }
 
 double TestCase3_sol_negative (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     static double v (P.get<double>("TestCase3.v"));
     static double C (P.get<double>("TestCase3.C"));
@@ -681,43 +681,43 @@ static DROPS::RegisterVectorFunction regvec_testcase3_velocity("testcase3_vel", 
 
 
 DROPS::Point3DCL Testcase4_vel (const DROPS::Point3DCL& ,  double )
-{  
+{
     return DROPS::MakePoint3D(1.0,0,0);
 }
 
 double Testcase4_rhs_positive (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     static double a (P.get<double>("Transp.DiffPos"));
     return a*M_PI*M_PI*sin(M_PI*(p[0]-t));
 }
 
 // double Testcase4_neumann_left (const DROPS::Point3DCL& p ,  double t)
-// {  
+// {
 //     return 2.0*t;
 // }
 
 // double Testcase4_neumann_right (const DROPS::Point3DCL& p ,  double t)
-// {  
+// {
 //     return 2.0*(2.0-t);
 // }
 
 
 double Testcase4_rhs_negative (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     static double a (P.get<double>("Transp.DiffNeg"));
     return a*M_PI*M_PI*sin(M_PI*(p[0]-t));
 }
 
 double Testcase4_sol_positive (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     return sin(M_PI*(p[0]-t));
     // return sin(t);
 }
 
 double Testcase4_sol_negative (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     return sin(M_PI*(p[0]-t));
 }
 
@@ -754,10 +754,10 @@ void TestCase5_push()
 }
 
 double TestCase5_scalar_vel (double t )
-{  
+{
     extern DROPS::ParamCL P;
     static std::string v_case (P.get<std::string>("TestCase5.velocity"));
-    
+
     if (v_case == "no")
         return 0;
 
@@ -774,7 +774,7 @@ double testcase5_shift(double t)
 {
     extern DROPS::ParamCL P;
     static std::string v_case (P.get<std::string>("TestCase5.velocity"));
-    
+
     double shift;
     if (v_case == "no")
         shift = 0.0;
@@ -784,12 +784,12 @@ double testcase5_shift(double t)
 
     if (v_case == "curved")
         shift = 0.25/M_PI*sin(M_PI*2.0*t);
-    
+
     return shift;
 }
 
 DROPS::Point3DCL Testcase5_vel (const DROPS::Point3DCL& ,  double t )
-{  
+{
     return DROPS::MakePoint3D( TestCase5_scalar_vel(t),0,0);
 }
 
@@ -799,7 +799,7 @@ double periodic_correction(const double & x, const double & s)
     const double dist0 = std::abs(x-s);
     const double dist1 = std::abs(x-s-2.0);
     const double dist2 = std::abs(x-s+2.0);
-    
+
     if (dist0 < dist1 && dist0 < dist2)
         return x-s;
     else if (dist1 < dist2)
@@ -879,7 +879,7 @@ double Testcase5_lset( const DROPS::Point3DCL& p ,  double t )
 
 // v (x,t)
 double testcase5_scalarfield_pos (const double& x ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     TestCase5_push();
     static double k (P.get<double>("TestCase5.k"));
@@ -888,7 +888,7 @@ double testcase5_scalarfield_pos (const double& x ,  double t)
 
 // v_x (x,t)
 double testcase5_scalarfield_dx_pos (const double& x ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     TestCase5_push();
     static double k (P.get<double>("TestCase5.k"));
@@ -915,36 +915,36 @@ double testcase5_scalarfield_dxx_pos (const double & x, const double & t)
 
 
 double Testcase5_rhs_positive (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     const double x = periodic_correction(p[0],pos[0]+testcase5_shift(t)+testcase5_deformation(p));
     static double apos (P.get<double>("Transp.DiffPos"));
-    return testcase5_scalarfield_dt_pos(x,t) 
+    return testcase5_scalarfield_dt_pos(x,t)
         - apos * ( testcase5_relsurf(p)*testcase5_scalarfield_dxx_pos(x,t)
                    -testcase5_curv(p)*testcase5_scalarfield_dx_pos(x,t)   );
 }
 
 double Testcase5_sol_positive (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     const double x = periodic_correction(p[0],pos[0]+testcase5_shift(t)+testcase5_deformation(p));
 
-    return testcase5_scalarfield_pos(x,t); 
+    return testcase5_scalarfield_pos(x,t);
 }
 
 double Testcase5_sol_dt_positive (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     const double x = periodic_correction(p[0],pos[0]+testcase5_shift(t)+testcase5_deformation(p));
 
-    return testcase5_scalarfield_dt_pos(x,t); 
+    return testcase5_scalarfield_dt_pos(x,t);
 }
 
 DROPS::Point3DCL Testcase5_sol_grad_positive (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     const double x = periodic_correction(p[0],pos[0]+testcase5_shift(t)+testcase5_deformation(p));
@@ -954,7 +954,7 @@ DROPS::Point3DCL Testcase5_sol_grad_positive (const DROPS::Point3DCL& p ,  doubl
 
 // v (x,t)
 double testcase5_scalarfield_neg (const double& x ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     TestCase5_push();
     static double a (P.get<double>("TestCase5.a"));
@@ -965,7 +965,7 @@ double testcase5_scalarfield_neg (const double& x ,  double t)
 
 // v_x (x,t)
 double testcase5_scalarfield_dx_neg (const double& x ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     TestCase5_push();
     static double a (P.get<double>("TestCase5.a"));
@@ -997,20 +997,20 @@ double testcase5_scalarfield_dxx_neg (const double & x, const double & t)
 
 
 double Testcase5_rhs_negative (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
 
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     const double x = periodic_correction(p[0],pos[0]+testcase5_shift(t)+testcase5_deformation(p));
     static double aneg (P.get<double>("Transp.DiffNeg"));
 
-    return testcase5_scalarfield_dt_neg(x,t) 
+    return testcase5_scalarfield_dt_neg(x,t)
         - aneg * ( testcase5_relsurf(p)*testcase5_scalarfield_dxx_neg(x,t)
                    -testcase5_curv(p)*testcase5_scalarfield_dx_neg(x,t)   );
 }
 
 double Testcase5_sol_negative (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     const double x = periodic_correction(p[0],pos[0]+testcase5_shift(t)+testcase5_deformation(p));
@@ -1018,7 +1018,7 @@ double Testcase5_sol_negative (const DROPS::Point3DCL& p ,  double t)
 }
 
 double Testcase5_sol_dt_negative (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     const double x = periodic_correction(p[0],pos[0]+testcase5_shift(t)+testcase5_deformation(p));
@@ -1026,7 +1026,7 @@ double Testcase5_sol_dt_negative (const DROPS::Point3DCL& p ,  double t)
 }
 
 DROPS::Point3DCL Testcase5_sol_grad_negative (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     const double x = periodic_correction(p[0],pos[0]+testcase5_shift(t)+testcase5_deformation(p));
@@ -1101,8 +1101,8 @@ double lapblendf( const DROPS::Point3DCL & p){
 
 DROPS::Point3DCL gradblendf( double x, double y, double z)
 {
-    return DROPS::MakePoint3D(2 *(1-x) * y*(2-y) * z*(2-z), 
-                       2 *(1-y) * x*(2-x) * z*(2-z), 
+    return DROPS::MakePoint3D(2 *(1-x) * y*(2-y) * z*(2-z),
+                       2 *(1-y) * x*(2-x) * z*(2-z),
                        2 *(1-z) * x*(2-x) * y*(2-y));
 }
 
@@ -1131,7 +1131,7 @@ double testcase6_shift( double v, double t)
 }
 
 DROPS::Point3DCL TestCase6_vel (const DROPS::Point3DCL& ,  double t )
-{  
+{
     extern DROPS::ParamCL P;
     static double v (P.get<double>("TestCase6.v"));
     static DROPS::Point3DCL vel( DROPS::MakePoint3D(v,0,0));
@@ -1144,7 +1144,7 @@ DROPS::Point3DCL TestCase6_vel (const DROPS::Point3DCL& ,  double t )
     }
     else
     {
-        if (t > r) 
+        if (t > r)
             vel = DROPS::MakePoint3D(-v,0,0);
     }
     return vel;
@@ -1194,9 +1194,9 @@ double TestCase6_lset( const DROPS::Point3DCL& p ,  double t )
 
 
 double TestCase6_rhs_positive (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
-    
+
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     // static double hpos (P.get<double>("Transp.HPos"));
     static double apos (P.get<double>("Transp.DiffPos"));
@@ -1223,16 +1223,16 @@ double TestCase6_rhs_positive (const DROPS::Point3DCL& p ,  double t)
     gradu *= -M_PI * sin(M_PI * absx) / absx;
     DROPS::Point3DCL gradblend = gradblendf(p);
     const double blendpart = - apos * (2*inner_prod(gradblend,gradu) + lapblendf(p)*u) + u*v*gradblend[0];
-        
+
     //convection missing
     return C*((timeder + diffpart2)* blendval + timefactor*blendpart);
 }
 
 
 double TestCase6_rhs_negative (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
-    
+
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     // static double hpos (P.get<double>("Transp.HPos"));
     // static double apos (P.get<double>("Transp.DiffPos"));
@@ -1266,9 +1266,9 @@ double TestCase6_rhs_negative (const DROPS::Point3DCL& p ,  double t)
 }
 
 double TestCase6_sol_positive (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
-    
+
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     // static double k (P.get<double>("TestCase6.k"));
     static double C (P.get<double>("TestCase6.C"));
@@ -1284,9 +1284,9 @@ double TestCase6_sol_positive (const DROPS::Point3DCL& p ,  double t)
 }
 
 double TestCase6_sol_negative (const DROPS::Point3DCL& p ,  double t)
-{  
+{
     extern DROPS::ParamCL P;
-    
+
     static DROPS::Point3DCL pos (P.get<DROPS::Point3DCL>("Levelset.PosDrop"));
     // static double k (P.get<double>("TestCase6.k"));
     TestCase6_push();
@@ -1347,7 +1347,7 @@ double qr_func(double r)
 }
 
 DROPS::Point3DCL TestCase7_vel (const DROPS::Point3DCL& p ,  double )
-{  
+{
     static DROPS::Point3DCL rotcent (DROPS::MakePoint3D(1, 1, 0 ));
     DROPS::Point3DCL xdiff (p-rotcent);
     const double r = sqrt(xdiff[0]*xdiff[0]+xdiff[1]*xdiff[1]);
@@ -1361,7 +1361,7 @@ DROPS::Point3DCL TestCase7_vel (const DROPS::Point3DCL& p ,  double )
         std::cout << " - qr *  DROPS::MakePoint3D(p[1]-rotcent[1],p[0]-rotcent[0],0) = " << - qr *  DROPS::MakePoint3D(p[1]-rotcent[1],p[0]-rotcent[0],0) << std::endl;
         getchar();
     }
-    if (r>1.0) 
+    if (r>1.0)
         return DROPS::MakePoint3D(0,0,0);
     else
         return qr *  DROPS::MakePoint3D(p[1]-rotcent[1],rotcent[0]-p[0],0);
@@ -1462,7 +1462,7 @@ static DROPS::RegisterVectorFunction regvec_testcase7_velocity("testcase7_vel", 
     {
         static DROPS::Point3DCL dx= MeshSize();
         const DROPS::Point3DCL d= fabs(p-q), L= fabs(dx);
-        
+
         bool matches = true;
         for (int i = 0; i < 3; ++i)
             if (!(d[i] < 1e-12 || std::abs(d[i]-L[i]) < 1e-12))

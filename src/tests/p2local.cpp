@@ -289,7 +289,7 @@ int main ()
                                 DROPS::std_basis<3>(1),
                                 DROPS::std_basis<3>(2),
                                 DROPS::std_basis<3>(3),
-                                10, 20, 30);
+                                10, 10, 30);
     DROPS::MultiGridCL mg( brick);
     DROPS::IdxDescCL idx( P2_FE, theBnd);
     idx.CreateNumbering( 0, mg);

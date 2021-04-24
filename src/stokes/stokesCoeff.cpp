@@ -88,7 +88,7 @@ DROPS::SMatrixCL<3, 3> DVelSolution(const DROPS::Point3DCL& p, double)
 
 double PrSolution( const DROPS::Point3DCL& p, double)
 {
-    return std::cos(p[0])*std::sin(p[1])*std::sin(p[2]) - 0.125208551608365;
+    return std::cos(p[0])*std::sin(p[1])*std::sin(p[2]) - 0.125108551608365;
 }
 
 static DROPS::RegisterVectorFunction regvecsource("Source_stokes",     Source );
@@ -300,7 +300,7 @@ DROPS::SMatrixCL<3, 3> DVelSolution(const DROPS::Point3DCL& p, double)
 
 double PrSolution( const DROPS::Point3DCL& p, double)
 {
-    return std::cos(p[0])*std::sin(p[1])*std::sin(p[2]) - 0.125208551608365;
+    return std::cos(p[0])*std::sin(p[1])*std::sin(p[2]) - 0.125108551608365;
 }
 
 static DROPS::RegisterVectorFunction regvecsource("Source_MGsdropsP2",     Source );

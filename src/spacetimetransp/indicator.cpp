@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2013 LNM/SC RWTH Aachen, Germany
+ * Copyright 1013 LNM/SC RWTH Aachen, Germany
 */
 
 #include "spacetimetransp/indicator.h"
@@ -34,14 +34,14 @@ namespace DROPS
 
 ConcentrationMarkingStrategyCL::ConcentrationMarkingStrategyCL
                                   ( const LevelsetP2CL &lset,
-                                    P1EvalCL<double,cBndDataCL,VecDescCL > & a_solneg, 
-                                    P1EvalCL<double,cBndDataCL,VecDescCL > & a_solpos, 
+                                    P1EvalCL<double,cBndDataCL,VecDescCL > & a_solneg,
+                                    P1EvalCL<double,cBndDataCL,VecDescCL > & a_solpos,
                                     double * thresholdlist, Uint coarse_level, Uint fine_level,
                                     bool a_hacked,
                                     double a_hacked_width,
                                     std::ofstream * & distributionout,
                                     double )
-: lsetgetter_( new LevelsetP2GetterCL(lset) ), solneg(a_solneg), solpos(a_solpos), 
+: lsetgetter_( new LevelsetP2GetterCL(lset) ), solneg(a_solneg), solpos(a_solpos),
   thresholdlist_( thresholdlist ), c_level_( coarse_level ),
   f_level_( fine_level ), hacked_(a_hacked), hacked_width_(a_hacked_width), modified_( false ), decision_( DontCareC ), distributionout_( distributionout), owndistout_(true)
 {
@@ -97,7 +97,7 @@ MarkingStrategyCL* ConcentrationMarkingStrategyCL::clone_strategy()
     return new ConcentrationMarkingStrategyCL( *this );
 }
 
-Point3DCL ConcentrationMarkingStrategyCL::GetGradientOfTetra( const TetraCL &t, bool is_pos) 
+Point3DCL ConcentrationMarkingStrategyCL::GetGradientOfTetra( const TetraCL &t, bool is_pos)
 {
     LocalP1CL<> c(t, is_pos ? solpos : solneg);
     double det = 0;
@@ -110,7 +110,7 @@ Point3DCL ConcentrationMarkingStrategyCL::GetGradientOfTetra( const TetraCL &t, 
     return grad;
 }
 
-double ConcentrationMarkingStrategyCL::GetMeanConcentrationOfTetra( const TetraCL &t, bool is_pos) 
+double ConcentrationMarkingStrategyCL::GetMeanConcentrationOfTetra( const TetraCL &t, bool is_pos)
 {
     LocalP1CL<> c(t, is_pos ? solpos : solneg);
     double res = 0.0;
@@ -184,7 +184,7 @@ void ConcentrationMarkingStrategyCL::visit( const TetraCL &t )
             if (neighb != NULL)
             {
                 const FaceCL * face = t.GetFace(f);
-                
+
                 Point3DCL points[3];
                 for (Uint v = 0; v < 3; ++v)
                 {
@@ -201,17 +201,17 @@ void ConcentrationMarkingStrategyCL::visit( const TetraCL &t )
                 Point3DCL normal;
                 t.GetOuterNormal(f, normal);
                 double gradn = inner_prod(normal, grad);
-                
+
                 Point3DCL neighbgrad = GetGradientOfTetra(*neighb,num_pos>0);
                 double neighbgradn = inner_prod(normal, neighbgrad);
-                
+
                 errormeas += area * (neighbgradn - gradn) * (neighbgradn - gradn);
             }
         }
 // #endif
 
         // double threshold * = {1e-3, 1e-4, 1e-5};
-        
+
 #pragma omp critical(distout)
         *distributionout_ << lsetmean << "\t" << errormeas << "\n";
 

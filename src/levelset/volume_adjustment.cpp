@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2017 LNM RWTH Aachen, Germany
+ * Copyright 1017 LNM RWTH Aachen, Germany
 */
 
 #include "levelset/volume_adjustment.h"

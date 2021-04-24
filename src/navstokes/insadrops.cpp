@@ -9,16 +9,16 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * DROPS is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
- * 
- * 
+ *
+ *
  * Copyright 2009 LNM/SC RWTH Aachen, Germany
 */
 
@@ -322,13 +322,13 @@ void UzawaSolverCL<PoissonSolverT>::doSolve(
 
     double tol= tol_;
     tol*= tol;
-    Uint output= 50;//max_iter/20;  // nur 20 Ausgaben pro Lauf
+    Uint output= 50;//max_iter/10;  // nur 10 Ausgaben pro Lauf
 
     double res1_norm= 0., res2_norm= 0.;
     for( iter_=0; iter_<maxiter_; ++iter_) {
         z_xpay(res2, B*v, -1.0, c);
         res2_norm= norm_sq( res2);
-        _poissonSolver.SetTol( std::sqrt( res2_norm)/20.0);
+        _poissonSolver.SetTol( std::sqrt( res2_norm)/10.0);
         _poissonSolver.Solve(_M, p_corr, res2, DummyExchangeCL());
 //        p+= _tau * p_corr;
         axpy(_tau, p_corr, p);
@@ -343,7 +343,7 @@ void UzawaSolverCL<PoissonSolverT>::doSolve(
             std::cout << "step " << iter_ << ": norm of 1st eq= " << std::sqrt( res1_norm)
                       << ", norm of 2nd eq= " << std::sqrt( res2_norm) << std::endl;
 
-        _poissonSolver.SetTol( std::sqrt( res1_norm)/20.0);
+        _poissonSolver.SetTol( std::sqrt( res1_norm)/10.0);
         _poissonSolver.Solve( A, v_corr, res1, DummyExchangeCL());
         v-= v_corr;
     }

@@ -1590,7 +1590,7 @@ public:
         double fext = laplace_beltrami_xyz_sol(p,0);
         *ff = (fcal-fext)*(fcal-fext);
 
-        //     DROPS::BaryCoordCL tmp{0.051566846126417189,0.07044162180172904,0.1244933792872029,
+        //     DROPS::BaryCoordCL tmp{0.051566846126417189,0.07044162180172904,0.1244933792871029,
         //   0.75349815278465082};
         //   std::cout<<localP2RhsCp(tmp)<<std::endl;
         //  *ff = 1;

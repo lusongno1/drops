@@ -18,7 +18,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 //multigrid
@@ -316,7 +316,7 @@ void Strategy( InstatNavierStokes2PhaseP2P1CL& Stokes, LsetBndDataCL& lsetbnddat
     typedef JACPcCL LsetPcT;
 #endif
     LsetPcT lset_pc;
-    GMResSolverCL<LsetPcT>* gm = new GMResSolverCL<LsetPcT>( lset_pc, 200, P.get<int>("CouplingSolver.LevelsetSolver.Iter"), P.get<double>("CouplingSolver.LevelsetSolver.Tol"));
+    GMResSolverCL<LsetPcT>* gm = new GMResSolverCL<LsetPcT>( lset_pc, 100, P.get<int>("CouplingSolver.LevelsetSolver.Iter"), P.get<double>("CouplingSolver.LevelsetSolver.Tol"));
 
     LevelsetModifyCL lsetmod( P.get<int>("Levelset.Reparam.Freq"), P.get<int>("Levelset.Reparam.Method"), P.get<double>("Levelset.Reparam.MaxGrad"), P.get<double>("Levelset.Reparam.MinGrad"), is_periodic);
 
@@ -632,7 +632,7 @@ void Strategy( InstatNavierStokes2PhaseP2P1CL& Stokes, LsetBndDataCL& lsetbnddat
     typedef JACPcCL STConcPcT;
 #endif
                 STConcPcT                  pc_;
-                GMResSolverCL<STConcPcT> gm_( pc_, 20, P.get<int>("Transp.Solver.Iter"), P.get<double>("Transp.Solver.Tol"),
+                GMResSolverCL<STConcPcT> gm_( pc_, 10, P.get<int>("Transp.Solver.Iter"), P.get<double>("Transp.Solver.Tol"),
                                               P.get<int>("Transp.Solver.useRelTol",0), false, RightPreconditioning);
                 gm_.Solve( A, sol.GetSolution().Data, b.Data,Idx.GetEx());
                 std::cout << "res = " << gm_.GetResid() << ", iter = " << gm_.GetIter()<<"\n";
@@ -944,7 +944,7 @@ void  OnlyTransportStrategy( MultiGridCL& MG, LsetBndDataCL& lsetbnddata, AdapTr
                 typedef JACPcCL STConcPcT;
 #endif
                 STConcPcT                  pc_;
-                GMResSolverCL<STConcPcT> gm_( pc_, 20, P.get<int>("Transp.Solver.Iter"), P.get<double>("Transp.Solver.Tol"),
+                GMResSolverCL<STConcPcT> gm_( pc_, 10, P.get<int>("Transp.Solver.Iter"), P.get<double>("Transp.Solver.Tol"),
                                               P.get<int>("Transp.Solver.useRelTol",0), false, RightPreconditioning);
                 gm_.Solve( A, sol.GetSolution().Data, b.Data,Idx.GetEx());
                 std::cout << "res = " << gm_.GetResid() << ", iter = " << gm_.GetIter()<<"\n";
@@ -1004,7 +1004,7 @@ void  OnlyTransportStrategy( MultiGridCL& MG, LsetBndDataCL& lsetbnddata, AdapTr
         getrusage( RUSAGE_SELF, &usage);
         printf( "Memory usage | ru_maxrss: %li kB.\n", usage.ru_maxrss);
 
-        bool vtkoutnow = vtkwriter && (step%P.get<int>("VTK.Freq")==0 || step < 20);
+        bool vtkoutnow = vtkwriter && (step%P.get<int>("VTK.Freq")==0 || step < 10);
         if (vtkoutnow)
             vtkwriter->Write(tnew);
     }

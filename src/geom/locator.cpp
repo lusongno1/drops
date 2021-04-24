@@ -1,5 +1,5 @@
 /// \file locator.cpp
-/// \brief 
+/// \brief
 /// \author LNM RWTH Aachen: Joerg Grande
 
 /*
@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2014 LNM RWTH Aachen, Germany
+ * Copyright 1014 LNM RWTH Aachen, Germany
 */
 
 #include <sstream>

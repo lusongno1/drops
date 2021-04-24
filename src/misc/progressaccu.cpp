@@ -1,5 +1,5 @@
 /// \file progressaccu.cpp
-/// \brief accumulator which displays progress of accumulation 
+/// \brief accumulator which displays progress of accumulation
 /// \author LNM RWTH Aachen: Christoph Lehrenfeld
 
 /*
@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #include "misc/progressaccu.h"
@@ -40,7 +40,7 @@ void ProgressBarTetraAccumulatorCL::begin_accumulation ()
   if (active)
   {
     // std::cout  //<< "\n"
-    //            // << std::setw(20) 
+    //            // << std::setw(10)
     //            << name << ": ";
     tetprog = new Uint(0);
     prog = new int(-1);
@@ -53,9 +53,9 @@ void ProgressBarTetraAccumulatorCL::finalize_accumulation ()
   {
     if (isterm)
     {
-      std::cout                     
+      std::cout
         << "\r"
-        // << std::setw(20) 
+        // << std::setw(10)
         << name << ": " << std::setw(3) << 100 << "% [ "
         << std::setw(8) << ntet << " / " << std::setw(8) << ntet << " ]"
         << " - [ finished ]" << std::endl;
@@ -96,7 +96,7 @@ void ProgressBarTetraAccumulatorCL::visit (const TetraCL& )
         if (isterm){
           std::cout // << "\r                          "
             << "\r"
-            // << std::setw(20) 
+            // << std::setw(10)
             << name << ": " << std::setw(3) << newprog << "% [ "
             << std::setw(8) << mytetprog << " / " << std::setw(8) << ntet << " ]" << " - [";
           for (int i = 0; i < newprog/10; ++i)
@@ -107,7 +107,7 @@ void ProgressBarTetraAccumulatorCL::visit (const TetraCL& )
         }
         else //poor mans output (compatible to output files)
         {
-          if (newprog==0) 
+          if (newprog==0)
             std::cout << name << ": ["<< std::flush;
           else
             std::cout << "#" << std::flush;

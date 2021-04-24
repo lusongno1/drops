@@ -261,7 +261,7 @@ int main (int argc, char* argv[])
     // construct iterative solver and preconditioners
     typedef SSORPcCL      SymmPcPcT;
     SymmPcPcT symmPcPc_;
-    
+
 
     std::stringstream Astream;
     typedef PCGSolverCL<SymmPcPcT> PCGSolverT;
@@ -273,7 +273,7 @@ int main (int argc, char* argv[])
     std::stringstream Schurstream;
     PCGSolverT SchurPCGSolver (symmPcPc_, P.get<int>("Solver.PcBIter"), P.get<double>("Solver.PcBTol"), true, &Schurstream);
     SchurPreBaseCL *spc_ = new SurfaceLaplacePreCL<PCGSolverT>( Schur_hat, SchurPCGSolver);
-    
+
     //ExpensivePreBaseCL *apc_;
 //    SchurPreBaseCL  *spc_ = new DummyPreCL(1,1);  // no preconditioning for Schur
     typedef BlockPreCL<ExpensivePreBaseCL, SchurPreBaseCL, DiagSpdBlockPreCL>  DiagBlockPcT;

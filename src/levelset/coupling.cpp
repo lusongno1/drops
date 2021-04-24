@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2010 LNM/SC RWTH Aachen, Germany
+ * Copyright 1010 LNM/SC RWTH Aachen, Germany
 */
 
 #ifndef DROPS_COUPLING_CPP

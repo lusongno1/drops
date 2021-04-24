@@ -104,7 +104,7 @@ int TestMinres2()
     AB.Build();
     DROPS::VectorCL b( 0., 4);
     b[0]= -1277./2/1.;
-    b[1]= -2015./2.;
+    b[1]= -1015./2.;
     b[2]= -3907./4.;
     b[3]= -533./4.;
     DROPS::VectorCL x( 0., 4);
@@ -112,7 +112,7 @@ int TestMinres2()
     std::cout << "A = " << A  << '\n' << "b = " << b << std::endl;
     int mi= 10;
     double tol= 1e-10;
-    std::cout << "Minres2: "; 
+    std::cout << "Minres2: ";
     MINRES( A, x, b, DROPS::DummyExchangeCL(), mi, tol);
     std::cout << "TEST3 x: " << x << "TEST3 Ax-b: " << DROPS::VectorCL( A*x - b) << '\n'  << "TEST3 Iterationnumber: " << mi
               << '\n'<< "TEST3 Residual: "  << tol << '\n'  << std::endl;
@@ -131,7 +131,7 @@ int TestPMinres()
     AB.Build();
     DROPS::VectorCL b( 0., 4);
     b[0]= -1277./2/1.;
-    b[1]= -2015./2.;
+    b[1]= -1015./2.;
     b[2]= -3907./4.;
     b[3]= -533./4.;
     DROPS::VectorCL x( 0., 4);
@@ -142,9 +142,9 @@ int TestPMinres()
     DROPS::LanczosONBCL<DROPS::VectorCL> q;
     q.new_basis( A, b, DROPS::DummyExchangeCL());
     DROPS::PMResSolverCL<DROPS::LanczosONBCL<DROPS::VectorCL> > pmr( q, mi, tol);
-    std::cout << "PMinres: "; 
+    std::cout << "PMinres: ";
     pmr.Solve( A, x, b, DROPS::DummyExchangeCL());
-    std::cout << "TEST4 x: " << x << "TEST4 Ax-b: " << DROPS::VectorCL( A*x - b) << '\n' << "TEST4 Iterationnumber: " << pmr.GetIter() 
+    std::cout << "TEST4 x: " << x << "TEST4 Ax-b: " << DROPS::VectorCL( A*x - b) << '\n' << "TEST4 Iterationnumber: " << pmr.GetIter()
               << '\n' << "TEST4 Residual: " << pmr.GetResid() << '\n' << std::endl;
     return 0;
 }
@@ -161,7 +161,7 @@ int TestPMinres2()
     AB.Build();
     DROPS::VectorCL b( 0., 4);
     b[0]= -1277./2/1.;
-    b[1]= -2015./2.;
+    b[1]= -1015./2.;
     b[2]= -3907./4.;
     b[3]= -533./4.;
     DROPS::VectorCL x( 0., 4);
@@ -172,9 +172,9 @@ int TestPMinres2()
     DROPS::DummyPcCL pc;
     DROPS::PLanczosONBCL<DROPS::VectorCL, DROPS::DummyPcCL> q( pc);
     DROPS::PMResSolverCL<DROPS::PLanczosONBCL<DROPS::VectorCL, DROPS::DummyPcCL> > pmr( q, mi, tol);
-    std::cout << "PMinres2: "; 
+    std::cout << "PMinres2: ";
     pmr.Solve( A, x, b, DROPS::DummyExchangeCL());
-    std::cout << "TEST5 x: " << x << "TEST5 Ax-b: " << DROPS::VectorCL( A*x - b) << '\n' << "TEST5 Iterationnumber: " << pmr.GetIter() 
+    std::cout << "TEST5 x: " << x << "TEST5 Ax-b: " << DROPS::VectorCL( A*x - b) << '\n' << "TEST5 Iterationnumber: " << pmr.GetIter()
               << '\n' << "TEST5 Residual: " << pmr.GetResid() << '\n' << std::endl;
     return 0;
 }

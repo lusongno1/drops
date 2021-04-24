@@ -37,12 +37,12 @@ static double Reaction(const DROPS::Point3DCL&, double =0)
 {
     return 0.0;
 }
-   
+
 DROPS::Point3DCL Source( const DROPS::Point3DCL& p, double)
 {
     DROPS::SVectorCL<3> ret(0.0);
     ret[2]= 3*p[2];
-    return ret; 
+    return ret;
 }
 
 
@@ -54,7 +54,7 @@ static DROPS::SVectorCL<3> LsgVel(const DROPS::Point3DCL& p, double)
     ret[2]= -2*p[2];
     return ret;
 }
-    
+
 static double LsgPr(const DROPS::Point3DCL& p, double)
 {
     return -(p[0]*p[0]+p[1]*p[1]+p[2]*p[2])/2;
@@ -69,7 +69,7 @@ class StokesCoeffCL
     static instat_scalar_fun_ptr q;
     //source term
     static instat_vector_fun_ptr f;
-        
+
     const double nu;
 
     StokesCoeffCL(): nu(1.0)
@@ -133,13 +133,13 @@ void UzawaSolverCL<PoissonSolverT>::doSolve(
 
     double tol= tol_;
     tol*= tol;
-    Uint output= 50;//max_iter/20;  // nur 20 Ausgaben pro Lauf
+    Uint output= 50;//max_iter/10;  // nur 10 Ausgaben pro Lauf
 
     double res1_norm= 0., res2_norm= 0.;
     for( iter_=0; iter_<maxiter_; ++iter_) {
         z_xpay(res2, B*v, -1.0, c);
         res2_norm= norm_sq( res2);
-        _poissonSolver.SetTol( std::sqrt( res2_norm)/20.0);
+        _poissonSolver.SetTol( std::sqrt( res2_norm)/10.0);
         _poissonSolver.Solve(_M, p_corr, res2, DummyExchangeCL());
 //        p+= _tau * p_corr;
         axpy(_tau, p_corr, p);
@@ -154,7 +154,7 @@ void UzawaSolverCL<PoissonSolverT>::doSolve(
             std::cout << "step " << iter_ << ": norm of 1st eq= " << std::sqrt( res1_norm)
                       << ", norm of 2nd eq= " << std::sqrt( res2_norm) << std::endl;
 
-        _poissonSolver.SetTol( std::sqrt( res1_norm)/20.0);
+        _poissonSolver.SetTol( std::sqrt( res1_norm)/10.0);
         _poissonSolver.Solve( A, v_corr, res1, DummyExchangeCL());
         v-= v_corr;
     }
@@ -296,13 +296,13 @@ void StrategyNavSt(NavierStokesP2P1CL<Coeff>& NS, int maxStep, double fp_tol, in
         NS.prM.SetIdx( pidx1, pidx1);
         NS.SetupPrMass( &NS.prM);
         AFPDeCo_Uzawa_PCG_CL<NavStokesCL> statsolver(NS, NS.prM.Data.GetFinest(), fp_maxiter, fp_tol,
-                                                     2000, poi_maxiter, poi_tol, uzawa_red);
+                                                     1000, poi_maxiter, poi_tol, uzawa_red);
 //        FPDeCo_Uzawa_PCG_CL<NavStokesCL> statsolver(NS, NS.prM.Data, fp_maxiter, fp_tol,
-//                                                  2000, poi_maxiter, poi_tol, uzawa_red);
+//                                                  1000, poi_maxiter, poi_tol, uzawa_red);
 //        AFPDeCo_Schur_PCG_CL<NavStokesCL> statsolver(NS, fp_maxiter, fp_tol,
-//                                                   2000, poi_maxiter, poi_tol, uzawa_red);
+//                                                   1000, poi_maxiter, poi_tol, uzawa_red);
 //        FPDeCo_Schur_PCG_CL<NavStokesCL> statsolver(NS, fp_maxiter, fp_tol,
-//                                                  2000, poi_maxiter, poi_tol, uzawa_red);
+//                                                  1000, poi_maxiter, poi_tol, uzawa_red);
         VelVecDescCL old_v1( vidx1);
         old_v1.Data= v1->Data;
         VelVecDescCL rhsN( vidx1);

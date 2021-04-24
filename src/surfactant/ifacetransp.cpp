@@ -3577,7 +3577,7 @@ void SurfactantNarrowBandStblP1CL::InitStep2 (double new_t)
 
         WriteToFile( temp_ic.Data, "Extended.txt", "mass");*/
 
-    //fulltransport_= new TransportP2FunctionCL( MG_, make_P2Eval( MG_, Bnd_v_, oldv_), full_idx, dt_,  /*theta=*/theta_, /*SD=*/ 0.1, /*iter=*/ 2000, /*tol=*/ gm_.GetTol());
+    //fulltransport_= new TransportP2FunctionCL( MG_, make_P2Eval( MG_, Bnd_v_, oldv_), full_idx, dt_,  /*theta=*/theta_, /*SD=*/ 0.1, /*iter=*/ 1000, /*tol=*/ gm_.GetTol());
     //fulltransport_->DoStep( rhsext.Data, make_P2Eval( MG_, Bnd_v_, *v_));
 
     if(new_t/dt_==1)
@@ -5337,7 +5337,7 @@ void SurfactantCharTransportP1CL::InitStep (double new_t)
     full_idx.CreateNumbering( idx.TriangLevel(), MG_);
     std::cout << " full NumUnknowns: " << full_idx.NumUnknowns() << std::endl;
 
-    fulltransport_= new TransportP1FunctionCL( MG_, make_P2Eval( MG_, Bnd_v_, oldv_), full_idx, dt_,  /*theta=*/theta_, /*SD=*/ 0.1, /*iter=*/ 2000, /*tol=*/ 0.1*gm_.GetTol());
+    fulltransport_= new TransportP1FunctionCL( MG_, make_P2Eval( MG_, Bnd_v_, oldv_), full_idx, dt_,  /*theta=*/theta_, /*SD=*/ 0.1, /*iter=*/ 1000, /*tol=*/ 0.1*gm_.GetTol());
 
     VecDescCL rhs( &idx);
     rhs.Data= (1./dt_)*ic.Data;

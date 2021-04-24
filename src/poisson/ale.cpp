@@ -29,7 +29,7 @@
 
 
 namespace DROPS{
-    
+
 void ALECL::InitGrid() const
 {
     Point3DCL New_Coord(0.);
@@ -49,7 +49,7 @@ void ALECL::InitGrid() const
 void ALECL::MovGrid(double t) const
 {
     Point3DCL New_Coord(0.);
-    int lvl= mg_.GetLastLevel();  
+    int lvl= mg_.GetLastLevel();
     for (MultiGridCL::TriangVertexIteratorCL sit= mg_.GetTriangVertexBegin(lvl), send= mg_.GetTriangVertexEnd(lvl);
         sit != send; ++sit)
     {

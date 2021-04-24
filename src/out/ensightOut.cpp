@@ -180,7 +180,7 @@ Ensight6OutCL::putGeom (MultiGridCL& mg, int lvl, std::string geoName)
         std::strcpy(buffer,"part 1");                          //part no. line
         os.write(buffer,80);
 
-        std::strncpy( buffer, geoName.c_str(), 20);
+        std::strncpy( buffer, geoName.c_str(), 10);
         os.write(buffer,80);
         std::strcpy(buffer,"tetra4");                          // element 1 tetrahedron with 4 nodes each
         os.write(buffer,80);

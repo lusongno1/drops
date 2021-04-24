@@ -37,11 +37,11 @@ static double Reaction(const DROPS::Point3DCL&, double =0)
 {
     return 0.0;
 }
-   
+
 DROPS::Point3DCL Source( const DROPS::Point3DCL&, double)
 {
     DROPS::SVectorCL<3> ret(0.0);
-    return ret; 
+    return ret;
 }
 
 static const double st=0.1;
@@ -68,7 +68,7 @@ class StokesCoeffCL
     static instat_scalar_fun_ptr q;
     //source term
     static instat_vector_fun_ptr f;
-        
+
     const double nu;
 
     StokesCoeffCL(): nu(1.0)
@@ -221,7 +221,7 @@ inline void Uzawa_IPCG_CL::doSolve(
         res2(p.size());
     double tol= tol_;
     tol*= tol;
-    Uint output= 50;//max_iter/20;  // nur 20 Ausgaben pro Lauf
+    Uint output= 50;//max_iter/10;  // nur 10 Ausgaben pro Lauf
 
     double res1_norm= 0., res2_norm= 0.;
     for( iter_=0; iter_<maxiter_; ++iter_)
@@ -495,8 +495,8 @@ void Strategy(StokesP2P1CL<Coeff>& Stokes, double inner_iter_tol, double tol,
 
         if (meth)
         {
-//            PSchur_PCG_CL schurSolver( M.Data, 200, outer_tol, 200, inner_iter_tol);
-            PSchur_GSPCG_CL schurSolver( Stokes.prM.Data.GetFinest(), 200, outer_tol, 200, inner_iter_tol);
+//            PSchur_PCG_CL schurSolver( M.Data, 100, outer_tol, 100, inner_iter_tol);
+            PSchur_GSPCG_CL schurSolver( Stokes.prM.Data.GetFinest(), 100, outer_tol, 100, inner_iter_tol);
             time.Start();
             schurSolver.Solve( A->Data, B->Data, C->Data, v1->Data, p1->Data, b->Data, c->Data, v1->RowIdx->GetEx(), p1->RowIdx->GetEx());
             time.Stop();

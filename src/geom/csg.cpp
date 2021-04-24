@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #include "geom/csg.h"
@@ -170,7 +170,7 @@ class InfiniteConeBodyCL : public BodyCL
         } catch (DROPSErrCL) {}
         axis_/=axis_.norm();
     }
- 
+
    const VecOfStringT& known_keys () const {
         static std::string keys[] = {
             std::string( "Type"),
@@ -332,7 +332,7 @@ class SimilarityTransformBodyCL : public BodyCL
     Point3DCL t_;
 
   public:
-    SimilarityTransformBodyCL (BodyStackT& s, const ParamCL& p) 
+    SimilarityTransformBodyCL (BodyStackT& s, const ParamCL& p)
         : s_(1.), do_rotate_( false), t_( 0.) {
         try {
             s_= p.get<double>( "Scaling");

@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2014 LNM RWTH Aachen, Germany
+ * Copyright 1014 LNM RWTH Aachen, Germany
 */
 
 #ifndef DROPS_LOCATOR_H

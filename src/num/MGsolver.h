@@ -253,7 +253,7 @@ class BSSmootherCL
  \param maxit  number of maximal iterations for the inner CG method
  \param red    stopping criterion for the inner CG method
  \param omega  scaling parameter for the diagonal of A */
-    BSSmootherCL( int maxit = 20, double red = 2e-1, double omega = 2.0) : maxit_(maxit), red_(red), omega_(omega) {};
+    BSSmootherCL( int maxit = 10, double red = 2e-1, double omega = 2.0) : maxit_(maxit), red_(red), omega_(omega) {};
     template <typename Mat, typename Vec, typename ExT>
     void Apply( const Mat& A, const Mat& B, const Mat&, const Mat& M,
                 Vec& u, Vec& p, const Vec& f, const Vec& g, const ExT& vel_ex, const ExT& p_ex ) const;

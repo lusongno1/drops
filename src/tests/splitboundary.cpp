@@ -45,13 +45,13 @@ int main()
     std::cout << "Checking Sanity...\n" << std::flush;
     std::cout << DROPS::SanityMGOutCL(mg) << std::endl;
     std::cout << "...ok" << std::endl;
-    
+
     int bnd_faces =0;
         DROPS_FOR_TRIANG_TETRA( mg, /*default-level*/-1, it)
     {
         bnd_faces =0;
         for (int i =0; i<4; ++i)
-        {  
+        {
             const DROPS::FaceCL* f = it->GetFace(i);
             if (f->IsOnBoundary())
                 bnd_faces += 1;

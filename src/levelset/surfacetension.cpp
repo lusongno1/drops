@@ -88,7 +88,7 @@ void SurfaceTensionCL::ComputeSF(const TetraCL& t, const BaryCoordCL * const p,
                               LocalP1CL<> p1_sigma_s(t, *s_, cBnd_);
                               Uint lidx = sigma_vtk_->RowIdx->GetIdx();
                               for(Uint i=0;i<4;i++)
-                                  sigma_vtk_->Data[t.GetVertex(i)->Unknowns(lidx)] = p1_sigma[i] + sigma_s(p1_sigma_s[i]); 
+                                  sigma_vtk_->Data[t.GetVertex(i)->Unknowns(lidx)] = p1_sigma[i] + sigma_s(p1_sigma_s[i]);
                            }
 
                       }

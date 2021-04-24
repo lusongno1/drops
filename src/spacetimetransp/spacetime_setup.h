@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #ifndef DROPS_SPACETIME_SETUP_H
@@ -48,15 +48,15 @@ const Uint quad1d_p3_n_points = 4;
 const double quad1d_p3_points[4] =
     { 0.0, 1.0/3.0,  2.0/3.0, 1.0 };
 const double quad1d_p3_modal_psik_times_psi[4][2] =
-    { {13.0/120.0 ,  1.0/ 60.0},
+    { {13.0/110.0 ,  1.0/ 60.0},
       { 3.0/ 10.0 ,  3.0/ 40.0},
       { 3.0/ 40.0 ,  3.0/ 10.0},
-      { 1.0/ 60.0 , 13.0/120.0}};     // int u*v, u in P1, v in P2
+      { 1.0/ 60.0 , 13.0/110.0}};     // int u*v, u in P1, v in P2
 const double quad1d_p3_modal_psik_times_psi_i_psi_j[4][2][2] =
-    { { { 1./ 10.0, 1./120.0} , {1./120.0, 1./120.0} },
+    { { { 1./ 10.0, 1./110.0} , {1./110.0, 1./110.0} },
       { { 9./ 40.0, 3./ 40.0} , {3./ 40.0,       0.} },
       { {      0.0, 3./ 40.0} , {3./ 40.0, 9./ 40.0} },
-      { { 1./120.0, 1./120.0} , {1./120.0, 1./ 10.0} } }; // int u*v*w, u in P1, v in P1, w in P2
+      { { 1./110.0, 1./110.0} , {1./110.0, 1./ 10.0} } }; // int u*v*w, u in P1, v in P1, w in P2
 //naiv backup:
 const double quad1d_p3_intweights[4] =
     { 1.0/8.0, 3.0/8.0, 3.0/8.0, 1.0/8.0};
@@ -99,7 +99,7 @@ const double quad1d_p0_intweights[1] =
 class MomentsQuad1D
 {
 public:
-    
+
     MomentsQuad1D(){;}
 
     static int GetNPoints(int order){
@@ -139,7 +139,7 @@ public:
             break;
         case 3:
             return quad1d_p3_modal_psik_times_psi_i_psi_j[l][i][j];
-            break;        
+            break;
         default:
             throw DROPSErrCL("MomentsQuad1D::GetIntegralPkP1P1: Unknown integration order!");
             return 0;
@@ -193,21 +193,21 @@ const double mass_1D_p1p1[2][2] = { {1.0/3.0, 1.0/6.0} , {1.0/6.0, 1.0/3.0}};   
 const double dudtv_1D_p1p1[2][2] = { {-1.0/2.0, 1.0/2.0} , {-1.0/2.0, 1.0/2.0}};  // du/dt * v
 const double dudtdvdt_1D_p1p1[2][2] = { {1.0, -1.0} , {-1.0, 1.0}};  // du/dt * dv/dt
 const double m_udvdt_1D_p1p1[2][2] = { {1.0/2.0, 1.0/2.0} , {-1.0/2.0, -1.0/2.0}};//    -u * dv/dt
-const double dudtv_0_5_m_udvdt_0_5_1D_p1p1[2][2] = 
-    { { 0.0, 0.5}, 
+const double dudtv_0_5_m_udvdt_0_5_1D_p1p1[2][2] =
+    { { 0.0, 0.5},
       {-0.5, 0.0} };   // 0.5*u * dv/dt - 0.5 * v * du/dt
-const double udvdt_1D_p1p1[2][2] = 
-    { {-1.0/2.0, -1.0/2.0}, 
+const double udvdt_1D_p1p1[2][2] =
+    { {-1.0/2.0, -1.0/2.0},
       { 1.0/2.0,  1.0/2.0} };  //     u * dv/dt
 const double mass_1D_p1p1p1[2][2][2] =
     { { { 1.0/4.0, 1.0/12.0} , {1.0/12.0, 1.0/12.0} },      // u * v * w
       { {1.0/12.0, 1.0/12.0} , {1.0/12.0, 1.0/4.00} } };
-const double mass_1D_p2p1[3][2] = 
-    { {1.0/6.0,     0.0}, 
+const double mass_1D_p2p1[3][2] =
+    { {1.0/6.0,     0.0},
       {1.0/3.0, 1.0/3.0},
       {    0.0, 1.0/6.0} };     //     u * v, u in P1, v in P2
 
-const double mass_1D_p2p1p1[3][2][2] = 
+const double mass_1D_p2p1p1[3][2][2] =
     { { { 9./60.0, 1./60.0} , {1./60.0, -1./60.0} },
       { {12./60.0, 8./60.0} , {8./60.0, 12./60.0} },
       { {-1./60.0, 1./60.0} , {1./60.0,  9./60.0} } }; // u*v*w, u in P1, v in P1, w in P2
@@ -216,13 +216,13 @@ const double mass_1D_p2p1p1[3][2][2] =
 class STVelocityContainer
 {
   typedef BndDataCL<Point3DCL>                              VelBndDataT;
-  typedef P2EvalCL<SVectorCL<3>, const VelBndDataT, const VecDescCL> const_DiscVelSolCL;  
+  typedef P2EvalCL<SVectorCL<3>, const VelBndDataT, const VecDescCL> const_DiscVelSolCL;
   private:
-    VecDescCL *vold_;   
-    VecDescCL *vnew_;   
-    const VelBndDataT*    Bnd_v_;     
-    MultiGridCL*   MG_;  
-    instat_vector_fun_ptr vfptr_; 
+    VecDescCL *vold_;
+    VecDescCL *vnew_;
+    const VelBndDataT*    Bnd_v_;
+    MultiGridCL*   MG_;
+    instat_vector_fun_ptr vfptr_;
     const_DiscVelSolCL * asp2_old;
     const_DiscVelSolCL * asp2_new;
   public:
@@ -233,34 +233,34 @@ class STVelocityContainer
       asp2_old = new const_DiscVelSolCL( vold_, Bnd_v_, MG_);
       asp2_new = new const_DiscVelSolCL( vnew_, Bnd_v_, MG_);
     };
-    
+
     STVelocityContainer(instat_vector_fun_ptr v):vold_(0),vnew_(0),Bnd_v_(0),MG_(0),vfptr_(v),asp2_old(0),asp2_new(0){};
-    
+
     ~STVelocityContainer()
     {
       if (asp2_old) delete asp2_old;
       if (asp2_new) delete asp2_new;
     }
-    
+
     const_DiscVelSolCL & GetVelocityAsP2_Old() const
-        { 
+        {
           if (!(vold_ && Bnd_v_))
             throw DROPSErrCL("velocity not prescribed as a const_DiscVelSolCL");
-          return *asp2_old; 
+          return *asp2_old;
         }
-        
+
     const_DiscVelSolCL & GetVelocityAsP2_New() const
-        { 
+        {
           if (!(vnew_ && Bnd_v_))
             throw DROPSErrCL("velocity not prescribed as a const_DiscVelSolCL");
-          return *asp2_new; 
+          return *asp2_new;
         }
-        
+
     const_DiscVelSolCL GetVelocityAsP2_Old(const VecDescCL& vel) const
-        { 
+        {
           if (!(vold_ && Bnd_v_))
             throw DROPSErrCL("velocity not prescribed as a const_DiscVelSolCL");
-          return const_DiscVelSolCL( &vel, Bnd_v_, MG_); 
+          return const_DiscVelSolCL( &vel, Bnd_v_, MG_);
         }
 
     instat_vector_fun_ptr GetVelocityAsFunctionPointer() const
@@ -269,15 +269,15 @@ class STVelocityContainer
         throw DROPSErrCL("velocity not prescribed as a function(pointer)");
       return vfptr_;
     }
-    
+
     bool VelocityAsP2() const {
       return (vold_ && vnew_ && Bnd_v_);
     }
-     
+
     bool VelocityAsFunctionPointer() const {
       return (vfptr_);
     }
- 
+
 };
 
 
@@ -324,10 +324,10 @@ inline void composite_elcontrib_to_xelcontrib(double coup_s_s_neg[D][D], double 
 }
 
 
-// Accumulator for space time integrals - testing surface area, space-time surface area etc... 
+// Accumulator for space time integrals - testing surface area, space-time surface area etc...
 class STGeomApproxTestAccumulatorCL : public TetraAccumulatorCL
 {
-    protected:   
+    protected:
     const MultiGridCL& MG_;
 
     const LevelsetP2CL * lsetp2old;
@@ -350,16 +350,16 @@ class STGeomApproxTestAccumulatorCL : public TetraAccumulatorCL
     Point3DCL * intnorm;
     Point4DCL * intnorm4d;
 
-public: 
+public:
     STGeomApproxTestAccumulatorCL (const MultiGridCL& MG, const LevelsetP2CL * lsetp2old_in,
-                                   const LevelsetP2CL * lsetp2new_in, 
+                                   const LevelsetP2CL * lsetp2new_in,
                                    instat_scalar_fun_ptr lset_fpt, const double t1, const double t2,
                                    const ParamCL::ptree_type & P);
     ///\brief Initializes matrix-builders and load-vectors
     void begin_accumulation ();
     ///\brief Builds the matrices
     void finalize_accumulation();
-    virtual void visit (const TetraCL&); 
+    virtual void visit (const TetraCL&);
     virtual TetraAccumulatorCL* clone (int /*tid*/) { return new STGeomApproxTestAccumulatorCL( *this); }
 };
 
@@ -426,24 +426,24 @@ public:
 // Accumulator for space time integrals
 class STVolumeAccumulator_P1SP1TXCL : public TetraAccumulatorCL
 {
-    protected:   
+    protected:
     const MultiGridCL& MG_;
-    const BndDataCL<> * BndData_neg; 
-    const BndDataCL<> * BndData_pos; 
-    MatrixCL* Amat_; 
-    VecDescCL* b_; 
-    const IdxDescCL& RowIdx_; 
-    const IdxDescCL& ColIdx_; 
+    const BndDataCL<> * BndData_neg;
+    const BndDataCL<> * BndData_pos;
+    MatrixCL* Amat_;
+    VecDescCL* b_;
+    const IdxDescCL& RowIdx_;
+    const IdxDescCL& ColIdx_;
 
     const LevelsetP2CL * lsetp2old;
     const LevelsetP2CL * lsetp2new;
-    
-    MatrixBuilderCL * A_;    
-    
+
+    MatrixBuilderCL * A_;
+
     const ExtIdxDescCL& Xidx;
 
     //local informations
-    
+
     // - sharable (for future changes)
     Point3DCL G[4];
     double det;
@@ -480,10 +480,10 @@ class STVolumeAccumulator_P1SP1TXCL : public TetraAccumulatorCL
     double elvec_x[8];
 
     /* QuadCL<> U_Grad[4]; */
-    
+
     const Uint lvl;
     const Uint idx;
-    
+
     const Uint ints_per_space_edge;
     const Uint subtimeintervals;
 
@@ -499,14 +499,14 @@ class STVolumeAccumulator_P1SP1TXCL : public TetraAccumulatorCL
     void update_global_matrix_without_x();
     void update_global_matrix_with_x();
     void update_coupling(const TetraCL& sit, bool with_x);
-    
-public: 
-    STVolumeAccumulator_P1SP1TXCL (const MultiGridCL& MG, const BndDataCL<> * BndData_neg_in, 
-                                   const BndDataCL<> * BndData_pos_in, 
+
+public:
+    STVolumeAccumulator_P1SP1TXCL (const MultiGridCL& MG, const BndDataCL<> * BndData_neg_in,
+                                   const BndDataCL<> * BndData_pos_in,
                                    const LevelsetP2CL * lsetp2old_in,
                                    const LevelsetP2CL * lsetp2new_in,
-                                   MatrixCL* Amat, VecDescCL* b, 
-                                   const IdxDescCL& RowIdx, const IdxDescCL& ColIdx, 
+                                   MatrixCL* Amat, VecDescCL* b,
+                                   const IdxDescCL& RowIdx, const IdxDescCL& ColIdx,
                                    const double t1, const double t2,
                                    const ParamCL::ptree_type & P);
 
@@ -517,27 +517,27 @@ public:
 
     virtual void local_setup (const TetraCL& sit) = 0;
 
-    virtual void visit (const TetraCL&); 
+    virtual void visit (const TetraCL&);
     void output_elmats (); // just for debugging... Can be removed later..
 
     virtual TetraAccumulatorCL* clone (int /*tid*/) = 0; //{ return new STVolumeAccumulator_P1SP1TXCL ( *this); }
-    
+
 };
 
-// lets-see-matrix 
+// lets-see-matrix
 class MassTestAccumulator_P1SP1TXCL : public STVolumeAccumulator_P1SP1TXCL
 {
     protected:
     typedef STVolumeAccumulator_P1SP1TXCL base_;
     using                           base_::MG_;
-    using                           base_::BndData_neg; 
-    using                           base_::BndData_pos; 
-    using                           base_::Amat_; 
-    using                           base_::b_; 
-    using                           base_::RowIdx_; 
-    using                           base_::ColIdx_; 
-    using                           base_::lsetp2old; 
-    using                           base_::lsetp2new; 
+    using                           base_::BndData_neg;
+    using                           base_::BndData_pos;
+    using                           base_::Amat_;
+    using                           base_::b_;
+    using                           base_::RowIdx_;
+    using                           base_::ColIdx_;
+    using                           base_::lsetp2old;
+    using                           base_::lsetp2new;
     using                           base_::A_;              //MassTests matrix
     using                           base_::G;
     using                           base_::det;
@@ -570,21 +570,21 @@ class MassTestAccumulator_P1SP1TXCL : public STVolumeAccumulator_P1SP1TXCL
     instat_scalar_fun_ptr rhs_pos;
 
     public:
-    MassTestAccumulator_P1SP1TXCL (const MultiGridCL& MG, const BndDataCL<> * BndData_neg_in, 
-                                   const BndDataCL<> * BndData_pos_in, 
+    MassTestAccumulator_P1SP1TXCL (const MultiGridCL& MG, const BndDataCL<> * BndData_neg_in,
+                                   const BndDataCL<> * BndData_pos_in,
                                    const LevelsetP2CL * lsetp2old_in,
                                    const LevelsetP2CL * lsetp2new_in,
                                    instat_scalar_fun_ptr rhs_neg_in,
                                    instat_scalar_fun_ptr rhs_pos_in,
-                                   MatrixCL* Amat, VecDescCL* b, 
-                                   const IdxDescCL& RowIdx, const IdxDescCL& ColIdx, 
+                                   MatrixCL* Amat, VecDescCL* b,
+                                   const IdxDescCL& RowIdx, const IdxDescCL& ColIdx,
                                    const double t1, const double t2,
                                    const ParamCL::ptree_type & P)
         : base_(MG,BndData_neg_in,BndData_pos_in,lsetp2old_in,lsetp2new_in,Amat,b,RowIdx,ColIdx,t1,t2,P),
         rhs_neg(rhs_neg_in),rhs_pos(rhs_pos_in){}
     virtual void local_setup (const TetraCL& sit);
     virtual TetraAccumulatorCL* clone (int /*tid*/) { return new MassTestAccumulator_P1SP1TXCL ( *this); }
-    
+
 };
 
 
@@ -594,14 +594,14 @@ class SpatialLaplaceAccumulator_P1SP1TXCL : public STVolumeAccumulator_P1SP1TXCL
     protected:
     typedef STVolumeAccumulator_P1SP1TXCL base_;
     using                           base_::MG_;
-    using                           base_::BndData_neg; 
-    using                           base_::BndData_pos; 
-    using                           base_::Amat_; 
-    using                           base_::b_; 
-    using                           base_::RowIdx_; 
-    using                           base_::ColIdx_; 
-    using                           base_::lsetp2old; 
-    using                           base_::lsetp2new; 
+    using                           base_::BndData_neg;
+    using                           base_::BndData_pos;
+    using                           base_::Amat_;
+    using                           base_::b_;
+    using                           base_::RowIdx_;
+    using                           base_::ColIdx_;
+    using                           base_::lsetp2old;
+    using                           base_::lsetp2new;
     using                           base_::A_;              //SpatialLaplaces matrix
     using                           base_::G;
     using                           base_::det;
@@ -636,14 +636,14 @@ class SpatialLaplaceAccumulator_P1SP1TXCL : public STVolumeAccumulator_P1SP1TXCL
     /* QuadCL<> U_Grad[4]; */
 
     public:
-    SpatialLaplaceAccumulator_P1SP1TXCL (const MultiGridCL& MG, const BndDataCL<> * BndData_neg_in, 
-                                         const BndDataCL<> * BndData_pos_in, 
+    SpatialLaplaceAccumulator_P1SP1TXCL (const MultiGridCL& MG, const BndDataCL<> * BndData_neg_in,
+                                         const BndDataCL<> * BndData_pos_in,
                                          const LevelsetP2CL * lsetp2old_in,
                                          const LevelsetP2CL * lsetp2new_in,
                                          instat_scalar_fun_ptr rhs_neg_in,
                                          instat_scalar_fun_ptr rhs_pos_in,
-                                         MatrixCL* Amat, VecDescCL* b, 
-                                         const IdxDescCL& RowIdx, const IdxDescCL& ColIdx, 
+                                         MatrixCL* Amat, VecDescCL* b,
+                                         const IdxDescCL& RowIdx, const IdxDescCL& ColIdx,
                                          const double t1, const double t2,
                                          const ParamCL::ptree_type & P)
         : base_(MG,BndData_neg_in,BndData_pos_in,lsetp2old_in,lsetp2new_in,Amat,b,RowIdx,ColIdx,t1,t2,P),
@@ -651,7 +651,7 @@ class SpatialLaplaceAccumulator_P1SP1TXCL : public STVolumeAccumulator_P1SP1TXCL
     virtual void local_setup (const TetraCL& sit);
 
     virtual TetraAccumulatorCL* clone (int /*tid*/ ) { return new SpatialLaplaceAccumulator_P1SP1TXCL ( *this); }
-    
+
 };
 
 // STTransport
@@ -660,14 +660,14 @@ class STTransportVolumeAccumulator_P1SP1TXCL : public STVolumeAccumulator_P1SP1T
     protected:
     typedef STVolumeAccumulator_P1SP1TXCL base_;
     using                           base_::MG_;
-    using                           base_::BndData_neg; 
-    using                           base_::BndData_pos; 
-    using                           base_::Amat_; 
-    using                           base_::b_; 
-    using                           base_::RowIdx_; 
-    using                           base_::ColIdx_; 
-    using                           base_::lsetp2old; 
-    using                           base_::lsetp2new; 
+    using                           base_::BndData_neg;
+    using                           base_::BndData_pos;
+    using                           base_::Amat_;
+    using                           base_::b_;
+    using                           base_::RowIdx_;
+    using                           base_::ColIdx_;
+    using                           base_::lsetp2old;
+    using                           base_::lsetp2new;
     using                           base_::A_;              //SpatialLaplaces matrix
     using                           base_::G;
     using                           base_::det;
@@ -701,7 +701,7 @@ class STTransportVolumeAccumulator_P1SP1TXCL : public STVolumeAccumulator_P1SP1T
     instat_scalar_fun_ptr lset_fpt;
     instat_scalar_fun_ptr rhs_neg;
     instat_scalar_fun_ptr rhs_pos;
-    
+
     /* instat_vector_fun_ptr convection; */
     STVelocityContainer & convection;
 
@@ -727,23 +727,23 @@ class STTransportVolumeAccumulator_P1SP1TXCL : public STVolumeAccumulator_P1SP1T
     bool adjoint;
 
     public:
-    STTransportVolumeAccumulator_P1SP1TXCL (const MultiGridCL& MG, const BndDataCL<> * BndData_neg_in, 
-                                            const BndDataCL<> * BndData_pos_in, 
+    STTransportVolumeAccumulator_P1SP1TXCL (const MultiGridCL& MG, const BndDataCL<> * BndData_neg_in,
+                                            const BndDataCL<> * BndData_pos_in,
                                             const LevelsetP2CL * lsetp2old_in,
                                             const LevelsetP2CL * lsetp2new_in,
                                             instat_scalar_fun_ptr lset_fpt_in,
                                             instat_scalar_fun_ptr rhs_neg_in,
                                             instat_scalar_fun_ptr rhs_pos_in,
                                             STVelocityContainer & convection_in,
-                                            MatrixCL* Amat, VecDescCL* b, 
-                                            const IdxDescCL& RowIdx, const IdxDescCL& ColIdx, 
+                                            MatrixCL* Amat, VecDescCL* b,
+                                            const IdxDescCL& RowIdx, const IdxDescCL& ColIdx,
                                             const double t1, const double t2,
                                             const VecDescCL & oldsol_neg, const VecDescCL & oldsol_pos,
                                             const ParamCL::ptree_type & P);
     virtual void local_setup (const TetraCL& sit);
 
     virtual TetraAccumulatorCL* clone (int /*tid*/ ) { return new STTransportVolumeAccumulator_P1SP1TXCL ( *this); }
-    
+
 };
 
 

@@ -100,7 +100,7 @@ int main()
         std::cout<<i+1<<".Tropfenverf.: "; mg.SizeInfo(std::cout);
         std::cout << DROPS::SanityMGOutCL(mg) << std::endl;
 //        DebugIt(&mg);
-        char str[20];
+        char str[10];
         std::ofstream ofs;
         std::sprintf(str, "drop%i.off", i+1);
         ofs.open(str);

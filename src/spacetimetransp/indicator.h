@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2013 LNM/SC RWTH Aachen, Germany
+ * Copyright 1013 LNM/SC RWTH Aachen, Germany
 */
 
 #ifndef DROPS_INDICATOR_H
@@ -53,8 +53,8 @@ class ConcentrationMarkingStrategyCL: public MarkingStrategyCL
 {
 public:
     ConcentrationMarkingStrategyCL( const LevelsetP2CL &fct,
-                                    P1EvalCL<double,cBndDataCL,VecDescCL > & solneg, 
-                                    P1EvalCL<double,cBndDataCL,VecDescCL > & solpos, 
+                                    P1EvalCL<double,cBndDataCL,VecDescCL > & solneg,
+                                    P1EvalCL<double,cBndDataCL,VecDescCL > & solpos,
                                     double * thresholdlist, Uint coarse_level, Uint fine_level,
                                     bool hacked,
                                     double hacked_width,
@@ -66,8 +66,8 @@ public:
     TetraAccumulatorCL* clone( int );
     MarkingStrategyCL*  clone_strategy();
 
-    Point3DCL GetGradientOfTetra( const TetraCL &t, bool is_pos ); 
-    double GetMeanConcentrationOfTetra( const TetraCL &t, bool is_pos ); 
+    Point3DCL GetGradientOfTetra( const TetraCL &t, bool is_pos );
+    double GetMeanConcentrationOfTetra( const TetraCL &t, bool is_pos );
 
     void visit( const TetraCL& t );
 
@@ -86,11 +86,11 @@ public:
     Uint   GetFineLevel() const;
     void   SetFineLevel( Uint level );
 
-    void   ResetOutput(int step){ 
-        delete distributionout_; 
+    void   ResetOutput(int step){
+        delete distributionout_;
         std::ostringstream name;
         name << "distrib" << step << ".out";
-        distributionout_ = new std::ofstream(name.str().c_str()); 
+        distributionout_ = new std::ofstream(name.str().c_str());
     }
 
 private:
@@ -111,4 +111,4 @@ private:
 
 }
 
-#endif 
+#endif

@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2011,2012 LNM, RWTH Aachen, Germany
+ * Copyright 1011,1012 LNM, RWTH Aachen, Germany
 */
 
 #ifndef DROPS_REFTETRACUT_H
@@ -263,7 +263,7 @@ class RefTrianglePartitionCL
     typedef SArrayCL<Ubyte, 3> TriangleT;     ///< the vertices of a triangle of the cut: the tetra's vertices are denoted by 0..3, the edge-cuts by edge-num + 4, which is in 4..9.
     typedef const TriangleT* const_triangle_iterator;
     typedef       TriangleT*       triangle_iterator;
-    
+
   private:
     TriangleT triangle_[3];      ///< at most three triangles
     Ubyte size_;                 ///< number of triangles
@@ -272,10 +272,10 @@ class RefTrianglePartitionCL
     TriangleT MakeTriangle (Ubyte v0, Ubyte v1, Ubyte v2) const { return MakeSArray( v0, v1, v2); }
 
   public:
-    /// Setting the level-set value of the opposite vertex to the triangle to 0.  
-    /// With RefTetraPartitionCL we can first make a partition of the refTetra in which the refTriangle lies, 
+    /// Setting the level-set value of the opposite vertex to the triangle to 0.
+    /// With RefTetraPartitionCL we can first make a partition of the refTetra in which the refTriangle lies,
     /// then we just map this refTetra partition to the face we are interested in.
-    RefTrianglePartitionCL(byte ls[4], Ubyte VertexNum); 
+    RefTrianglePartitionCL(byte ls[4], Ubyte VertexNum);
     size_t size () const { return size_; }      ///< Number of triangles, 0, 1, or 2
     int sign (const_triangle_iterator t) const { return sign_[ t- triangle_begin() ]; } ///< Sign of the triangle, to which t points
 

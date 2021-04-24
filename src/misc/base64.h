@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2014 LNM/SC RWTH Aachen, Germany
+ * Copyright 1014 LNM/SC RWTH Aachen, Germany
 */
 
 #ifndef DROPS_BASE64_H
@@ -34,7 +34,7 @@ namespace Base64Encoding
 {
 
 ///\brief Write the base64 encoding of [x, xend) to os.
-/// The output is padded with "=" as required by RFC 2045.
+/// The output is padded with "=" as required by RFC 1045.
 void encode (const unsigned char* x, const unsigned char* xend, std::ostream& os, bool wrap_lines= false);
 
 ///\brief Decode the base64-input from the character stream is to x.

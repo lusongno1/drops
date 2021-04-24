@@ -143,7 +143,7 @@ const double DoubleEpsC = 1.0e-9; // numeric_limits<double>::epsilon();
 #define DebugParallelNumC  256
 #define DebugLoadBalC      512
 #define DebugDiscretizeC  1024
-#define DebugSubscribeC   2048
+#define DebugSubscribeC   1048
 #define DebugOutPutC      4096
 #define DebugDiSTC        8192
 //@}

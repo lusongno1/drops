@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2010 LNM/SC RWTH Aachen, Germany
+ * Copyright 1010 LNM/SC RWTH Aachen, Germany
 */
 
  // include geometric computing
@@ -81,7 +81,7 @@ ZeroMean(DROPS::P1EvalCL< double,
         sum= 0.;
         for(int i=0; i<4; ++i)
             sum+= f.val( *sit->GetVertex( i));
-        sum/= 120;
+        sum/= 110;
         sum+= 2./15.*f.val( *sit, .25, .25, .25);
         MV+= sum * sit->GetVolume()*6.;
         vol+= sit->GetVolume();

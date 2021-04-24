@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #ifndef DROPS_SPACETIME_SOL_H
@@ -43,7 +43,7 @@
 // #include "geom/simplex.h"
 // #include "geom/principallattice.h"
 // #include "num/unknowns.h"
-// 
+//
 
 
 namespace DROPS
@@ -78,7 +78,7 @@ private:
     /* IdxDescCL neg_space_idx_; // std. p1 index */
     /* IdxDescCL pos_space_idx_; // std. p1 index */
 
-    
+
     /* double lasttraces_time_past; */
     /* double lasttraces_time_future; */
 
@@ -104,8 +104,8 @@ public:
 
     void EvalFutureTrace();
     void EvalPastTrace();
-    void EvalTraces(){ 
-        EvalFutureTrace(); 
+    void EvalTraces(){
+        EvalFutureTrace();
         EvalPastTrace();
     }
 
@@ -237,7 +237,7 @@ public:
                     errl1p += q3_diffabs.quad(absdet);
                 else
                     errl1n += q3_diffabs.quad(absdet);
-                
+
                 if (pPart)
                     massp += q3_dsol.quad(absdet);
                 else
@@ -256,7 +256,7 @@ public:
         double dmaxval = -1e99;
         double lsetv_maxdiff = -1e99;
         double maxdiff = -1e99;
-        
+
         Point3DCL maxcoord;
         Point3DCL dmaxcoord;
         Point3DCL dmaxdiff;
@@ -266,8 +266,8 @@ public:
 //        Uint idxn = idx.GetIdx();
         DROPS_FOR_TRIANG_VERTEX( mg_, -1, it)
         {
-            IdxT unkn = (*it).Unknowns.Exist(idxn) ? (*it).Unknowns(idxn) : NoIdx;            
-            IdxT lset_unkn = (*it).Unknowns.Exist(lset_idxn) ? (*it).Unknowns(lset_idxn) : NoIdx;            
+            IdxT unkn = (*it).Unknowns.Exist(idxn) ? (*it).Unknowns(idxn) : NoIdx;
+            IdxT lset_unkn = (*it).Unknowns.Exist(lset_idxn) ? (*it).Unknowns(lset_idxn) : NoIdx;
             if (unkn == NoIdx)
                 continue;
             if ((lset_unkn == NoIdx) || (lsetp2new->Phi.Data[lset_unkn] < 0))
@@ -297,7 +297,7 @@ public:
                 dmaxdiff_val = val;
                 dmaxdiff_dval = dval;
             }
-            
+
             /* LocalP2CL<double> lp2_soln (*it, Lsgn, time); */
             /* LocalP2CL<double> lp2_solp (*it, Lsgp, time); */
             /* LocalP1CL<double> lp1_p (*it, cp, Bndpos_); */
@@ -399,7 +399,7 @@ public:
                 /*     errl1p += q3_diffabs.quad(absdet); */
                 /* else */
                 /*     errl1n += q3_diffabs.quad(absdet); */
-                
+
             }
         }
 

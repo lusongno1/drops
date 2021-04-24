@@ -147,12 +147,12 @@ class TetrahedronP3FECL:public TetrahedronFECL
 class FE_P3CL
 {
   private:
-    static const double _D2H[20][3][3];
+    static const double _D2H[10][3][3];
 
   public:
     // default ctor, copy-ctor, assignment-op, dtor
 
-    static const Uint NumDoFC= 20;
+    static const Uint NumDoFC= 10;
 
     // restriction of the shape functions to reference edge
     static double H0(double v1) { return 1. +v1*(2.*v1 -3.); }
@@ -207,7 +207,7 @@ class FE_P3CL
       }
 
     // pt[0]...pt[numpt-1] are coordinates where the shape-functions are evaluated.
-    // v is an array of 20 valarrays. They are resized to have numpt components.
+    // v is an array of 10 valarrays. They are resized to have numpt components.
     // v[i] contains H_i( pt[0])...H_i( pt[numpt-1])
     static void ApplyAll(Uint numpt, const BaryCoordCL* const pt, std::valarray<double>* v);
 
@@ -238,7 +238,7 @@ class FE_P3CL
     static inline double Laplace(Uint dof, const SMatrixCL<3,3>& M);
 
     // The barycentric coordinates of the dofs.
-    static const BaryCoordCL bary_coord[20];
+    static const BaryCoordCL bary_coord[10];
 };
 
 template<class T= double>
@@ -315,7 +315,7 @@ template<class T>
     { // This is just for P3
         Uint idx_num = vd.RowIdx->GetIdx();
         Uint first = s.Unknowns(idx_num);
-        for (int i = 0; i < 20; ++i)
+        for (int i = 0; i < 10; ++i)
         {
             (*this)[i] = DoFT::get( vd.Data, first++);
         }
@@ -358,7 +358,7 @@ template<class T>
     if (vd.RowIdx->IsDG())
     { // This is just for P3
         Uint first = s.Unknowns(idx);
-        for (int i = 0; i < 20; ++i)
+        for (int i = 0; i < 10; ++i)
         {
             (*this)[i] = DoFT::get( v, first++);
         }
@@ -395,7 +395,7 @@ template<class T>
             throw DROPSErrCL( "LocalP3CL::Assign: Prolongation not implemented.\n");
         Uint idx_num = vd.RowIdx->GetIdx();
         Uint first = s.Unknowns(idx_num);
-        for (int i = 0; i < 20; ++i)
+        for (int i = 0; i < 10; ++i)
         {
             (*this)[i] = DoFT::get( vd.Data, first++);
         }
@@ -470,35 +470,35 @@ class P3DiscCL
 {
   public:
     // gradients on reference tetra
-    static void GetGradientsOnRef( LocalP1CL<Point3DCL> GRef[20]);
-    static void GetGradientsOnRef( Quad2CL<Point3DCL> GRef[20]);
-    static void GetGradientsOnRef( Quad5CL<Point3DCL> GRef[20]);
+    static void GetGradientsOnRef( LocalP1CL<Point3DCL> GRef[10]);
+    static void GetGradientsOnRef( Quad2CL<Point3DCL> GRef[10]);
+    static void GetGradientsOnRef( Quad5CL<Point3DCL> GRef[10]);
     // The 2nd arg points to 3 vertices of the triangle
-    static void GetGradientsOnRef( Quad5_2DCL<Point3DCL> GRef[20], const BaryCoordCL* const);
+    static void GetGradientsOnRef( Quad5_2DCL<Point3DCL> GRef[10], const BaryCoordCL* const);
     // p3[i] contains a LocalP3CL-object that is initialized with FE_P3CL::Hi
-    static void GetP3Basis( LocalP3CL<> p3[20]);
+    static void GetP3Basis( LocalP3CL<> p3[10]);
     // p3[i] contains a Quad5_2DCL-object that is initialized with FE_P3CL::Hi
-    static void GetP3Basis( Quad5_2DCL<> p3[20], const BaryCoordCL* const p);
+    static void GetP3Basis( Quad5_2DCL<> p3[10], const BaryCoordCL* const p);
     // compute gradients
-    static void GetGradients( LocalP1CL<Point3DCL> G[20], const LocalP1CL<Point3DCL> GRef[20], const SMatrixCL<3,3> &T)
-    { for (int i=0; i<20; ++i) for (int j=0; j<4; ++j) G[i][j]= T*GRef[i][j]; }
-    static void GetGradients( Quad2CL<Point3DCL> G[20], Quad2CL<Point3DCL> GRef[20], const SMatrixCL<3,3> &T)
-    { for (int i=0; i<20; ++i) for (int j=0; j<5; ++j) G[i][j]= T*GRef[i][j]; }
-    static void GetGradients( Quad5CL<Point3DCL> G[20], Quad5CL<Point3DCL> GRef[20], const SMatrixCL<3,3> &T)
-    { for (int i=0; i<20; ++i) for (int j=0; j<Quad5DataCL::NumNodesC; ++j) G[i][j]= T*GRef[i][j]; }
-    static void GetGradients( Quad5_2DCL<Point3DCL> G[20], Quad5_2DCL<Point3DCL> GRef[20], const SMatrixCL<3,3> &T)
-    { for (int i=0; i<20; ++i) for (int j=0; j<Quad5_2DDataCL::NumNodesC; ++j) G[i][j]= T*GRef[i][j]; }
+    static void GetGradients( LocalP1CL<Point3DCL> G[10], const LocalP1CL<Point3DCL> GRef[10], const SMatrixCL<3,3> &T)
+    { for (int i=0; i<10; ++i) for (int j=0; j<4; ++j) G[i][j]= T*GRef[i][j]; }
+    static void GetGradients( Quad2CL<Point3DCL> G[10], Quad2CL<Point3DCL> GRef[10], const SMatrixCL<3,3> &T)
+    { for (int i=0; i<10; ++i) for (int j=0; j<5; ++j) G[i][j]= T*GRef[i][j]; }
+    static void GetGradients( Quad5CL<Point3DCL> G[10], Quad5CL<Point3DCL> GRef[10], const SMatrixCL<3,3> &T)
+    { for (int i=0; i<10; ++i) for (int j=0; j<Quad5DataCL::NumNodesC; ++j) G[i][j]= T*GRef[i][j]; }
+    static void GetGradients( Quad5_2DCL<Point3DCL> G[10], Quad5_2DCL<Point3DCL> GRef[10], const SMatrixCL<3,3> &T)
+    { for (int i=0; i<10; ++i) for (int j=0; j<Quad5_2DDataCL::NumNodesC; ++j) G[i][j]= T*GRef[i][j]; }
     static void GetGradient( Quad2CL<Point3DCL> &G, Quad2CL<Point3DCL> &GRef, const SMatrixCL<3,3> &T)
     { for (int j=0; j<5; ++j) G[j]= T*GRef[j]; }
     static void GetGradient( Quad5CL<Point3DCL> &G, Quad5CL<Point3DCL> &GRef, const SMatrixCL<3,3> &T)
     { for (int j=0; j<Quad5DataCL::NumNodesC; ++j) G[j]= T*GRef[j]; }
     /// compute gradient of a function provided as LocalP3CL<double> object
     template<class GradT>
-    static void GetFuncGradient( GradT& gradF, const LocalP3CL<>& F, const GradT G[20])
-    { gradF= F[0]*G[0]; for (int i=1; i<20; ++i) gradF+= F[i]*G[i]; }
+    static void GetFuncGradient( GradT& gradF, const LocalP3CL<>& F, const GradT G[10])
+    { gradF= F[0]*G[0]; for (int i=1; i<10; ++i) gradF+= F[i]*G[i]; }
     // Compute the Hessians H[d]= M*Href[d]*M^T
-    static void GetHessians (SMatrixCL<3,3> H[20], const SMatrixCL<3,3>& M) {
-        for (Uint d= 0; d< 20; ++d) {
+    static void GetHessians (SMatrixCL<3,3> H[10], const SMatrixCL<3,3>& M) {
+        for (Uint d= 0; d< 10; ++d) {
             std::memset( &H[d], 0, 3*3*sizeof( double));
             for (Uint i= 0; i < 3; ++i)
                 for (Uint j= 0; j < 3; ++j)
@@ -511,11 +511,11 @@ class P3DiscCL
     static inline SVectorCL<3> Quad( const TetraCL& tetra, instat_vector_fun_ptr, Uint, double= 0.0);
     // cubatur formula for int f(x)*phi_i dx, exact up to degree 2
     template<class valT>
-    static inline valT Quad( valT f[20], int i);
+    static inline valT Quad( valT f[10], int i);
     // returns int phi_i phi_j dx
     static inline double GetMass( int i, int j);
     // returns int phi_i dx
-    static inline double GetLumpedMass( int i) { return i<4 ? -1./120. : 1./30.; }
+    static inline double GetLumpedMass( int i) { return i<4 ? -1./110. : 1./30.; }
 };
 
 
@@ -526,8 +526,8 @@ class LocalP3GradientCL
     const BndDataCL<>& fbnd_;
 
     SMatrixCL<3,3> M;
-    LocalP1CL<Point3DCL> GradRefLP1[20],
-                         GradLP1[20],
+    LocalP1CL<Point3DCL> GradRefLP1[10],
+                         GradLP1[10],
                          p1grad;
     LocalP3CL<> p3;//LocalP2CL
     LocalP3CL<Point3DCL> p3grad;
@@ -555,12 +555,12 @@ class LocalNumbP3CL
   public:
     /// \brief Field of unknown-indices; NoIdx, iff the degree of freedom lies
     /// on a boundary without unknowns. (Formerly called Numb.)
-    IdxT     num   [20];
+    IdxT     num   [10];
     /// \brief On boundaries, the number of the relevant BndSegDataCL-object
     /// in the corresponding BndDataCL-object, else NoBndC.
-    BndIdxT  bndnum[20];
+    BndIdxT  bndnum[10];
     /// \brief The relevant BndCondT, NoBC in the interior dofs.
-    BndCondT bc    [20];
+    BndCondT bc    [10];
 
     /// \brief The default constructor leaves everything uninitialized.
     LocalNumbP3CL() {}
@@ -655,7 +655,7 @@ class OswaldProjectionP3AccuCL : public TetraAccumulatorCL
         }
         loc_.set_tetra( &t);
         numg.assign_indices_only( t, *avg_.RowIdx);
-        for (Uint i= 0; i < 20; ++i) {
+        for (Uint i= 0; i < 10; ++i) {
             if (!numg.WithUnknowns( i))
                 continue;
             const IdxT dof= numg.num[i];
@@ -702,8 +702,8 @@ public:
     /// common data @{
     LocalP3CL<> locp3_ls;
 
-    LocalP3CL<>          p3[20];
-    LocalP1CL<Point3DCL> gradrefp3[20];
+    LocalP3CL<>          p3[10];
+    LocalP1CL<Point3DCL> gradrefp3[10];
 
     std::valarray<double>     ls_loc;
     SurfacePatchCL            surf;
@@ -790,21 +790,21 @@ public:
 class LocalMassP3CL
 {
 private:
-    std::valarray<double> qp3[20];
+    std::valarray<double> qp3[10];
 
 public:
     static const FiniteElementT row_fe_type= P3IF_FE,
                                 col_fe_type= P3IF_FE;
 
-    double coup[20][20];
+    double coup[10][10];
 
     void setup (const TetraCL&, const InterfaceCommonDataP3CL& cdata)
     {
-        for (int i= 0; i < 20; ++i)
+        for (int i= 0; i < 10; ++i)
             resize_and_evaluate_on_vertexes ( cdata.p3[i], cdata.qdom, qp3[i]);
         //caculate discrete shape function values on triangles
 
-        for (int i= 0; i < 20; ++i)
+        for (int i= 0; i < 10; ++i)
         {
             coup[i][i]= quad_2D( cdata.qdom_projected.absdets()*qp3[i]*qp3[i], cdata.qdom);
             //cal interations between differerent shape functions
@@ -826,8 +826,8 @@ class LocalLaplaceBeltramiP3CL
 private:
     double D_; // diffusion coefficient
 
-    LocalP1CL<Point3DCL> gradp3[20];
-    GridFunctionCL<Point3DCL> qgradp3[20];
+    LocalP1CL<Point3DCL> gradp3[10];
+    GridFunctionCL<Point3DCL> qgradp3[10];
 
     GridFunctionCL<Point3DCL> nl;
     GridFunctionCL<SMatrixCL<3,3> > Winv;
@@ -836,7 +836,7 @@ public:
     static const FiniteElementT row_fe_type= P3IF_FE,
                                 col_fe_type= P3IF_FE;
 
-    double coup[20][20];
+    double coup[10][10];
 
     const GridFunctionCL<Point3DCL>& get_qgradp3 (size_t i)
     {
@@ -868,7 +868,7 @@ public:
         SMatrixCL<3,3> T;
         GetTrafoTr( T, dummy, t);
         P3DiscCL::GetGradients( gradp3, cdata.gradrefp3, T);
-        for (int i= 0; i < 20; ++i)
+        for (int i= 0; i < 10; ++i)
         {
             resize_and_evaluate_on_vertexes ( gradp3[i], cdata.qdom, qgradp3[i]);
             for (Uint j= 0; j < qgradp3[i].size(); ++j)
@@ -878,7 +878,7 @@ public:
             }
         }
 
-        for (int i= 0; i < 20; ++i)
+        for (int i= 0; i < 10; ++i)
         {
             coup[i][i]= quad_2D( cdata.qdom_projected.absdets()*dot( qgradp3[i], qgradp3[i]), cdata.qdom);
             for(int j= 0; j < i; ++j)
@@ -905,17 +905,17 @@ private:
 public:
     static const FiniteElementT row_fe_type= P3IF_FE;
 
-    double vec[20];
+    double vec[10];
 
     LocalVectorP3CL (instat_scalar_fun_ptr f, double time) : f_( f), time_( time) {}
 
-    void setup (const TetraCL& t, const InterfaceCommonDataP3CL& cdata, const IdxT numr[20])
+    void setup (const TetraCL& t, const InterfaceCommonDataP3CL& cdata, const IdxT numr[10])
     {
         //   coutTet(t);
         resize_and_evaluate_on_vertexes( f_, cdata.qdom_projected.vertexes(), time_, qf);
         qp3.resize( cdata.qdom.vertex_size());
         int IdxPos = -1;
-        for (Uint i= 0; i < 20; i++)
+        for (Uint i= 0; i < 10; i++)
         {
             if (numr[i] == NoIdx)
                 continue;
@@ -1279,7 +1279,7 @@ public:
             {
                 LocalP3CL<> lp3( t, *fvd, nobnddata);
                 loc_lb.setup( t, cdata);
-                for (Uint i= 0; i < 20; ++i)
+                for (Uint i= 0; i < 10; ++i)
                     qfgradgrid+= lp3[i]*loc_lb.get_qgradp3( i);
             }
             else if (fvd->RowIdx->GetFE() == P1IF_FE)
@@ -1365,9 +1365,9 @@ template<class BndData_, class VD_>
 //     and bnd for tetrahedron s in the container c.                       *
 // Precondition: vd is a VecDescCL for a P3-function on level l, bnd is a  *
 //     BndDataCL and s a tetrahedron on a level <= l. c is a container     *
-//     (component access with []) that can hold at least 20 values of f's  *
+//     (component access with []) that can hold at least 10 values of f's  *
 //     return type.                                                        *
-// Postcondition: c contains the value of f in the 20 DoF in the order used*
+// Postcondition: c contains the value of f in the 10 DoF in the order used*
 //     by FE_P3CL.                                                         *
 //**************************************************************************
 //template <class VecDescT, class BndDataT, class Cont>
@@ -1682,8 +1682,8 @@ void CreateNumbOnInterfaceP3 (const Uint idx, IdxT& counter, Uint stride,
 {
     //const size_t stride= 1;
 
-    LocalP3CL<> p3[20];
-    for (int i= 0; i < 20; ++i)
+    LocalP3CL<> p3[10];
+    for (int i= 0; i < 10; ++i)
         p3[i][i]= 1.;
     // first set NoIdx in all vertices
     for (MultiGridCL::TriangVertexIteratorCL vit= vbegin; vit != vend; ++vit) {
@@ -1714,7 +1714,7 @@ void CreateNumbOnInterfaceP3 (const Uint idx, IdxT& counter, Uint stride,
 
         make_CompositeQuad5Domain2D( qdom, patch, *it);
         qp3.resize( qdom.vertex_size());
-        for (Uint i= 0; i < 20; ++i) {
+        for (Uint i= 0; i < 10; ++i) {
             UnknownHandleCL& unknowns= i < 4 ? const_cast<VertexCL*>( it->GetVertex( i))->Unknowns
                                              : const_cast<EdgeCL*>( it->GetEdge( i - 4))->Unknowns;
             if (unknowns.Exist( idx))

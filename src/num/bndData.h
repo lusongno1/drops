@@ -83,9 +83,9 @@ class BndCondInfoCL
     bool     IsDirichlet()  const { return bc_==Dir0BC || bc_==DirBC; }
     bool     IsNatural()    const { return bc_==Nat0BC || bc_==NatBC; }
     bool     IsPeriodic()   const { return bc_==Per1BC || bc_==Per2BC ; }
-    bool     IsSlip()       const { return bc_==Slip0BC || bc_==SlipBC; } 
-    bool     IsMovSlip()    const { return bc_==SlipBC; } 
-    bool     IsSymmetric()  const { return bc_==SymmBC; } 
+    bool     IsSlip()       const { return bc_==Slip0BC || bc_==SlipBC; }
+    bool     IsMovSlip()    const { return bc_==SlipBC; }
+    bool     IsSymmetric()  const { return bc_==SymmBC; }
     BndCondT GetBC()        const { return bc_; }
 };
 

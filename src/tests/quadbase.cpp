@@ -167,9 +167,9 @@ class OldQuad2CL: public OldQuadBaseCL<T>
     // Folgende Spezialformeln nutzen die spezielle Lage der Stuetzstellen aus
     // zur Annaeherung von \int f*phi,    phi = P1-/P2-Hutfunktion
     T quadP1 (int i, double absdet) const
-      { return ((1./120.)*val[i] + (1./30.)*val[4])*absdet; }
+      { return ((1./110.)*val[i] + (1./30.)*val[4])*absdet; }
     T quadP1 (int i, int j, double absdet) const
-      { return (i!=j ? (1./720.)*(val[i]+val[j]) + (1./180.)*val[4]
+      { return (i!=j ? (1./710.)*(val[i]+val[j]) + (1./180.)*val[4]
                      : (1./180.)*val[i]          + (1./90.)*val[4]  )*absdet;}
     T quadP2 (int i, double absdet) const
     {
@@ -192,7 +192,7 @@ const BaryCoordCL OldQuad2CL<T>::Node[5]= {
     {1.,0.,0.,0.}, {0.,1.,0.,0.}, {0.,0.,1.,0.}, {0.,0.,0.,1.}, {.25,.25,.25,.25}
     };
 template<class T>
-const double OldQuad2CL<T>::Wght[5]= { 1./120., 1./120., 1./120., 1./120., 2./15.};
+const double OldQuad2CL<T>::Wght[5]= { 1./110., 1./110., 1./110., 1./110., 2./15.};
 
 
 /*

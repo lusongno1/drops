@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #ifndef DROPS_DEFORMATION_H
@@ -45,7 +45,7 @@ private:
     BndDataCL<Point3DCL> * bnd_;
     size_t mgVersion_;
     std::map<const TetraCL*, bool> tet_is_curved;
-    
+
     MeshDeformationCL() : mg_(0), mlidx_( vecP2_FE), pointsol_(&mlidx_), bnd_(0), mgVersion_(0)
     {}
     virtual ~MeshDeformationCL()
@@ -79,9 +79,9 @@ public:
 
 /** calculates the transpose of the transformation  Tetra -> RefTetra
  *  if \f$ \Phi \f$ denotes the trafo from \f$ T_ref \f$ to \f$ T \f$
- *  then the result is \f$ T = (\nabla \Phi)^{-T} \f$ and 
+ *  then the result is \f$ T = (\nabla \Phi)^{-T} \f$ and
  *  det \f$ = det(\nabla \Phi) \f$
- *  Inputs are p the point on the reference triangle and pt, the four points 
+ *  Inputs are p the point on the reference triangle and pt, the four points
  *  of the transformed tetraeder.  */
 inline void GetTrafoTr( SMatrixCL<3,3>& T, double& det, const LocalP1CL<Point3DCL>& pt)
 {

@@ -101,7 +101,7 @@ namespace filmdistance{
         DROPS::Point3DCL ret(0.);
         const double d= p[1]/delta;
         static const double u= DensFilm * GravityX * delta * delta /ViscFilm/2;
-        ret[0]= d<=1 ? (2*d-d*d)*u 
+        ret[0]= d<=1 ? (2*d-d*d)*u
                      : 0.;
         return ret;
     }

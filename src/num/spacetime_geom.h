@@ -1,6 +1,6 @@
 /// \file spacetime_geom.h
-/// \brief classes that constitute space time geometries - 
-/// Note that in contrast to VertexCL, ..., SimplexCL, ... these geometries only appear element-local 
+/// \brief classes that constitute space time geometries -
+/// Note that in contrast to VertexCL, ..., SimplexCL, ... these geometries only appear element-local
 /// and their purpose is the decomposition of a cut space-time primitive into several uncut ones
 /// main components:
 ///  * Point4DContainer (gathered collection of unique Points)
@@ -11,8 +11,8 @@
 ///    * PentatopeCL
 /// PentatopeCL basically does all the work. With the help of levelset values a cut Pentatope
 /// can be decomposed into uncut Pentatopes, HyperTrigs and GeneralizedPrisms. Each class can
-/// decompose itself into Pentatopes. The Pentatope class also decomposes the interface into 
-/// Tetra4Ds. 
+/// decompose itself into Pentatopes. The Pentatope class also decomposes the interface into
+/// Tetra4Ds.
 /// \author LNM RWTH Aachen: Christoph Lehrenfeld
 
 /*
@@ -32,7 +32,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #ifndef DROPS_SPACETIME_GEOM_H
@@ -73,9 +73,9 @@ struct Point4Dless {
 };
 
 
-/// Container set constitutes a collection of Point4Ds 
+/// Container set constitutes a collection of Point4Ds
 /// main feature: the operator()(const Point4DCL & p)
-/// The points in the container are owned and later 
+/// The points in the container are owned and later
 /// released by Point4DContainer
 class Point4DContainer
 {
@@ -84,7 +84,7 @@ protected:
 #ifdef DEBUG
     size_t k;
 #endif
-public: 
+public:
     Point4DContainer()
     {
 #ifdef DEBUG
@@ -92,9 +92,9 @@ public:
 #endif
         pset.clear();
     };
-    
+
     /// Access operator to points
-    /// Either point is already in the Container, 
+    /// Either point is already in the Container,
     ///   then return pointer to that point
     /// or point is not in the Container yet,
     ///   then add point to container and return pointer to new Point4D
@@ -165,7 +165,7 @@ public:
         p[2] = pcont(Point4DCL(0.0,1.0,0.0,0.0));
         p[3] = pcont(Point4DCL(0.0,0.0,1.0,0.0));
     }
-    
+
     Tetra4DCL(Point4DContainer& pcont_in, const Point4DCL & points1, const Point4DCL & points2, const Point4DCL & points3, const Point4DCL & points4, bool points_already_in_pcont = false): absdet_of_trafo_initialized(false),normal_initialized(false),has_helppoint(false),pcont(pcont_in){
         p[0] = points_already_in_pcont ? &points1 : pcont(points1);
         p[1] = points_already_in_pcont ? &points2 : pcont(points2);
@@ -192,7 +192,7 @@ public:
         helppoint = already_in_pcont ? &p : pcont(p);
         helpsign = sign;
     }
-    
+
     Tetra4DCL& operator= (const Tetra4DCL &)
     {
         throw DROPSErrCL("Tetra4DCL& operator= called");
@@ -207,7 +207,7 @@ public:
     // return space time normal
     Point4DCL Normal() const;
 
-    // returns 1.0/(sqrt(1+w_n^2)) = ||n_s|| where n_s is the spatial part of the space time normal 
+    // returns 1.0/(sqrt(1+w_n^2)) = ||n_s|| where n_s is the spatial part of the space time normal
     double Nu() const;
 
     friend  std::ostream& operator<<(std::ostream& os, const Tetra4DCL &);
@@ -217,7 +217,7 @@ public:
 std::ostream& operator<<(std::ostream& os, const Tetra4DCL & penta);
 
 /*
-  Class constituting a pentatope (a.k.a. simplex-4, pentachoron, .. ) 
+  Class constituting a pentatope (a.k.a. simplex-4, pentachoron, .. )
   as the convex hull of five Points(4D)
  */
 class PentatopeCL
@@ -233,19 +233,19 @@ protected:
     /// calculate absolute value of determinant
     inline void calc_abs_determinant() const;
 public:
-    
+
     const SArrayCL<const Point4DCL*,5> & GetPoints() const {return p;}
 
-    PentatopeCL(Point4DContainer& pcont_in, 
-            const Point4DCL & points1, 
-            const Point4DCL & points2, 
-            const Point4DCL & points3, 
-            const Point4DCL & points4, 
-            const Point4DCL & points5, 
+    PentatopeCL(Point4DContainer& pcont_in,
+            const Point4DCL & points1,
+            const Point4DCL & points2,
+            const Point4DCL & points3,
+            const Point4DCL & points4,
+            const Point4DCL & points5,
             bool already_in_pcont = false)
         : pcont(pcont_in),
         absdet_of_trafo_initialized(false)
-        
+
     {
         p[0] = already_in_pcont ? &points1 : pcont(points1);
         p[1] = already_in_pcont ? &points2 : pcont(points2);
@@ -285,7 +285,7 @@ public:
 
     // generate lsetvalues for all penta vertices
     template <class EvalObj, class T>
-    void eval_timeinterpol_func_at_verts(EvalObj fx_at_t0, EvalObj fx_at_t1, 
+    void eval_timeinterpol_func_at_verts(EvalObj fx_at_t0, EvalObj fx_at_t1,
                                                     SArrayCL<T,5> & ret)
     {
         BaryCoordCL spacebarycoord;
@@ -326,17 +326,17 @@ public:
     }
 
 
-    // decomposition into positive and negative pentatopes. The level set values already 
-    // define a P1 representation. They could have been obtained via interpolation 
-    // or L2-Projection or whatever... 
-    void decompose_add_signed_pentas_4dtets(SArrayCL<double,5> & lsetvals, 
-                                            std::vector<PentatopeCL> & negpentas, 
-                                            std::vector<PentatopeCL> & pospentas, 
+    // decomposition into positive and negative pentatopes. The level set values already
+    // define a P1 representation. They could have been obtained via interpolation
+    // or L2-Projection or whatever...
+    void decompose_add_signed_pentas_4dtets(SArrayCL<double,5> & lsetvals,
+                                            std::vector<PentatopeCL> & negpentas,
+                                            std::vector<PentatopeCL> & pospentas,
                                             std::vector<Tetra4DCL> & iftets);
 
-    void decompose_signed_pentas(SArrayCL<double,5> & lsetvals, 
-                                 std::vector<PentatopeCL> & negpentas, 
-                                 std::vector<PentatopeCL> & pospentas, 
+    void decompose_signed_pentas(SArrayCL<double,5> & lsetvals,
+                                 std::vector<PentatopeCL> & negpentas,
+                                 std::vector<PentatopeCL> & pospentas,
                                  std::vector<Tetra4DCL> & iftets)
     {
         negpentas.clear();
@@ -356,7 +356,7 @@ std::ostream& operator<<(std::ostream& os, PentatopeCL penta);
 
 /*
   helper class constituting a Generalized prism-4
-  generalized prism-4: 4D geometry which defines the convex hull of 8 points. 
+  generalized prism-4: 4D geometry which defines the convex hull of 8 points.
   Assumption: the eight points can be divided into two groups with 4 points
   each, where both groups define a valid (with pos. measure) tetrahedra.
 */
@@ -408,7 +408,7 @@ public:
             }
             xx[3] = ti.first;
             yy[3] = ti.second;
-            
+
             x[i] = pcont(xx);
             y[i] = pcont(yy);
         }
@@ -462,16 +462,16 @@ public:
         return *this;
     }
 
-    void decompose_add_to_pentas (std::vector<PentatopeCL> & pentas, 
+    void decompose_add_to_pentas (std::vector<PentatopeCL> & pentas,
                                   int plattice_1d_els = 1, int time_1d_els = 1) const;
-    
-    void decompose_to_pentas (std::vector<PentatopeCL> & pentas, 
+
+    void decompose_to_pentas (std::vector<PentatopeCL> & pentas,
                               int plattice_1d_els = 1, int time_1d_els = 1) const
     {
         pentas.clear();
         decompose_add_to_pentas(pentas, plattice_1d_els, time_1d_els);
     }
- 
+
     friend  std::ostream& operator<<(std::ostream& os, GeneralizedPrism4CL);
 
     virtual ~GeneralizedPrism4CL(){};
@@ -494,8 +494,8 @@ protected:
 
 public:
     HyperTrigCL(Point4DContainer& pcont_in,
-                SArrayCL<const Point4DCL*,3> & iu, 
-                SArrayCL<const Point4DCL*,3> & iv, 
+                SArrayCL<const Point4DCL*,3> & iu,
+                SArrayCL<const Point4DCL*,3> & iv,
                 SArrayCL<const Point4DCL*,3> & iw)
         :u(iu),v(iv),w(iw), pcont(pcont_in)
     {
@@ -505,9 +505,9 @@ public:
         Point2DCL chi[3];
         SArrayCL<const Point4DCL*,3> * trigs[3];
         trigs[0] = &u; trigs[1] = &v; trigs[2] = &w;
-        chi[0][0] = 0.0;   chi[0][1] = 0.0; 
-        chi[1][0] = 1.0;   chi[1][1] = 0.0; 
-        chi[2][0] = 0.0;   chi[2][1] = 1.0; 
+        chi[0][0] = 0.0;   chi[0][1] = 0.0;
+        chi[1][0] = 1.0;   chi[1][1] = 0.0;
+        chi[2][0] = 0.0;   chi[2][1] = 1.0;
 
         for (Uint i = 0; i < 3; ++i)
         {

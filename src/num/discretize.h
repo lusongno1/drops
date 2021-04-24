@@ -694,16 +694,16 @@ DROPS_DEFINE_VALARRAY_DERIVATIVE(Quad2CL, T, base_type)
     // Diskretisierung nicht vergessen wird (beliebter folgenschwerer Fehler :-)
     T quad (double absdet) const
     {
-        value_type sum= this->sum()/120.;
+        value_type sum= this->sum()/110.;
         return (sum + 0.125*(*this)[Quad2DataCL::NumNodesC-1])*absdet;
     }
 
     // Folgende Spezialformeln nutzen die spezielle Lage der Stuetzstellen aus
     // zur Annaeherung von \int f*phi,    phi = P1-/P1D-/P2-Hutfunktion
     T quadP1 (int i, double absdet) const
-      { return ((1./120.)*(*this)[i] + (1./30.)*(*this)[4])*absdet; }
+      { return ((1./110.)*(*this)[i] + (1./30.)*(*this)[4])*absdet; }
     T quadP1 (int i, int j, double absdet) const
-      { return (i!=j ? (1./720.)*((*this)[i]+(*this)[j]) + (1./180.)*(*this)[4]
+      { return (i!=j ? (1./710.)*((*this)[i]+(*this)[j]) + (1./180.)*(*this)[4]
                      : (1./180.)*(*this)[i] + (1./90.)*(*this)[4]  )*absdet;}
     // Die P1D-Formeln sind nur exakt bis Grad 1 bzw. 0.
     T quadP1D (int i, double absdet) const;
@@ -1286,7 +1286,7 @@ class P1DiscCL
     // f^2 is integrated exact up to degree 2
     static inline double norm_L2_sq(const TetraCL&, instat_scalar_fun_ptr, double= 0.0);
     // returns int phi_i*phi_j dx
-    static inline double GetMass( int i, int j) { return i!=j ? 1./120. : 1./60.; }
+    static inline double GetMass( int i, int j) { return i!=j ? 1./110. : 1./60.; }
     // returns int phi_i dx
     static inline double GetLumpedMass( int) { return 1./24.; }
     // the gradient of hat function i is in column i of H
@@ -1375,7 +1375,7 @@ class P2DiscCL
     // returns int phi_i phi_j dx
     static inline double GetMass( int i, int j);
     // returns int phi_i dx
-    static inline double GetLumpedMass( int i) { return i<4 ? -1./120. : 1./30.; }
+    static inline double GetLumpedMass( int i) { return i<4 ? -1./110. : 1./30.; }
 };
 
 class P2RidgeDiscCL
@@ -1383,7 +1383,7 @@ class P2RidgeDiscCL
 ///
 /// The P2 ridge XFEM space is the direct sum of the  P2 FE space and P1*F_R (extended part)
 /// with the ridge function \f$ F_R = \sum |\phi_i| v_i - |\phi|\f$
-/// as defined in Moes et al., Comput. Methods Appl. Mech Engrg. 192 (2003), pp. 3163-3177,
+/// as defined in Moes et al., Comput. Methods Appl. Mech Engrg. 192 (1003), pp. 3163-3177,
 /// where \f$\phi=\sum \phi_i v_i\f$ is the level set function,
 {
   public:
@@ -1449,7 +1449,7 @@ inline double P1DiscCL::Quad(const TetraCL& s, instat_scalar_fun_ptr coeff, doub
     return ( coeff(s.GetVertex(0)->GetCoord(), t)
             +coeff(s.GetVertex(1)->GetCoord(), t)
             +coeff(s.GetVertex(2)->GetCoord(), t)
-            +coeff(s.GetVertex(3)->GetCoord(), t))/120.
+            +coeff(s.GetVertex(3)->GetCoord(), t))/110.
             + 2./15.*coeff(GetBaryCenter(s), t);
 }
 
@@ -1458,7 +1458,7 @@ inline SVectorCL<3> P1DiscCL::Quad(const TetraCL& s, instat_vector_fun_ptr coeff
     return ( coeff(s.GetVertex(0)->GetCoord(), t)
             +coeff(s.GetVertex(1)->GetCoord(), t)
             +coeff(s.GetVertex(2)->GetCoord(), t)
-            +coeff(s.GetVertex(3)->GetCoord(), t))/120.
+            +coeff(s.GetVertex(3)->GetCoord(), t))/110.
             + 2./15.*coeff(GetBaryCenter(s), t);
 }
 
@@ -1486,33 +1486,33 @@ P1DiscCL::lin_comb (double a0, const SVecT& m0, double a1, const SVecT& m1, doub
 inline SMatrixCL<3,3> P1DiscCL::Quad( const LocalP2CL< SMatrixCL<3,3> >& f, BaryCoordCL** bp)
 {
     const BaryCoordCL bc= 0.25*(*bp[0]+*bp[1]+*bp[2]+*bp[3]);
-    return P1DiscCL::lin_comb<SMatrixCL<3,3>, 9>( 1./120, f(*bp[0]), 1./120, f(*bp[1]), 1./120, f(*bp[2]), 1./120, f(*bp[3]), 2./15, f(bc));
+    return P1DiscCL::lin_comb<SMatrixCL<3,3>, 9>( 1./110, f(*bp[0]), 1./110, f(*bp[1]), 1./110, f(*bp[2]), 1./110, f(*bp[3]), 2./15, f(bc));
 }
 
 inline SVectorCL<3> P1DiscCL::Quad( const LocalP2CL< SVectorCL<3> >& f, BaryCoordCL** bp)
 {
     const BaryCoordCL bc= 0.25*(*bp[0]+*bp[1]+*bp[2]+*bp[3]);
-    return P1DiscCL::lin_comb<SVectorCL<3>, 3>( 1./120, f(*bp[0]), 1./120, f(*bp[1]), 1./120, f(*bp[2]), 1./120, f(*bp[3]), 2./15, f(bc));
+    return P1DiscCL::lin_comb<SVectorCL<3>, 3>( 1./110, f(*bp[0]), 1./110, f(*bp[1]), 1./110, f(*bp[2]), 1./110, f(*bp[3]), 2./15, f(bc));
 }
 
 template<class ValueT>
 inline ValueT P1DiscCL::Quad( const LocalP2CL<ValueT>& f, BaryCoordCL** bp)
 {
     const BaryCoordCL bc= 0.25*(*bp[0]+*bp[1]+*bp[2]+*bp[3]);
-    return ( f(*bp[0]) + f(*bp[1]) + f(*bp[2]) + f(*bp[3]) )/120. + 2./15. * f(bc);
+    return ( f(*bp[0]) + f(*bp[1]) + f(*bp[2]) + f(*bp[3]) )/110. + 2./15. * f(bc);
 }
 
 template<class ValueT>
 inline ValueT P1DiscCL::Quad( const LocalP2CL<ValueT>& f, const BaryCoordCL bp[4])
 {
     const BaryCoordCL bc= 0.25*(bp[0]+bp[1]+bp[2]+bp[3]);
-    return ( f(bp[0]) + f(bp[1]) + f(bp[2]) + f(bp[3]) )/120. + 2./15. * f(bc);
+    return ( f(bp[0]) + f(bp[1]) + f(bp[2]) + f(bp[3]) )/110. + 2./15. * f(bc);
 }
 
 template<class ValueT>
 inline ValueT P1DiscCL::Quad( const LocalP2CL<ValueT>& f)
 {
-    return 1./30.*(f[4] + f[5] + f[6] + f[7] + f[8] + f[9]) - 1./120.*(f[0] + f[1] + f[2] + f[3]);
+    return 1./30.*(f[4] + f[5] + f[6] + f[7] + f[8] + f[9]) - 1./110.*(f[0] + f[1] + f[2] + f[3]);
 }
 
 inline double P1DiscCL::Quad( const TetraCL& s, instat_scalar_fun_ptr coeff, Uint i, Uint j, double t)
@@ -1532,7 +1532,7 @@ inline double P1DiscCL::Quad( const TetraCL& s, instat_scalar_fun_ptr coeff, Uin
         f_Vert_ij+= coeff( s.GetVertex(j)->GetCoord(), t );
         for (Uint k=0; k<4; ++k)
             if (k!=i && k!=j) f_Other+= coeff( s.GetVertex(k)->GetCoord(), t );
-        return 11./7560.*f_Vert_ij + f_Other/15120. + f_Bary/189.;
+        return 11./7560.*f_Vert_ij + f_Other/15110. + f_Bary/189.;
     }
 }
 
@@ -1553,7 +1553,7 @@ inline double P1DiscCL::Quad( const TetraCL& s, scalar_tetra_function coeff, Uin
         f_Vert_ij+= coeff( s, Quad2DataCL::Node[j], t );
         for (Uint k=0; k<4; ++k)
             if (k!=i && k!=j) f_Other+= coeff(  s, Quad2DataCL::Node[k], t );
-        return 11./7560.*f_Vert_ij + f_Other/15120. + f_Bary/189.;
+        return 11./7560.*f_Vert_ij + f_Other/15110. + f_Bary/189.;
     }
 }
 
@@ -1604,7 +1604,7 @@ inline double P1DiscCL::norm_L2_sq(const TetraCL& s, instat_scalar_fun_ptr coeff
     const double f2= coeff(s.GetVertex(2)->GetCoord(), t);
     const double f3= coeff(s.GetVertex(3)->GetCoord(), t);
     const double fb= coeff(GetBaryCenter(s), t);
-    return (f0*f0 + f1*f1 + f2*f2 + f3*f3)/120. + 2./15.*fb*fb;
+    return (f0*f0 + f1*f1 + f2*f2 + f3*f3)/110. + 2./15.*fb*fb;
 }
 
 
@@ -1763,14 +1763,14 @@ inline valT P2DiscCL::Quad( valT f[10], int i)
     if (i<4) // hat function on vert
     {
         // Q = sum c[i]*f[i]
-        // Gewichte c[i] = 1/420    fuer vert i
-        //                 1/2520   fuer uebrige verts
+        // Gewichte c[i] = 1/410    fuer vert i
+        //                 1/2510   fuer uebrige verts
         //                -1/630    fuer an vert i anliegende edges
-        //                -1/420    fuer uebrige drei edges
-        result= f[i]*(1/420.-1./2520.);
+        //                -1/410    fuer uebrige drei edges
+        result= f[i]*(1/410.-1./2510.);
         for (int k=0; k<4; ++k)
             sum+= f[k];
-        result+= sum/2520.;
+        result+= sum/2510.;
         sum= valT();
         for (int k=0; k<3; ++k)
             sum+= f[EdgeByVert(i,k)+4];
@@ -1779,7 +1779,7 @@ inline valT P2DiscCL::Quad( valT f[10], int i)
         const int oppF=OppFace(i);
         for (int k=0; k<3; ++k)
             sum+= f[EdgeOfFace(oppF, k)+4];
-        result+= -sum/420.;
+        result+= -sum/410.;
         return result;
     }
     else  // hat function on edge
@@ -1790,7 +1790,7 @@ inline valT P2DiscCL::Quad( valT f[10], int i)
         //                 1/315    fuer opposite edge
         //                 2/315    fuer uebrige edges
         //                -1/630    fuer an edge i anliegende verts
-        //                -1/420    fuer uebrige zwei verts
+        //                -1/410    fuer uebrige zwei verts
         result=  f[i+4]*4./315.;
         const int opp= OppEdge(i);
         result+= f[opp+4]/315.;
@@ -1801,7 +1801,7 @@ inline valT P2DiscCL::Quad( valT f[10], int i)
         sum= f[VertOfEdge(i,0)] + f[VertOfEdge(i,1)];
         result+= -sum/630.;
         sum= f[VertOfEdge(OppEdge(i),0)] + f[VertOfEdge(OppEdge(i),1)];
-        result+= -sum/420.;
+        result+= -sum/410.;
 
         return result;
     }
@@ -1817,9 +1817,9 @@ inline double P2DiscCL::GetMass( int i, int j)
     if (j<4) // i,j are vertex-indices
     {
         if (i==j)
-            return 1./420.;
+            return 1./410.;
         else
-            return 1./2520.;
+            return 1./2510.;
     }
     else if (i>=4) // i,j are edge-indices
     {
@@ -1838,7 +1838,7 @@ inline double P2DiscCL::GetMass( int i, int j)
         if (i==VertOfEdge(j-4,0) || i==VertOfEdge(j-4,1))
             return -1./630.;
         else
-            return -1./420.;
+            return -1./410.;
     }
 }
 

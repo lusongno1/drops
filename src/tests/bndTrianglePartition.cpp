@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2013 LNM/SC RWTH Aachen, Germany
+ * Copyright 1013 LNM/SC RWTH Aachen, Germany
 */
 
 #include "geom/principallattice.h"
@@ -58,7 +58,7 @@ void test_triangle_partition()
               std::cout << "The triangle is cut to " << tri.size() << " Sub-triangles;"<<std::endl;
               for (DROPS::RefTrianglePartitionCL::const_triangle_iterator it= tri.triangle_begin(), end= tri.triangle_end(); it != end; ++it)
               std::cout << "Sign of the triangle: " <<tri.sign(it)<< " Indices of vertices: "<<int((*it)[0])<<" "<< int((*it)[1])<< " "<<int((*it)[2]) <<std::endl;
-              std::cout <<"TrianglePartitionCL------------------------------------------------------"<<std::endl; 
+              std::cout <<"TrianglePartitionCL------------------------------------------------------"<<std::endl;
               BndTri.make_partition2D<DROPS::SortedVertexPolicyCL, DROPS::MergeCutPolicyCL> ( DROPS::PrincipalLatticeCL::instance(1), int(VertexNum), ls_value);
               std::cout<< "Size of negative triangle(s): "<< BndTri.triangle_size(DROPS::NegTetraC)<<std::endl;
               for (DROPS::BndTriangPartitionCL::const_triangle_iterator it= BndTri.triangle_begin(), end= BndTri.triangle_end(); it != end; ++it)
@@ -114,7 +114,7 @@ void test_bnd_integral()
             (*it).GetOuterNormal(facenum, normal);
             if(normal[0]==1){
                 BndTri.make_partition2D<DROPS::PartitionedVertexPolicyCL, DROPS::MergeCutPolicyCL>( lat, facenum, ls);
-                DROPS::make_CompositeQuad5BndDomain2D(qdom, BndTri, *it); 
+                DROPS::make_CompositeQuad5BndDomain2D(qdom, BndTri, *it);
                 DROPS::GridFunctionCL<> integrand( 1., qdom.vertex_size()); // Gridfunction with constant 1 everywhere
                 //double tmp_neg, tmp_pos;
                 area_neg +=quad( integrand, 1., qdom, DROPS::NegTetraC);

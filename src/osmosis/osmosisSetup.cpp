@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 #include "osmosis/osmosisSetup.h"
 #include "osmosis/localsetups.cpp"
@@ -37,7 +37,7 @@ namespace DROPS
 //
 //====================================================
 
-/// Initialize P1 function 
+/// Initialize P1 function
 void OsmosisP1CL::Init (instat_scalar_fun_ptr cn, double t)
 {
     conc.t = t;
@@ -55,7 +55,7 @@ void OsmosisP1CL::Init (instat_scalar_fun_ptr cn, double t)
     }
 
 	DoInterfaceStep(t);
-    
+
 }
 
 void OsmosisP1CL::InitWithScaling (instat_scalar_fun_ptr cn, double totalconcentration, double t)
@@ -87,7 +87,7 @@ void OsmosisP1CL::InitWithScaling (instat_scalar_fun_ptr cn, double totalconcent
 	DoInterfaceStep(t);
 }
 
-///Calls 
+///Calls
 /// -InitStep (Setup of linear osmosis diffusion system)
 /// -DoStep (Solution of linear system)
 /// -DoInterfaceStep (Solution of interface system)
@@ -448,14 +448,14 @@ void OsmosisP1CL::SetupInterfaceStabilisation(TetraCL& sit, double detTet, Matri
 	Quad3CL<Point3DCL> nTet = GetImprovedTetraNormal(sit, lset_.Phi, Bnd_ls_);
 
     LocalP2CL<> lsetp2(sit, lset_.Phi, Bnd_ls_);
-    
+
     Quad3CL<double> lsetq(lsetp2);
     Quad3CL<double> weight (1.0);
 
-	static bool weighteddiff = P.get<int>("ZeroVelAtBnd.Active",0) 
+	static bool weighteddiff = P.get<int>("ZeroVelAtBnd.Active",0)
         && P.get<int>("ZeroVelAtBnd.WeightedDiffusion",1);
 
-    
+
     if (weighteddiff)
     {
         static double weighteddiffdist = P.get<double>("ZeroVelAtBnd.WeightedDiffDistance",0.25);
@@ -507,7 +507,7 @@ void OsmosisP1CL::SetupInterfaceStabilisation(TetraCL& sit, double detTet, Matri
 			for(int k = 0; k < 3; ++k)
 			{
                 if (locIdx.num[i] != NoIdx && locIdx.num[j] != NoIdx)
-                {    
+                {
                     matM(locIdx.num[i] + k, locIdx.num[j] + k)	+= gtgint;
                     matM(locIdx.num[j] + k, locIdx.num[i] + k)	+= gtgint;
                 }
@@ -580,9 +580,9 @@ void OsmosisP1CL::SetupInstatSystem(MatrixCL& matA,
     TransformedP1FiniteElement & transfp1fel = *new TransformedP1FiniteElement (p1feq);
 
     GlobalConvDiffReacCoefficients global_cdcoef(D_, GetVelocity() , c_, f_ ,time);
-	
+
     ConvDiffElementMatrices elmats;
-    Elvec4 f; 
+    Elvec4 f;
 
     DROPS_FOR_TRIANG_TETRA( MG_, lvl, sit) {
         std::memset( f, 0, 4*sizeof(double));
@@ -595,7 +595,7 @@ void OsmosisP1CL::SetupInstatSystem(MatrixCL& matA,
         oldcut.Init( *sit, oldlset_.Phi, 0.);
         const bool nocut=!cut.Intersects();
         const bool oldnocut=!oldcut.Intersects();
-                
+
 
         LocalConvDiffReacCoefficients local_cdcoef(global_cdcoef,*sit);
 		bool nPartNew = false;
@@ -705,19 +705,19 @@ void OsmosisP1CL::SetupInstatMixedMassMatrix( MatrixCL& matM, VecDescCL* b, IdxD
                num_cols=  ColIdx.NumUnknowns();
     MatrixBuilderCL M(&matM, num_unks,  num_cols);//mass matrix
     const MultiGridCL& mg= this->GetMG();
-    BndDataCL<> Bndlset(mg.GetBnd().GetNumBndSeg());                
+    BndDataCL<> Bndlset(mg.GetBnd().GetNumBndSeg());
     const Uint lvl= RowIdx.TriangLevel();
     LocalNumbP1CL n;
     bool nocut; // oldsign[4],
 
     P1FEGridfunctions p1feq;
-    TransformedP1FiniteElement & transfp1fel = *new TransformedP1FiniteElement (p1feq);    
+    TransformedP1FiniteElement & transfp1fel = *new TransformedP1FiniteElement (p1feq);
 
     GlobalConvDiffReacCoefficients global_cdcoef(D_, GetVelocity() , c_, f_, time);
 
-    Elvec4 f; 
+    Elvec4 f;
 
-    DROPS_FOR_TRIANG_TETRA( MG_, lvl, sit) { 
+    DROPS_FOR_TRIANG_TETRA( MG_, lvl, sit) {
         std::memset( f, 0, 4*sizeof(double));
         transfp1fel.SetTetra(*sit);
 
@@ -752,8 +752,8 @@ void OsmosisP1CL::SetupInstatMixedMassMatrix( MatrixCL& matM, VecDescCL* b, IdxD
 			SetupLocalOneInterfaceMassMatrix( oldcut, M_P1NEW_P1OLD_n, transfp1fel);
 			SetupLocalTwoPhaseRhs(transfp1fel, oldcut, f, local_cdcoef);
 		}
-        
-        
+
+
         for(int i= 0; i < 4; ++i)
             if (n.WithUnknowns( i)){
                 for(int j= 0; j < 4; ++j)

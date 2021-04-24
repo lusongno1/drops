@@ -211,7 +211,7 @@ void Strategy(StokesP1BubbleP1CL<Coeff>& Stokes, double omega, double inner_iter
         VectorCL rhs( -c->Data);
         {
             double tol= inner_iter_tol;
-            int max_iter= 200;
+            int max_iter= 100;
             VectorCL tmp(vidx1->NumUnknowns());
             PCG(A->Data, tmp, b->Data, DummyExchangeCL(), pc, max_iter, tol);
             std::cout << "Iterationen: " << max_iter << "    Norm des Residuums: " << tol << std::endl;
@@ -219,14 +219,14 @@ void Strategy(StokesP1BubbleP1CL<Coeff>& Stokes, double omega, double inner_iter
         }
         std::cout << "rhs has been set!" << std::endl;
 //            tol= 1.0e-14;
-        max_iter= 200;
+        max_iter= 100;
         tol= outer_tol;
 //        PCG(A->Data, new_x->Data, b->Data, DummyExchangeCL(), pc, max_iter, tol);
         PCG(BABT, p1->Data, rhs, DummyExchangeCL(), schur_pc, max_iter, tol);
         std::cout << "Iterationen: " << max_iter << "    Norm des Residuums: " << tol << std::endl;
 
         tol= outer_tol;
-        max_iter= 200;
+        max_iter= 100;
         PCG(A->Data, v1->Data, VectorCL( b->Data - transp_mul(B->Data, p1->Data)), DummyExchangeCL(), pc, max_iter, tol);
         time.Stop();
 

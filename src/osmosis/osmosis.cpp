@@ -24,7 +24,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #include "geom/multigrid.h"
@@ -221,7 +221,7 @@ void  OnlyOsmosisStrategy( MultiGridCL& MG, LsetBndDataCL& lsetbnddata, AdapTria
         if (gnuoutnow)
 			gnu.Write(t);
 
-        bool vtkoutnow = P.get("VTK.Freq", 0) && (step%P.get("VTK.Freq", 0)==0);// || step < 20);
+        bool vtkoutnow = P.get("VTK.Freq", 0) && (step%P.get("VTK.Freq", 0)==0);// || step < 10);
         if (vtkoutnow){
             ScopeTimer vtktime("VTK-output");
             vtkwriter.Write(t);

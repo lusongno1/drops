@@ -31,7 +31,7 @@ namespace DROPS
 {
 
 VTKOutCL::VTKOutCL(const MultiGridCL& mg, const std::string& dataname, Uint numsteps,
-                   const std::string& dirname, const std::string& filename, 
+                   const std::string& dirname, const std::string& filename,
                    const std::string& pvdfilename, bool binary, bool onlyP1, bool P2DG,
                    Uint lvl, bool reusepvd, bool usedeformed)
 /** Beside constructing the VTKOutCL, this function computes the number of
@@ -46,7 +46,7 @@ VTKOutCL::VTKOutCL(const MultiGridCL& mg, const std::string& dataname, Uint nums
 \param lvl       Multigrid level
 */
     : mg_(mg), timestep_(0), numsteps_(numsteps), descstr_(dataname),
-      dirname_(dirname), filename_(filename), pvdfilename_(pvdfilename), 
+      dirname_(dirname), filename_(filename), pvdfilename_(pvdfilename),
       binary_(binary), onlyP1_(onlyP1), P2DG_(P2DG), geomwritten_(false),
       vAddrMap_(), eAddrMap_(), coords_(), tetras_(), lvl_(lvl),
       numPoints_(0), numTetras_(0), reusepvd_(reusepvd), usedeformed_(usedeformed)
@@ -250,11 +250,11 @@ void VTKOutCL::GatherCoord()
 
     if (!P2DG_)
         numPoints_= numLocPoints_= numVertices + numEdges;
-    else 
+    else
         numPoints_= numLocPoints_ = 10 * numTetras_;
 
     coords_.resize(3*numLocPoints_);
-    
+
     if (P2DG_ && usedeformed_)
       throw DROPSErrCL("P2DG and usedeformed in VTK!");
 
@@ -329,7 +329,7 @@ void VTKOutCL::GatherCoord()
                     coords_[3*counter+j]= (float)p[j];
                 counter++;
             }
-            // Put coordinate of the barycenter of the edge into the field of 
+            // Put coordinate of the barycenter of the edge into the field of
         }
     }
 

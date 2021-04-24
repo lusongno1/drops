@@ -354,7 +354,7 @@ void ExactDistanceInitCL::Test ()
     double d;
     Point3DCL l;
     dist_to_tri.dist( /*tri,*/ p, d /*, l*/);
-    std::cerr.precision( 20);
+    std::cerr.precision( 10);
     std::cerr << "p: " << p << " d: " << d << std::endl; // << " l: " << l << std::endl;
 }
 

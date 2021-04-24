@@ -199,7 +199,7 @@ void read_parameter_file_from_cmdline (ParamCL& P, int argc, char **argv, std::s
     if (fail)
         throw DROPSErrCL("read_parameter_file_from_cmdline: Unable to read default parameters from './default.json' and '"
                 + default_params + "'\n");
-    
+
     // then read parameters from JSON file specified on command line (otherwise use default_file)
     boost::property_tree::ptree params;
     if ( (argc == 1) || (argv[1][0] == '-') ) { // no file specified on command line

@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 // #include "geom/simplex.h"
@@ -50,11 +50,11 @@ void MeshDeformationCL::MaybeUpdateNumbering()
     mgVersion_= mg_->GetVersion();
 }
 
-/// Apply a transformation to the reference mesh and fill the (P2)deformation vector 
+/// Apply a transformation to the reference mesh and fill the (P2)deformation vector
 /// accordingly. The flag "only_bnd_edges_curved" allows to basically reduce the number
 /// of curved edges (and thus tetrahedra) by removing curvature information at inner edges
 /// and replacing them with the mean of the vertex values.
-void MeshDeformationCL::SetMeshTransformation(instat_vector_fun_ptr f, const double t, 
+void MeshDeformationCL::SetMeshTransformation(instat_vector_fun_ptr f, const double t,
                                               bool only_bnd_edges_curved, bool P2){
     MaybeUpdateNumbering();
     const Uint pidx = mlidx_.GetIdx();
@@ -114,7 +114,7 @@ void MeshDeformationCL::SetInnerEdgesPlanar(){
         if (!vt1.Unknowns.Exist( pidx)) continue;
         if (!vt2.Unknowns.Exist( pidx)) continue;
         if (!it->Unknowns.Exist( pidx)) continue;
-        
+
         Point3DCL a,b;
         for (Uint k = 0; k < 3; ++k)
         {

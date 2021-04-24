@@ -573,7 +573,7 @@ void  OnlyTransportStrategy( MultiGridCL& MG, LsetBndDataCL& lsetbnddata, AdapTr
         massTransp.GetSolutionOnPart( c_in, false , false);
 
         bool ensightoutnow = ensight && step%P.get<int>("Ensight.Freq")==0;
-        bool vtkoutnow = vtkwriter && (step%P.get<int>("VTK.Freq")==0 || step < 20);
+        bool vtkoutnow = vtkwriter && (step%P.get<int>("VTK.Freq")==0 || step < 10);
         if (ensightoutnow)
             ensight->Write(t);
         if (vtkoutnow)

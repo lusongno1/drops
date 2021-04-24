@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #ifndef DROPS_TRANSPORTNITSCHE_H
@@ -46,42 +46,42 @@ typedef double (*instat_fun_ptr)(const DROPS::Point3DCL&, double);
 
 namespace DROPS
 {
-  
+
 class VelocityContainer
 {
   typedef BndDataCL<Point3DCL>                              VelBndDataT;
-  typedef P2EvalCL<SVectorCL<3>, const VelBndDataT, const VecDescCL> const_DiscVelSolCL;  
+  typedef P2EvalCL<SVectorCL<3>, const VelBndDataT, const VecDescCL> const_DiscVelSolCL;
   private:
-    VecDescCL *v_;   
-    const VelBndDataT*    Bnd_v_;     
-    MultiGridCL*   MG_;  
-    instat_vector_fun_ptr vfptr_; 
+    VecDescCL *v_;
+    const VelBndDataT*    Bnd_v_;
+    MultiGridCL*   MG_;
+    instat_vector_fun_ptr vfptr_;
     const_DiscVelSolCL * asp2;
   public:
     VelocityContainer(VecDescCL & v,const VelBndDataT& Bnd_v,MultiGridCL& MG):v_(&v),Bnd_v_(&Bnd_v), MG_(&MG),vfptr_(0)
     {
       asp2 = new const_DiscVelSolCL( v_, Bnd_v_, MG_);
     };
-    
+
     VelocityContainer(instat_vector_fun_ptr v):v_(0),Bnd_v_(0),MG_(0),vfptr_(v),asp2(0){};
-    
+
     ~VelocityContainer()
     {
       if (asp2) delete asp2;
     }
-    
+
     const_DiscVelSolCL & GetVelocityAsP2() const
-        { 
+        {
           if (!(v_ && Bnd_v_))
             throw DROPSErrCL("velocity not prescribed as a const_DiscVelSolCL");
-          return *asp2; 
+          return *asp2;
         }
-        
+
     const_DiscVelSolCL GetVelocityAsP2(const VecDescCL& vel) const
-        { 
+        {
           if (!(v_ && Bnd_v_))
             throw DROPSErrCL("velocity not prescribed as a const_DiscVelSolCL");
-          return const_DiscVelSolCL( &vel, Bnd_v_, MG_); 
+          return const_DiscVelSolCL( &vel, Bnd_v_, MG_);
         }
 
     instat_vector_fun_ptr GetVelocityAsFunctionPointer() const
@@ -90,15 +90,15 @@ class VelocityContainer
         throw DROPSErrCL("velocity not prescribed as a function(pointer)");
       return vfptr_;
     }
-    
+
     bool hasVelocityAsP2() const {
       return (v_ && Bnd_v_);
     }
-     
+
     bool hasVelocityAsFunctionPointer() const {
       return (vfptr_);
     }
- 
+
 };
 
 class OsmosisP1CL
@@ -120,7 +120,7 @@ class OsmosisP1CL
                 M,         ///< mass matrix
                 C;        ///< convection matrix
     VecDescCL	b;
-    
+
     MatDescCL MVn, ///< Matrix for interface velocity field problem
     		  MV; ///< Matrix for globalised velocity field problem
     VecDescCL bVn, ///< RHS vector for interface velocity field problem
@@ -136,7 +136,7 @@ class OsmosisP1CL
     LsetBndDataCL& Bnd_ls_;          ///< Boundary condition for the level set function
     VelocityContainer v_;
     double         theta_,          ///< time scheme parameter
-                   dt_,             ///< time step 
+                   dt_,             ///< time step
                    D_;           ///< diffusion constant
     LevelsetP2CL &lset_,  &oldlset_;  ///< levelset at current time step and previous step
     SSORPcCL				ssorpc_;
@@ -159,14 +159,14 @@ class OsmosisP1CL
     OsmosisP1CL( MultiGridCL& mg, BndDataT& Bnd, VelBndDataT& BndVel, VelocityContainer& v, LsetBndDataCL& Bnd_ls,
         LevelsetP2CL& lset, LevelsetP2CL& oldlset,
         DROPS::ParamCL& P, double initialtime=0, instat_scalar_fun_ptr reac=0, instat_scalar_fun_ptr rhs=0)
-        : oldt_(initialtime), t_( initialtime), 
+        : oldt_(initialtime), t_( initialtime),
         idx( P1_FE, 1, Bnd), oldidx( P1_FE, 1, Bnd),
         Velidx( vecP1_FE, BndVel),
         MG_( mg), Bnd_( Bnd), Bnd_v_(BndVel), Bnd_ls_(Bnd_ls), v_ (v),
         theta_( P.get<double>("Time.Theta")), dt_( P.get<int>("Time.NumSteps")!=0 ? P.get<double>("Time.FinalTime")/P.get<int>("Time.NumSteps") : 0),
         D_( P.get<double>("Osmosis.Diffusivity")),
         lset_( lset), oldlset_(oldlset),
-        gm_( pc_, 20, P.get<int>("Solver.Iter"), P.get<double>("Solver.Tol"), false, false, RightPreconditioning),
+        gm_( pc_, 10, P.get<int>("Solver.Iter"), P.get<double>("Solver.Tol"), false, false, RightPreconditioning),
         cg_( ssorpc_, P.get<int>("Solver.Iter"), P.get<double>("Solver.Tol"), false),
         f_(rhs), c_(reac),
         omit_bound_(P.get<double>("Osmosis.XFEMReduced"))
@@ -228,11 +228,11 @@ class OsmosisP1CL
 		{ return const_DiscVelSolCL( &Myc, &Bnd_v_, &MG_);}
     const_DiscVelP1SolCL GetVelP1Solution( const VecDescCL& Myc) const
 		{ return const_DiscVelP1SolCL( &Myc, &Bnd_v_, &MG_);}
-                         
- 
+
+
     void CheckDivergence();
 
-   
+
     /// \name For internal use only
     /// The following member functions are added to enable an easier implementation
     /// of the locling navstokes-levelset. They should not be called by a common user.
@@ -310,8 +310,8 @@ class OsmosisRepairCL : public MGObserverCL
     void pre_refine  () {}
     void post_refine ();
 
-    void pre_refine_sequence  (); 
-    void post_refine_sequence (); 
+    void pre_refine_sequence  ();
+    void post_refine_sequence ();
     const IdxDescCL* GetIdxDesc() const;
 };
 
@@ -352,7 +352,7 @@ class P1FEGridfunctions{
     LocalP2CL<> pipj[4][4];
   public:
     static void SetupPiPj(LocalP2CL<>pipj[4][4])
-    {    
+    {
         for(int i= 0; i < 4; ++i) {
             for(int j= 0; j < i; ++j) {
                 pipj[j][i][EdgeByVert( i, j) + 4]= 0.25;
@@ -371,9 +371,9 @@ class P1FEGridfunctions{
           q5_p[i].assign(p1[i]);
           p2[i].assign(p1[i]);
        }
-      SetupPiPj(pipj);  
+      SetupPiPj(pipj);
     }
-    
+
     LocalP1CL<>& GetShapeAsLocalP1(int i) {return p1[i];}
     LocalP2CL<>& GetShapeAsLocalP2(int i) {return p2[i];}
     LocalP2CL<>& GetProductShapeAsLocalP2(int i, int j) {return pipj[i][j];}
@@ -399,28 +399,28 @@ class TransformedP1FiniteElement{
     Quad3CL<> q3_baseshape[4];
   public:
     TransformedP1FiniteElement(P1FEGridfunctions& ap1fegfs, TetraCL* atet = nullptr):tet(atet), p1fegfs(ap1fegfs){
-      has_trafo_base=false;    
-      has_Gram=false;    
-      oninterface = false; 
+      has_trafo_base=false;
+      has_Gram=false;
+      oninterface = false;
       nodes = nullptr;
     }
-    
+
     virtual ~TransformedP1FiniteElement(){
       if (nodes) delete[] nodes;
     }
-    
+
     P1FEGridfunctions& GetGridfunctions(){
       return p1fegfs;
     }
-    
+
     void SetTetra(TetraCL& atet){
       tet = &atet;
-      has_trafo_base=false;    
-      has_Gram=false;    
-      oninterface = false;    
+      has_trafo_base=false;
+      has_Gram=false;
+      oninterface = false;
     }
-    
-    virtual void SetLocal(TetraCL& atet, LocalConvDiffReacCoefficients& , bool ){    
+
+    virtual void SetLocal(TetraCL& atet, LocalConvDiffReacCoefficients& , bool ){
       SetTetra(atet);
     }
 
@@ -429,31 +429,31 @@ class TransformedP1FiniteElement{
       if (nodes) delete[] nodes;
       nodes = Quad3CL<>::TransformNodes(cutT);
       oninterface = true;
-      
+
       for (int i = 0; i < 4; i ++){
-        q3_baseshape[i] = Quad3CL<>(p1fegfs.GetShapeAsLocalP2(i), nodes);      
-      }      
+        q3_baseshape[i] = Quad3CL<>(p1fegfs.GetShapeAsLocalP2(i), nodes);
+      }
     }
 
     TetraCL& GetTetra() const{
       if(tet == nullptr) throw DROPSErrCL("TransformedP1FiniteElement::GetTetra - No TetraCL object given!");
       return *tet;
     }
-    
+
     void CalcTrafoBase(){
       P1DiscCL::GetGradients(G, det, GetTetra());
       absdet = std::fabs( det);
       vol = absdet * 1.0/6.0;
       has_trafo_base = true;
     }
-    
+
     BaryCoordCL* GetNodes() const{
       if (!oninterface)
         throw DROPSErrCL("GetNodes should only be called if a tetra is subdivided!");
       else
         return nodes;
     }
-    
+
     double GetDeterminant(){
       if (!has_trafo_base) CalcTrafoBase();
       return det;
@@ -479,7 +479,7 @@ class TransformedP1FiniteElement{
         if (!has_trafo_base) CalcTrafoBase();
         GTG = GramMatrix(G);
         has_Gram = true;
-      } 
+      }
       return GTG;
     }
 
@@ -496,9 +496,9 @@ class GlobalConvDiffReacCoefficients{
   friend class LocalConvDiffReacCoefficients;
   private:
     typedef BndDataCL<Point3DCL> VelBndDataT;
-    typedef P2EvalCL<SVectorCL<3>, const VelBndDataT, const VecDescCL> const_DiscVelSolCL;  
+    typedef P2EvalCL<SVectorCL<3>, const VelBndDataT, const VecDescCL> const_DiscVelSolCL;
     double D_;
-    double time;    
+    double time;
     const VelocityContainer& vel;
     instat_scalar_fun_ptr source;
     instat_scalar_fun_ptr mass;
@@ -510,22 +510,22 @@ class GlobalConvDiffReacCoefficients{
     double GetDiffusionCoef(){
     	return D_;
     }
-	
+
 	instat_scalar_fun_ptr GetSourceAsFuntionPointer(){return source;}
 	instat_scalar_fun_ptr GetMassAsFuntionPointer(){return mass;}
 };
 
 class LocalConvDiffReacCoefficients{
   private:
-    GlobalConvDiffReacCoefficients& gcdcoefs;  
+    GlobalConvDiffReacCoefficients& gcdcoefs;
     Quad5CL<> q5_source;
     Quad3CL<> q3_source;
     Quad5CL<> q5_mass;
     Quad3CL<> q3_mass;
     Quad3CL<Point3DCL> *q3_velocity;
-    LocalP2CL<Point3DCL> *lp2_velocity;  
+    LocalP2CL<Point3DCL> *lp2_velocity;
   public:
-    LocalConvDiffReacCoefficients(GlobalConvDiffReacCoefficients& agcdcoefs, TetraCL& tet):gcdcoefs(agcdcoefs), 
+    LocalConvDiffReacCoefficients(GlobalConvDiffReacCoefficients& agcdcoefs, TetraCL& tet):gcdcoefs(agcdcoefs),
         q5_source(tet,gcdcoefs.source,gcdcoefs.time), q3_source(tet,gcdcoefs.source,gcdcoefs.time),
         q5_mass(tet,gcdcoefs.mass,gcdcoefs.time), q3_mass(tet,gcdcoefs.mass,gcdcoefs.time)
     {
@@ -539,7 +539,7 @@ class LocalConvDiffReacCoefficients{
         lp2_velocity = new LocalP2CL<Point3DCL>(tet, gcdcoefs.vel.GetVelocityAsFunctionPointer(),gcdcoefs.time);
       }
     }
-    
+
     ~LocalConvDiffReacCoefficients(){
       delete q3_velocity;
       delete lp2_velocity;
@@ -547,8 +547,8 @@ class LocalConvDiffReacCoefficients{
 
     double GetDiffusionCoef(){
       return gcdcoefs.GetDiffusionCoef();
-    }    
-	
+    }
+
 	instat_scalar_fun_ptr GetSourceAsFuntionPointer(){
 	  return gcdcoefs.GetSourceAsFuntionPointer();
 	}

@@ -44,7 +44,7 @@ enum SurfaceModelT
 /// different types of constitutive laws for surfactant
 {
     LANGMUIR=0, ///< Langmuir model
-    LINEAR  =1  ///< simple linear model  
+    LINEAR  =1  ///< simple linear model
 };
 
 class SurfaceTensionCL

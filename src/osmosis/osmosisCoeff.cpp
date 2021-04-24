@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #include "misc/funcmap.h"
@@ -99,7 +99,7 @@ double TransverseLinear (const DROPS::Point3DCL& p , double )
 }
 
 double ZeroFct (const DROPS::Point3DCL& ,  double )
-{  
+{
     return 0.;
 }
 
@@ -115,7 +115,7 @@ double Torus( const DROPS::Point3DCL& pin, double)
 
 
 DROPS::Point3DCL ZeroFct_vec (const DROPS::Point3DCL& ,  double )
-{  
+{
     return DROPS::Point3DCL(0.);
 }
 
@@ -130,8 +130,8 @@ double Dirichlet (const DROPS::Point3DCL& p, double )
   static double y0 = P.get<DROPS::Point3DCL>("Levelset.PosDrop")[1];
   static double R = P.get<DROPS::Point3DCL>("Levelset.RadDrop")[0];  */
 //  double x = p[0];
-  double y = p[1];  
-  
+  double y = p[1];
+
   int c= (int) (y * 2.0);
   switch(c)
   {
@@ -141,10 +141,10 @@ double Dirichlet (const DROPS::Point3DCL& p, double )
 /*    case 1:
     case 2:
             return (y-0.5)*(1.5-y);
-*/    case 3: 
+*/    case 3:
     default:
         return 0;
-        break; 
+        break;
   }
 }
 
@@ -175,7 +175,7 @@ double DirichletConstt (const DROPS::Point3DCL& p, double )
 }
 
 DROPS::SVectorCL<3> PotentialFlowfield (const DROPS::Point3DCL& p, double )
-{  
+{
     extern DROPS::ParamCL P;
     DROPS::SVectorCL<3> ret(0.);
     double x=p[0]-P.get<DROPS::Point3DCL>("Levelset.PosDrop")[0]; double y=p[1]-P.get<DROPS::Point3DCL>("Levelset.PosDrop")[1];
@@ -197,7 +197,7 @@ DROPS::SVectorCL<3> PotentialFlowfield (const DROPS::Point3DCL& p, double )
 
 template<int i>
 DROPS::SVectorCL<3> StraightFlowfield (const DROPS::Point3DCL&, double )
-{  
+{
     DROPS::SVectorCL<3> ret(0.);
     ret[i] = 1.0;
     return ret;

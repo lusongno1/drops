@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2012 LNM/SC RWTH Aachen, Germany
+ * Copyright 1012 LNM/SC RWTH Aachen, Germany
 */
 
 #ifndef DROPS_SPACETIME_MAP_H
@@ -37,7 +37,7 @@
 #include "geom/principallattice.h"
 #include "num/spacetime_geom.h"
 //#include "num/unknowns.h"
-// 
+//
 
 
 namespace DROPS
@@ -56,7 +56,7 @@ private:
 public:
     virtual Point4DCL Map(const Point4DCL &p ) const;
     static SpaceTimeIdentity& getInstance()
-    { 
+    {
         static SpaceTimeIdentity instance;
         return instance;
     }
@@ -73,7 +73,7 @@ private:
     Point3DCL diff[3];
 public:
     TPSpaceTimeMapping(const TetraCL & tet, const TimeInterval & tatb_in)
-        :/*tet(tet_in),*/tatb(tatb_in) 
+        :/*tet(tet_in),*/tatb(tatb_in)
     {
         a = tet.GetVertex(0)->GetCoord();
         for (int i = 1; i < 4; ++i)

@@ -60,7 +60,7 @@ void InitVecLaplace(const MultiGridCL& MG, LevelsetP2CL& lset, DROPS::VecDescCL&
 int main (int argc, char* argv[]) {
 
   try {
-    
+
     DROPS::read_parameter_file_from_cmdline( P, argc, argv, "../../param/surfnavierstokes/No_Bnd_Condition.json");
     std::cout << P << std::endl;
 
@@ -349,7 +349,7 @@ int main (int argc, char* argv[]) {
     std::stringstream Schurstream;
     PCGSolverT SchurPCGSolver (symmPcPc_, P.get<int>("Solver.PcBIter"), P.get<double>("Solver.PcBTol"), true, &Schurstream);
     SchurPreBaseCL *spc_ = new SurfaceLaplacePreCL<PCGSolverT>( Schur_hat, SchurPCGSolver);//pressure preconditioner
-    
+
     //construct symmteric block iterative solver
     typedef BlockPreCL<ExpensivePreBaseCL, SchurPreBaseCL, DiagSpdBlockPreCL>  DiagBlockPcT;
     typedef PLanczosONBCL<VectorCL, DiagBlockPcT> LanczosT;
@@ -646,18 +646,18 @@ int main (int argc, char* argv[]) {
                                 	InitVector(mg, vInit, &Test_A_plus_M_disturbed_test18);
                                 	InitVecLaplace(mg, lset, rhs, vSol, pSol, extrhs, extvsol, extpsol);
                                 }
-        else if( !testcase.compare("20")) {
-                                      	std::cout << "Test case 20 = test 17 + swirling depends on x; " << std::endl;
+        else if( !testcase.compare("10")) {
+                                      	std::cout << "Test case 10 = test 17 + swirling depends on x; " << std::endl;
                                       	ParameterNS::nu = P.get<double>("SurfNavStokes.kinematic_viscosity");
-                                      	extvsol = &Test_A_plus_M_vSolVectorFun20;
+                                      	extvsol = &Test_A_plus_M_vSolVectorFun10;
                                       	extpsol = &ZeroScalarFun;
-                                      	extcurlsol = &Test_A_plus_M_curlFun20;
-                                      	extrhs  = &Test_A_plus_M_RhsVectorFun20  ;//viscosity is here!
-                                      	extrhs2  = &Test_A_plus_M_rhs2Fun20;
-                                      	extsol_grad1 = &Test_A_plus_M_vSolVectorFun20_Gradient1;
-                                      	extsol_grad2 = &Test_A_plus_M_vSolVectorFun20_Gradient2;
-                                      	extsol_grad3 = &Test_A_plus_M_vSolVectorFun20_Gradient3;
-                                      	InitVector(mg, vInit, &Test_A_plus_M_vSolVectorFun20);
+                                      	extcurlsol = &Test_A_plus_M_curlFun10;
+                                      	extrhs  = &Test_A_plus_M_RhsVectorFun10  ;//viscosity is here!
+                                      	extrhs2  = &Test_A_plus_M_rhs2Fun10;
+                                      	extsol_grad1 = &Test_A_plus_M_vSolVectorFun10_Gradient1;
+                                      	extsol_grad2 = &Test_A_plus_M_vSolVectorFun10_Gradient2;
+                                      	extsol_grad3 = &Test_A_plus_M_vSolVectorFun10_Gradient3;
+                                      	InitVector(mg, vInit, &Test_A_plus_M_vSolVectorFun10);
                                       	InitVecLaplace(mg, lset, rhs, vSol, pSol, extrhs, extvsol, extpsol);
                                     	SetupInterfaceRhsP1(mg, &rhs2, lset.Phi, lset.GetBndData(), extrhs2);
 
@@ -1357,7 +1357,7 @@ int main (int argc, char* argv[]) {
     std::cout << "The average iterationsnumber of the Schur-preconditioner is: " << Schuraverage << '\n' << " ...with a variation of: " << Schurvariation << std::endl;
 
     delete &lset;
-    
+
     return 0;
   }
   catch (DROPS::DROPSErrCL err) { err.handle(); }

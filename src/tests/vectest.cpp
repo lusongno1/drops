@@ -214,6 +214,6 @@ int main()
     cout << "MyVectorCL Calc: " << time.GetTime() << endl
          << "           Differenz: " << norm( myret.raw() - ret) << endl;
     time.Reset();
-		
+
 	return 0;
 }

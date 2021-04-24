@@ -103,7 +103,7 @@ bool InterfacePatchCL::IntersectsChild( Uint ch) const
 
 // Init for SubtetraT
 // Wird nur von masstransport P1X verwendet
-void InterfacePatchCL::Init( const SubTetraT& st, const LocalP2CL<double>& ls, 
+void InterfacePatchCL::Init( const SubTetraT& st, const LocalP2CL<double>& ls,
                              double translation)
 {
     static Point3DCL zero;
@@ -176,12 +176,12 @@ bool InterfacePatchCL::ComputeVerticesOfCut( Uint ch, bool compute_PQRS)
             innersec_++;
         }
     }
-    
+
     const double eps = 1e-9;
-    
+
     for (int i = 0; i<intersec_; ++i){
         for (int face = 0; face <4; ++face){
-            if (Bary_[i][face] < eps) 
+            if (Bary_[i][face] < eps)
                 cut_point_on_face[i][face] = true;
             else
                 cut_point_on_face[i][face] = false;
@@ -193,7 +193,7 @@ bool InterfacePatchCL::ComputeVerticesOfCut( Uint ch, bool compute_PQRS)
         int on_face_cnt = 0;
         for (int i = 0; i<intersec_; ++i)
             if (cut_point_on_face[i][face]) on_face_cnt ++;
-        if (on_face_cnt == intersec_) 
+        if (on_face_cnt == intersec_)
             return false;
     }
 
@@ -263,14 +263,14 @@ bool InterfaceTetraCL::ComputeCutForChild( Uint ch)
 void InterfaceTetraCL::InsertSubTetra(const SubTetraT& BaryCoords, bool pos, Uint child)
 {
     if (barysubtetra_ == true)
-    {  
+    {
         SubTetraT TransformedBaryCoords = TransformToSubTetra(BaryCoords);
-        if (pos) 
+        if (pos)
         {
             posTetras.push_back(TransformedBaryCoords);
             posChildIdx.push_back(child);
-        } 
-        else 
+        }
+        else
         {
             negTetras.push_back(TransformedBaryCoords);
             negChildIdx.push_back(child);
@@ -278,12 +278,12 @@ void InterfaceTetraCL::InsertSubTetra(const SubTetraT& BaryCoords, bool pos, Uin
     }
     else
     {
-        if (pos) 
+        if (pos)
         {
             posTetras.push_back(BaryCoords);
             posChildIdx.push_back(child);
-        } 
-        else 
+        }
+        else
         {
             negTetras.push_back(BaryCoords);
             negChildIdx.push_back(child);
@@ -466,7 +466,7 @@ void InterfaceTetraCL::ComputeSubTets(bool subdivide_first)
         }
     }
     else
-        // just add own subtet.. 
+        // just add own subtet..
         ComputeSubTets( 8, /*clearTetras=*/ false);
 }
 
@@ -606,7 +606,7 @@ bool InterfaceLineCL::ComputeMCLForChild(Uint ch)
     int idx[2];
     for( int i=0; i<intersec_; i++ )
     {
-        num=0; 
+        num=0;
         for( int j=0; j<4; j++ )
         {
             if( cut_point_on_face[i][j]==true && cut_point_on_face[(i+1)%intersec_][j]==true)
@@ -630,7 +630,7 @@ bool InterfaceLineCL::ComputeMCLForChild(Uint ch)
             for(Uint v=0;v<6;v++)
             {
                 if(FaceOfEdge(v,0)==idx[0]&&FaceOfEdge(v,1)==idx[1]&&(BC_Edge_[v]==SlipBC||BC_Edge_[v]==Slip0BC||BC_Edge_[v]==SymmBC))
-                {	
+                {
                     IdxMCL_[numMCL_][0]= i;
                     IdxMCL_[numMCL_][1]= (i+1)%intersec_;
                     if(BC_Edge_[v]==SymmBC)
@@ -669,7 +669,7 @@ bool InterfaceLineCL::ComputeMCLForChild(Uint ch)
                 for(Uint v=0;v<6;v++)
                 {
                     if(FaceOfEdge(v,0)==idx[0]&&FaceOfEdge(v,1)==idx[1]&&(BC_Edge_[v]==SlipBC||BC_Edge_[v]==Slip0BC||BC_Edge_[v]==SymmBC))
-                    {	
+                    {
                         IdxMCL_[numMCL_][0]= i;
                         IdxMCL_[numMCL_][1]= i+2;
                         if(BC_Edge_[v]==SymmBC)
@@ -762,20 +762,20 @@ Quad9_1DCL<Point3DCL> InterfaceLineCL::GetImprovedNormalAtMCL(Uint v) const
 }
 
 // The method to compute the outer normal of MCL might have a large error when the contact angle is small.
-Quad9_1DCL<Point3DCL> InterfaceLineCL::GetImprovedMCLNormalOnSlipBnd(const TetraCL& tet, Uint v) const 
+Quad9_1DCL<Point3DCL> InterfaceLineCL::GetImprovedMCLNormalOnSlipBnd(const TetraCL& tet, Uint v) const
 {
     BaryCoordCL bary[2];
     bary[0] = Bary_[IdxMCL_[v][0]];
     bary[1] = Bary_[IdxMCL_[v][1]];
     Quad9_1DCL<Point3DCL> SlipBndNormal(tet, bary, outnormal_);
     Quad9_1DCL<Point3DCL> NormalMCL=GetImprovedNormalAtMCL(v);
-    Quad9_1DCL<Point3DCL> n;   
+    Quad9_1DCL<Point3DCL> n;
 
     n = NormalMCL - dot(NormalMCL, SlipBndNormal) * SlipBndNormal;
-    
-    for (int i =0; i<Quad9_1DDataCL::NumNodesC; i++) 
+
+    for (int i =0; i<Quad9_1DDataCL::NumNodesC; i++)
         if (n[i].norm()>1e-8) n[i]/= n[i].norm();
-    
+
     return n;
 
 }
@@ -862,7 +862,7 @@ LocalP2CL<double> ProjectIsoP2ChildToParentP1 (LocalP2CL<double> lpin, Uint chil
             res[i] +=  G[d]* (vertices[i][d]-vertices[v0][d]);
         }
     }
-        
+
     for (int i=0; i<6; i++){
         res[i+4] = 0.5 * res[VertOfEdge(i,0)] + 0.5 * res[VertOfEdge(i,1)];
     }

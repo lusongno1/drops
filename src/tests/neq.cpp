@@ -72,7 +72,7 @@ int main ()
     typedef SSORPcCL SPc2T;
     SPc2T spc2;
     SPc2T spc3;
-    //PCGSolverCL<SPcT> solver( spc, 200, 1e-6, true);
+    //PCGSolverCL<SPcT> solver( spc, 100, 1e-6, true);
     PCGNESolverCL<SPcT> solver( spc, 400, 1e-6, true);
     //GCRSolverCL<SPcT> solver( spc, 500, 500, 1e-6, true, &std::cout);
 

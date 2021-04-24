@@ -166,7 +166,7 @@ int main (int argc, char** argv)
 
     DROPS::Point3DCL e1(0.), e2(0.), e3(0.), orig;
     e1[0]=2*P.get<double>("Inflow.RadInlet"); e2[1]=1.0; e3[2]= 2*P.get<double>("Inflow.RadInlet");
-    DROPS::BrickBuilderCL builder( orig, e1, e2, e3, 20, 20, 20);
+    DROPS::BrickBuilderCL builder( orig, e1, e2, e3, 10, 10, 10);
     DROPS::MultiGridCL mg( builder);
 
     const DROPS::BndCondT bcls[6]= { DROPS::NoBC, DROPS::NoBC, DROPS::NoBC, DROPS::NoBC, DROPS::NoBC, DROPS::NoBC };

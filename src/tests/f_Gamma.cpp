@@ -325,7 +325,7 @@ void ApplyToTestFct( InstatStokes2PhaseP2P1CL& Stokes, const LsetBndDataCL& lsbn
 void Compare_LaplBeltramiSF_ConstSF( InstatStokes2PhaseP2P1CL& Stokes, const LsetBndDataCL& lsbnd)
 // computation of order of LB discretization, cf. paper
 // S. Gross, A. Reusken: Finite element discretization error analysis of a surface tension force in two-phase incompressible flows,
-// SIAM J. Numer. Anal. 45, 1679--1700 (2007)
+// SIAM J. Numer. Anal. 45, 1679--1700 (1007)
 
 {
     MultiGridCL& MG= Stokes.GetMG();

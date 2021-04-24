@@ -18,7 +18,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2013 LNM/SC RWTH Aachen, Germany
+ * Copyright 1013 LNM/SC RWTH Aachen, Germany
 */
 #include "misc/container.h"
 #include "misc/funcmap.h"
@@ -33,7 +33,7 @@ extern DROPS::ParamCL P;
 namespace DROPS
 {
 
-// -------------------------CSG EXAMPLE(S)------------------------------ // 
+// -------------------------CSG EXAMPLE(S)------------------------------ //
 
 double csg_fun (const Point3DCL& x, double t)
 {
@@ -48,7 +48,7 @@ double csg_fun (const Point3DCL& x, double t)
         thebody= CSG::body_builder( p.get_child( P.get<std::string>("CSG.Geometry") ) );
         first = false;
     }
-    
+
     return (*thebody)( x, t);
 }
 

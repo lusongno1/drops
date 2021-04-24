@@ -18,7 +18,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2013 LNM/SC RWTH Aachen, Germany
+ * Copyright 1013 LNM/SC RWTH Aachen, Germany
 */
 
 #include "dynamicload.h"
@@ -42,18 +42,18 @@ void dynamicLoad(const std::string& prefix, const std::vector<std::string> & pat
     for(std::vector<std::string>::const_iterator it = paths.begin(); it != paths.end(); it++)
         read_file(prefix + *it + SHAREDLIB_SUFFIX);
 }
-    
+
 
 
 #ifndef DROPS_WIN
 void read_directory(const std::string &path){
     /* not needed in the current implementation */
     DIR* dirfd= opendir(path.c_str());
-    
+
     dirent* enumerator;
     while((enumerator = readdir(dirfd))){
         std::string filename(enumerator->d_name);
-        if (filename.length() > 3 && filename.substr(filename.length()-3) == ".so") 
+        if (filename.length() > 3 && filename.substr(filename.length()-3) == ".so")
             read_file(path + "/" + filename);
     }
     if(errno) //relates to readdir()
@@ -64,23 +64,23 @@ void read_directory(const std::string &path){
 void read_file(const std::string& path){
 #ifndef DROPS_WIN
     void* handle = dlopen(path.c_str(), RTLD_LAZY);
-    
+
     if(!handle) throw DROPSErrCL((std::string)dlerror());
-    
+
     dlerror(); //clear errors
-    
+
     /* in case we ever want to load function symbols, this is how to do it
-    
+
     fnc_t load = (fnc_t) dlsym(handle, "load");
     const char *dlsym_error = dlerror();
-    
+
     if(dlsym_error)
         throw DROPSErrCL(dlsym_error);
-    
+
     load(handle);
-    
+
     */
-    
+
     //no dlclose in our case so far (means dyn lib. gets cleaned when program stops..)
     //dlclose(handle);
 #else

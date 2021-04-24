@@ -19,7 +19,7 @@
  * along with DROPS. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * Copyright 2013 LNM/SC RWTH Aachen, Germany
+ * Copyright 1013 LNM/SC RWTH Aachen, Germany
  */
 
 #include "spacetimetransp/stxfem.h"
@@ -34,10 +34,10 @@ namespace DROPS
 
 using namespace STXFEM;
 
-EnergyNormErrorAccumulatorCL::EnergyNormErrorAccumulatorCL(const MultiGridCL& MG, 
+EnergyNormErrorAccumulatorCL::EnergyNormErrorAccumulatorCL(const MultiGridCL& MG,
                                                        const LevelsetP2CL * lsetp2old_in,
-                                                       const LevelsetP2CL * lsetp2new_in, 
-                                                       instat_scalar_fun_ptr lset_fpt_in, 
+                                                       const LevelsetP2CL * lsetp2new_in,
+                                                       instat_scalar_fun_ptr lset_fpt_in,
                                                        const double t1, const double t2,
                                                        const VecDescCL & old_sol_neg_in,
                                                        const VecDescCL & old_sol_pos_in,
@@ -68,7 +68,7 @@ EnergyNormErrorAccumulatorCL::EnergyNormErrorAccumulatorCL(const MultiGridCL& MG
     lambda_stab(P.get<double>("NitschePenalty")),
     vmax(P.get<double>("MaxVelocity"))
 {
- 
+
     for(int i=0; i<4; i++)
     {
         LocalP1CL<> test = 0.0;
@@ -81,7 +81,7 @@ EnergyNormErrorAccumulatorCL::EnergyNormErrorAccumulatorCL(const MultiGridCL& MG
         for(int j=0; j<4; j++)
             phi_i_phi_j[i][j] = phi[i]*phi[j];
 
-   
+
 }
 
 void EnergyNormErrorAccumulatorCL::begin_accumulation ()
@@ -127,7 +127,7 @@ void EnergyNormErrorAccumulatorCL::visit (const TetraCL& sit)
     // const double h = std::pow(absdet,1.0/3.0); //unused
     const double dt = tnew-told;
     const double st_absdet= absdet * dt;
-    
+
     LocalP2CL<> locPhi_old, locPhi_new;
 
     locPhi_old.assign( sit, lsetp2old->Phi, lsetp2old->GetBndData());
@@ -145,12 +145,12 @@ void EnergyNormErrorAccumulatorCL::visit (const TetraCL& sit)
 
     bool inside_outer_band = false;
     bool outside_inner_band = false;
-    
+
     for (int i = 0; i < 10; ++i)
     {
-        if (locPhi_old[i] < dt*vmax || locPhi_new[i] < dt*vmax) 
+        if (locPhi_old[i] < dt*vmax || locPhi_new[i] < dt*vmax)
             inside_outer_band = true;
-        if (locPhi_old[i] > -dt*vmax || locPhi_new[i] >- dt*vmax) 
+        if (locPhi_old[i] > -dt*vmax || locPhi_new[i] >- dt*vmax)
             outside_inner_band = true;
     }
 
@@ -163,7 +163,7 @@ void EnergyNormErrorAccumulatorCL::visit (const TetraCL& sit)
             p_cstquad = new CompositeSTQuadCL<QuadRule>(refprism4,locPhi_old, locPhi_new,
                                                                       ints_per_space_edge, subtimeintervals);
         else
-            p_cstquad = new CompositeSTQuadCL<QuadRule>(sit, TimeInterval(told,tnew), lset_fpt, 
+            p_cstquad = new CompositeSTQuadCL<QuadRule>(sit, TimeInterval(told,tnew), lset_fpt,
                                                                       ints_per_space_edge, subtimeintervals);
         iscut = p_cstquad->HasInterface();
     }
@@ -184,18 +184,18 @@ void EnergyNormErrorAccumulatorCL::visit (const TetraCL& sit)
 
         CompositeSTQuadCL<QuadRule> & cstquad = *p_cstquad;
 
-        GridFunctionCL<double> solpos = cstquad.EvalOnPart( sol_pos, true, &stmap); 
+        GridFunctionCL<double> solpos = cstquad.EvalOnPart( sol_pos, true, &stmap);
         GridFunctionCL<double> solneg = cstquad.EvalOnPart( sol_neg, false, &stmap);
-        GridFunctionCL<double> soldtpos = cstquad.EvalOnPart( sol_dt_pos, true, &stmap); 
+        GridFunctionCL<double> soldtpos = cstquad.EvalOnPart( sol_dt_pos, true, &stmap);
         GridFunctionCL<double> soldtneg = cstquad.EvalOnPart( sol_dt_neg, false, &stmap);
-        GridFunctionCL<Point3DCL> solgradpos = cstquad.EvalOnPart( sol_grad_pos, true, &stmap); 
+        GridFunctionCL<Point3DCL> solgradpos = cstquad.EvalOnPart( sol_grad_pos, true, &stmap);
         GridFunctionCL<Point3DCL> solgradneg = cstquad.EvalOnPart( sol_grad_neg, false, &stmap);
- 
-        GridFunctionCL<double> gfone_neg = cstquad.EvalLinearOnPart( constone, constone, false); 
-        GridFunctionCL<double> gfone_pos = cstquad.EvalLinearOnPart( constone, constone, true); 
-        
+
+        GridFunctionCL<double> gfone_neg = cstquad.EvalLinearOnPart( constone, constone, false);
+        GridFunctionCL<double> gfone_pos = cstquad.EvalLinearOnPart( constone, constone, true);
+
         ScopeTimer scopetiming2("STTranspVolAccu_P1SP1TXCL::local_setup - cut - 4Dvols");
-        for(Uint s = 0; s < 2; s++) // both cases: sign = false and sign = true 
+        for(Uint s = 0; s < 2; s++) // both cases: sign = false and sign = true
         {
             const bool csign = s==1;
 
@@ -210,7 +210,7 @@ void EnergyNormErrorAccumulatorCL::visit (const TetraCL& sit)
 
             LocalP2CL<> oldsoltr(oldsolp1);
             LocalP2CL<> newsoltr(newsolp1);
-            
+
             // double (* coup_s_s_cur)[8][8] = csign ? &coup_s_s_pos : &coup_s_s_neg;
             // double (* elvec_cur)[8] = csign ? &elvec_pos : &elvec_neg;
             // const GridFunctionCL<Point3DCL>& vel_cur (csign ? velpos : velneg);
@@ -222,7 +222,7 @@ void EnergyNormErrorAccumulatorCL::visit (const TetraCL& sit)
 
             /* unused
             GridFunctionCL<double> psi_PAST = cstquad.EvalLinearOnPart( constone, p0, csign);
-            GridFunctionCL<double> psi_FUTURE = cstquad.EvalLinearOnPart( p0, constone, csign); 
+            GridFunctionCL<double> psi_FUTURE = cstquad.EvalLinearOnPart( p0, constone, csign);
             GridFunctionCL<double> & gfone (csign? gfone_pos: gfone_neg);
             */
 
@@ -292,14 +292,14 @@ void EnergyNormErrorAccumulatorCL::visit (const TetraCL& sit)
     }
     else
     {
-        // std::cout << " is not cut " << std::endl; 
+        // std::cout << " is not cut " << std::endl;
 
         ScopeTimer scopetiming("EnergyNormErrorAccumulator::local_setup - uncut");
 
         const double & alpha (sign[0] ? alpha_pos : alpha_neg);
         const double & beta (sign[0] ? beta_pos : beta_neg);
 
-        // only spatial integrals 
+        // only spatial integrals
         double coup_s_s_space_lap[4][4];
         double coup_s_s_space_mass[4][4];
         for(Uint i=0; i<4; ++i)
@@ -361,7 +361,7 @@ void EnergyNormErrorAccumulatorCL::visit (const TetraCL& sit)
 
     }
 
-                
+
     delete p_cstquad;
 }
 

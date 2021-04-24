@@ -49,12 +49,12 @@ int Test1()
     gauss_pivot(M, v);
     std::cout << "Solution shoud be: -2 1. Drops says: " << std::endl;
     std::cout << "Solution of the linear system based on Gauss-Elimination: "<< v << std::endl;
-    
+
     QRDecompCL<2> qr ( dat + 0);
     SVectorCL<2> r( dat2 + 0);
     qr.Solve( r);
     std::cout <<"Solution of the linear system based on QR-Decomposition: "<< r << std::endl;
-    
+
     return 0;
 }
 
