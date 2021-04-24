@@ -2061,7 +2061,7 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     // Setup an interface-P2 numbering
     DROPS::IdxDescCL ifacep2idx( P2IF_FE); //p2 element index decription class
     //std::cout<<"here:"<<P.get<double>("SurfTransp.XFEMReduced")<<std::endl;
-    ifacep2idx.GetXidx().SetBound( P.get<double>("SurfTransp.XFEMReduced"));//set boundary
+    //ifacep2idx.GetXidx().SetBound( P.get<double>("SurfTransp.XFEMReduced"));//set boundary, only for XFEM
     ifacep2idx.CreateNumbering( mg.GetLastLevel(), mg, &lset.Phi, &lset.GetBndData());//consider boundary
     std::cout << "P2-NumUnknowns: " << ifacep2idx.NumUnknowns() << std::endl;
 
