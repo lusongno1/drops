@@ -2067,7 +2067,7 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 
     // Recover the gradient of the level set function
     IdxDescCL vecp2idx( vecP2_FE);//vector p2 index
-    vecp2idx.CreateNumbering( mg.GetLastLevel(), mg);
+    vecp2idx.CreateNumbering( mg.GetLastLevel(), mg);//creat globle index
     VecDescCL lsgradrec( &vecp2idx);//level set gradient recorver
     averaging_P2_gradient_recovery( mg, lset.Phi, lset.GetBndData(), lsgradrec);
 
