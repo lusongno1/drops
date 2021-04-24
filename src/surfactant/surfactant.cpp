@@ -2059,7 +2059,7 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     LSInit( mg, lset.Phi, the_lset_fun, 0.);//initial level set function
 
     // Setup an interface-P2 numbering
-    DROPS::IdxDescCL ifacep2idx( P2IF_FE);//p2 element index decription class
+    DROPS::IdxDescCL ifacep2idx( P2IF_FE); //p2 element index decription class
     //std::cout<<"here:"<<P.get<double>("SurfTransp.XFEMReduced")<<std::endl;
     ifacep2idx.GetXidx().SetBound( P.get<double>("SurfTransp.XFEMReduced"));//set boundary
     ifacep2idx.CreateNumbering( mg.GetLastLevel(), mg, &lset.Phi, &lset.GetBndData());//consider boundary
