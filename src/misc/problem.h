@@ -64,7 +64,7 @@ enum FiniteElementT
 /// - values >= 128 are used for vector-valued FE,
 ///   the difference to the scalar FE counterpart should be 128
 {
-    P0_FE=0, P1_FE=1, P2_FE=2, P1Bubble_FE=3,         // for scalars
+    P0_FE=0, P1_FE=1, P2_FE=2, P1Bubble_FE=3,  P3_FE,       // for scalars
 	P1D_FE=P1_FE+OFFSET_DFE,
 	P2D_FE=P2_FE+OFFSET_DFE,
 	P1X_FE=P1_FE+OFFSET_XFE,
@@ -73,15 +73,16 @@ enum FiniteElementT
 	P1IF_FE=P1_FE+OFFSET_IFFE,
     P1IF_FE1=P1_FE+OFFSET_IFFE+4,
     P2IF_FE=P2_FE+OFFSET_IFFE,
+    P3IF_FE=P3_FE+OFFSET_IFFE,
     vecP1IF_FE=P1_FE+OFFSET_IFFE+OFFSET_VECFE,
     vecP2IF_FE=P2_FE+OFFSET_IFFE+OFFSET_VECFE,
     vecP1_FE=P1_FE+OFFSET_VECFE,
 	vecP2_FE=P2_FE+OFFSET_VECFE,
 	vecP1Bubble_FE=P1Bubble_FE+OFFSET_VECFE,
 	vecP2R_FE=P2R_FE+OFFSET_VECFE,
-	vecP2X_FE=P2X_FE+OFFSET_VECFE, 
-    P1SP1T_FE=P1_FE+OFFSET_STFE, 
-    P1SP1TX_FE=P1_FE+OFFSET_XFE+OFFSET_STFE, 
+	vecP2X_FE=P2X_FE+OFFSET_VECFE,
+    P1SP1T_FE=P1_FE+OFFSET_STFE,
+    P1SP1TX_FE=P1_FE+OFFSET_XFE+OFFSET_STFE,
     UnknownFE_=-1
 };
 

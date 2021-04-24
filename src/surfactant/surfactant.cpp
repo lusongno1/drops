@@ -2047,7 +2047,7 @@ public:
         return new InterfaceL2AccuDeformP2CL( *this);
     }
 };
-
+#define P2HIGH0
 void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::LevelsetP2CL& lset)
 {
 //std::cout << P << std::endl;
@@ -2103,22 +2103,30 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     //set up mass matrix
     DROPS::MatDescCL Mp2( &ifacep2idx, &ifacep2idx);//mass matrix
     //111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
-    // InterfaceMatrixAccuCL<LocalMassP2CL, InterfaceCommonDataP2CL> accuMp2( &Mp2, LocalMassP2CL(), cdatap2, "Mp2");
+#ifndef P2HIGH
+    InterfaceMatrixAccuCL<LocalMassP2CL, InterfaceCommonDataP2CL> accuMp2( &Mp2, LocalMassP2CL(), cdatap2, "Mp2");
+#else
     InterfaceMatrixAccuCL<LocalMassP2CLHighQuad, InterfaceCommonDataP2CL> accuMp2( &Mp2, LocalMassP2CLHighQuad(), cdatap2, "Mp2");
+#endif
     accus.push_back( &accuMp2);
 
     //set up stiffness matrix
     DROPS::MatDescCL Ap2( &ifacep2idx, &ifacep2idx);
     //22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
-    //InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CL, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CL( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
+#ifndef P2HIGH
+    InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CL, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CL( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
+#else
     InterfaceMatrixAccuCL<LocalLaplaceBeltramiP2CLHighQuad, InterfaceCommonDataP2CL> accuAp2( &Ap2, LocalLaplaceBeltramiP2CLHighQuad( P.get<double>("SurfTransp.Visc")), cdatap2, "Ap2");
+#endif
     accus.push_back( &accuAp2);
-
     //set up right hand side
     DROPS::VecDescCL bp2( &ifacep2idx);
     //33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
-    //InterfaceVectorAccuCL<LocalVectorP2CL, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CL( the_rhs_fun, bp2.t), cdatap2);
+#ifndef P2HIGH
+    InterfaceVectorAccuCL<LocalVectorP2CL, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CL( the_rhs_fun, bp2.t), cdatap2);
+#else
     InterfaceVectorAccuCL<LocalVectorP2CLHighQuad, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CLHighQuad( the_rhs_fun, bp2.t), cdatap2);
+#endif
     accus.push_back( &acculoadp2);
     accumulate( accus, mg, ifacep2idx.TriangLevel(), ifacep2idx.GetBndInfo());//begin tetra loop
 
@@ -2140,7 +2148,7 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     Lp2.LinComb( 1.0, Ap2.Data, 1.0, Mp2.Data);
 //   MatrixCL& Lp2= Ap2.Data;
 // keep data
-#if 0
+#if 1
     DROPS::WriteToFile( Ap2.Data, "ap2_iface.txt", "Ap2");
     DROPS::WriteToFile( Mp2.Data, "mp2_iface.txt", "Mp2");
     DROPS::WriteFEToFile( bp2, mg, "rhsp2_iface.txt", /*binary=*/ false);
@@ -2188,16 +2196,17 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     TetraAccumulatorTupleCL err_accus;//final tetra error accumulator
     err_accus.push_back( &cdatap2);//push back cdata, include P2 element
     //444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
-    // InterfaceL2AccuP2CL L2_accu( cdatap2, mg, "P2-solution");//interface L2 accumulator
+#ifndef P2HIGH
+    InterfaceL2AccuP2CL L2_accu( cdatap2, mg, "P2-solution");//interface L2 accumulator
+#else
     InterfaceL2AccuP2CLHighQuad L2_accu( cdatap2, mg, "P2-solution");//error accumulater high quad version
+#endif
     L2_accu.set_grid_function( xp2);//set solved solution
     L2_accu.set_function( the_sol_fun, 0.);//set exaction solution
     L2_accu.set_grad_function( the_sol_grad_fun, 0.);//set gradient for exact sol
     err_accus.push_back( &L2_accu);
     accumulate( err_accus, mg, ifacep2idx.TriangLevel(), ifacep2idx.GetBndInfo());//begin accumulating
-
-
-#if 0
+#if 1
 //write out
     {
         std::ofstream os( "quaqua_num_outer_iter.txt");
@@ -2225,6 +2234,7 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     }
 #endif
 }
+
 
 void StationaryStrategyDeformationP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::LevelsetP2CL& lset)
 {
@@ -2544,7 +2554,7 @@ int main (int argc, char* argv[])
                 if (P.get<int>( "SurfTransp.FEDegree") == 1)
                     StationaryStrategyP1( mg, adap, lset);
                 else
-                    StationaryStrategyP2( mg, adap, lset);
+                    StationaryStrategyP2( mg, adap, lset);//p2 fem
             }
         }
         else
