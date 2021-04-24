@@ -30,6 +30,8 @@
 #include "geom/builder.h"
 #include "num/spmat.h"
 
+
+
 #ifdef _PAR
 #  include "DiST/DiST.h"
 #  include "parallel/parallel.h"   // for parallel reductions
@@ -125,12 +127,15 @@ class FE_InfoCL
             case P2IF_FE:
             case P3IF_FE:
             case P2_FE:          NumUnknownsVertex_= NumUnknownsEdge_= 1; break;
+            case P3_FE:          NumUnknownsVertex_= NumUnknownsEdge_= 1; break;
             case vecP1IF_FE:
             case vecP1_FE:		 NumUnknownsVertex_ = 3; break;
             case vecP2IF_FE:
+            case vecP3IF_FE:
             case vecP2X_FE:
             case vecP2R_FE:
             case vecP2_FE:       NumUnknownsVertex_= NumUnknownsEdge_= 3; break;
+            case vecP3_FE:       NumUnknownsVertex_= NumUnknownsEdge_= 3; break;
 	        case P2D_FE:         NumUnknownsTetra_ = 10; break;
             default:             throw DROPSErrCL("FE_InfoCL: unknown FE type");
         }
@@ -1149,6 +1154,8 @@ class MLVecDescCL : public MLDataCL<VecDescCL> {
             it->SetIdx(&*idx_it);
     }
 };
+
+
 
 } // end of namespace DROPS
 

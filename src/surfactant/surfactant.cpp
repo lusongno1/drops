@@ -46,6 +46,7 @@
 #include <tr1/unordered_map>
 #include <tr1/unordered_set>
 #include <surfactant/sfpde.h>
+#include <surfactant/femP3.h>
 //#include <phg.h>
 
 using namespace DROPS;
@@ -1369,6 +1370,8 @@ public:
                 resize_and_evaluate_on_vertexes( make_P2Eval( mg, nobnddata, *fvd), t, cdata.qdom, qfgrid);
             else if (fvd->RowIdx->GetFE() == P1IF_FE)
                 resize_and_evaluate_on_vertexes( make_P1Eval( mg, nobnddata, *fvd), t, cdata.qdom, qfgrid);
+            else if (fvd->RowIdx->GetFE() == P3IF_FE)
+                resize_and_evaluate_on_vertexes( make_P3Eval( mg, nobnddata, *fvd), t, cdata.qdom, qfgrid);
 //             resize_and_evaluate_on_vertexes( make_P2Eval( mg, nobnddata, *fvd), cdata.qdom_projected, qfgrid);
             tid0p->f_grid_int[tid]+=  quad_2D( cdata.qdom_projected.absdets()*qfgrid,        cdata.qdom);
             tid0p->f_grid_norm[tid]+= quad_2D( cdata.qdom_projected.absdets()*qfgrid*qfgrid, cdata.qdom);
@@ -2236,6 +2239,196 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 }
 
 
+#define P3HIGH0
+void StationaryStrategyP3 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::LevelsetP2CL& lset)
+{
+//std::cout << P << std::endl;
+    // Initialize level set and triangulation
+    adap.MakeInitialTriang();//init mg
+    lset.CreateNumbering( mg.GetLastLevel(), &lset.idx);//level set numbering
+    lset.Phi.SetIdx( &lset.idx);//set discrete lsvel set's index
+    // LinearLSInit( mg, lset.Phi, &the_lset_fun);
+    LSInit( mg, lset.Phi, the_lset_fun, 0.);//initial level set function
+
+    // Setup an interface-P3 numbering
+    DROPS::IdxDescCL ifacep3idx( P3IF_FE); //p3 element index decription class
+    //std::cout<<"here:"<<P.get<double>("SurfTransp.XFEMReduced")<<std::endl;
+    //ifacep3idx.GetXidx().SetBound( P.get<double>("SurfTransp.XFEMReduced"));//set boundary, only for XFEM
+    ifacep3idx.CreateNumbering( mg.GetLastLevel(), mg, &lset.Phi, &lset.GetBndData());//consider boundary
+    std::cout << "P3-NumUnknowns: " << ifacep3idx.NumUnknowns() << std::endl;
+
+    // Recover the gradient of the level set function
+    IdxDescCL vecp3idx( vecP3_FE);//vector p3 index
+    vecp3idx.CreateNumbering( mg.GetLastLevel(), mg);//creat globle index
+    VecDescCL lsgradrec( &vecp3idx);//level set gradient recorver
+    averaging_P3_gradient_recovery( mg, lset.Phi, lset.GetBndData(), lsgradrec);//MultiGridCL
+
+    // Compute neighborhoods of the tetras at the interface
+    const PrincipalLatticeCL& lat= PrincipalLatticeCL::instance( 1);//lattice
+    TetraToTetrasT tetra_neighborhoods;//to put tetra neighborhoods
+    compute_tetra_neighborhoods( mg, lset.Phi, lset.GetBndData(), lat, tetra_neighborhoods);//compute neighborhood
+
+    QuaQuaMapperCL quaqua( mg, lset.Phi, lsgradrec, &tetra_neighborhoods,
+                           P.get<int>( "LevelsetMapper.Iter"),
+                           P.get<double>( "LevelsetMapper.Tol"),
+                           P.get<std::string>( "LevelsetMapper.Method") == "FixedPointWithLineSearch",
+                           P.get<double>( "LevelsetMapper.ArmijoConstant"));
+
+    VecDescCL to_iface( &vecp3idx);
+//     {
+//         TetraAccumulatorTupleCL accus;
+//         InterfaceCommonDataP3CL cdatap3( lset.Phi, lset.GetBndData(), quaqua, lat);
+//         accus.push_back( &cdatap3);
+//         InterfaceDebugP3CL p3debugaccu( cdatap3);
+// //         p3debugaccu.store_offsets( to_iface);
+//         p3debugaccu.set_true_area( 4.*M_PI*RadDrop[0]*RadDrop[0]);
+//         p3debugaccu.set_ref_dp( &dp_sphere);
+//         p3debugaccu.set_ref_abs_det( &abs_det_sphere);
+//         accus.push_back( &p3debugaccu);
+//         accumulate( accus, mg, ifacep3idx.TriangLevel(), ifacep3idx.GetMatchingFunction(), ifacep3idx.GetBndInfo());
+//     }
+
+    TetraAccumulatorTupleCL accus;//init an accumulator
+    InterfaceCommonDataP3CL cdatap3( lset.Phi, lset.GetBndData(), quaqua, lat);//store p3 data InterfaceCommonDataP2CL
+    accus.push_back( &cdatap3);//push_back P3 data
+
+    //set up mass matrix
+    DROPS::MatDescCL Mp3( &ifacep3idx, &ifacep3idx);//mass matrix
+    //111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+#ifndef P3HIGH
+    InterfaceMatrixAccuCL<LocalMassP3CL, InterfaceCommonDataP3CL> accuMp3( &Mp3, LocalMassP3CL(), cdatap3, "Mp3");//LocalMassP2CL
+#else
+    InterfaceMatrixAccuCL<LocalMassP3CLHighQuad, InterfaceCommonDataP3CL> accuMp3( &Mp3, LocalMassP3CLHighQuad(), cdatap3, "Mp3");
+#endif
+    accus.push_back( &accuMp3);
+
+    //set up stiffness matrix
+    DROPS::MatDescCL Ap3( &ifacep3idx, &ifacep3idx);
+    //22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+#ifndef P3HIGH
+    InterfaceMatrixAccuCL<LocalLaplaceBeltramiP3CL, InterfaceCommonDataP3CL> accuAp3( &Ap3, LocalLaplaceBeltramiP3CL( P.get<double>("SurfTransp.Visc")), cdatap3, "Ap3");//LocalLaplaceBeltramiP2CL
+#else
+    InterfaceMatrixAccuCL<LocalLaplaceBeltramiP3CLHighQuad, InterfaceCommonDataP3CL> accuAp3( &Ap3, LocalLaplaceBeltramiP3CLHighQuad( P.get<double>("SurfTransp.Visc")), cdatap3, "Ap3");
+#endif
+    accus.push_back( &accuAp3);
+    //set up right hand side
+    DROPS::VecDescCL bp3( &ifacep3idx);
+    //33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
+#ifndef P3HIGH
+    InterfaceVectorAccuCL<LocalVectorP3CL, InterfaceCommonDataP3CL> acculoadp3( &bp3, LocalVectorP3CL( the_rhs_fun, bp3.t), cdatap3);//LocalVectorP2CL
+#else
+    InterfaceVectorAccuCL<LocalVectorP3CLHighQuad, InterfaceCommonDataP3CL> acculoadp3( &bp3, LocalVectorP3CLHighQuad( the_rhs_fun, bp3.t), cdatap3);
+#endif
+    accus.push_back( &acculoadp3);
+    accumulate( accus, mg, ifacep3idx.TriangLevel(), ifacep3idx.GetBndInfo());//begin tetra loop
+
+//     TetraAccumulatorTupleCL mean_accus;
+//     mean_accus.push_back( &cdatap3);
+//     InterfaceL3AccuP3CL L3_mean_accu( cdatap3, mg, "P3-mean");
+//     L3_mean_accu.set_grid_function( bp3);
+//     mean_accus.push_back( &L3_mean_accu);
+//     accumulate( mean_accus, mg, ifacep3idx.TriangLevel(), ifacep3idx.GetMatchingFunction(), ifacep3idx.GetBndInfo());
+//     bp3.Data-= L3_mean_accu.f_grid_int_acc/L3_mean_accu.area_acc;
+//     accumulate( mean_accus, mg, ifacep3idx.TriangLevel(), ifacep3idx.GetMatchingFunction(), ifacep3idx.GetBndInfo());
+
+//     VectorCL e( 1., bp3.Data.size());
+//     VectorCL Ldiag( Ap3.Data.GetDiag());
+//     bp3.Data-= dot( VectorCL( e/Ldiag), bp3.Data)/std::sqrt( dot( VectorCL( e/Ldiag), e));
+
+//left hand matrix
+    DROPS::MatrixCL Lp3;
+    Lp3.LinComb( 1.0, Ap3.Data, 1.0, Mp3.Data);
+//   MatrixCL& Lp3= Ap3.Data;
+// keep data
+#if 1
+    DROPS::WriteToFile( Ap3.Data, "ap3_iface.txt", "Ap3");
+    DROPS::WriteToFile( Mp3.Data, "mp3_iface.txt", "Mp3");
+    DROPS::WriteFEToFile( bp3, mg, "rhsp3_iface.txt", /*binary=*/ false);
+#endif
+
+
+//define solver and solve linear equations
+    typedef DROPS::SSORPcCL SurfPcT;
+//     typedef DROPS::JACPcCL SurfPcT;
+    SurfPcT surfpc;
+    typedef DROPS::PCGSolverCL<SurfPcT> SurfSolverT;
+    SurfSolverT surfsolver( surfpc, P.get<int>("SurfTransp.Solver.Iter"), P.get<double>("SurfTransp.Solver.Tol"), true);
+    DROPS::VecDescCL xp3( &ifacep3idx);
+    surfsolver.Solve( Lp3, xp3.Data, bp3.Data, xp3.RowIdx->GetEx());
+    std::cout << "Iter: " << surfsolver.GetIter() << "\tres: " << surfsolver.GetResid() << '\n';
+    DROPS::WriteFEToFile( xp3, mg, "xp3_iface.txt", /*binary=*/ false);
+
+
+//define solver and solve linear equations
+//    typedef DROPS::SSORPcCL SurfPcT;
+//     typedef DROPS::JACPcCL SurfPcT;
+//    SurfPcT surfpc;
+//    typedef DROPS::GMResSolverCL<SurfPcT> SurfSolverT;
+//    SurfSolverT surfsolver( surfpc,10, P.get<int>("SurfTransp.Solver.Iter"), P.get<double>("SurfTransp.Solver.Tol"), true);
+//    DROPS::VecDescCL xp3( &ifacep3idx);
+//    surfsolver.Solve( Lp3, xp3.Data, bp3.Data, xp3.RowIdx->GetEx());
+//    std::cout << "Iter: " << surfsolver.GetIter() << "\tres: " << surfsolver.GetResid() << '\n';
+//    DROPS::WriteFEToFile( xp3, mg, "xp3_iface.txt", /*binary=*/ false);
+
+
+//define solver and solve linear equations
+//   typedef DROPS::SSORPcCL SurfPcT;
+//    typedef DROPS::JACPcCL SurfPcT;
+//    SurfPcT surfpc;
+//    typedef DROPS::GCRSolverCL<SurfPcT> SurfSolverT;
+//    SurfSolverT surfsolver( surfpc,10, P.get<int>("SurfTransp.Solver.Iter"), P.get<double>("SurfTransp.Solver.Tol"), true);
+//    DROPS::VecDescCL xp3( &ifacep3idx);
+//    surfsolver.Solve( Lp3, xp3.Data, bp3.Data, xp3.RowIdx->GetEx());
+//    std::cout << "Iter: " << surfsolver.GetIter() << "\tres: " << surfsolver.GetResid() << '\n';
+//    DROPS::WriteFEToFile( xp3, mg, "xp3_iface.txt", /*binary=*/ false);
+
+
+
+//accumulate errors on every tetrahedron
+    TetraAccumulatorTupleCL err_accus;//final tetra error accumulator
+    err_accus.push_back( &cdatap3);//push back cdata, include P3 element
+    //444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
+#ifndef P3HIGH
+    InterfaceL2AccuP3CL L3_accu( cdatap3, mg, "P3-solution");//interface L3 accumulator InterfaceL2AccuP2CL
+#else
+    InterfaceL3AccuP3CLHighQuad L3_accu( cdatap3, mg, "P3-solution");//error accumulater high quad version
+#endif
+    L3_accu.set_grid_function( xp3);//set solved solution
+    L3_accu.set_function( the_sol_fun, 0.);//set exaction solution
+    L3_accu.set_grad_function( the_sol_grad_fun, 0.);//set gradient for exact sol
+    err_accus.push_back( &L3_accu);
+    accumulate( err_accus, mg, ifacep3idx.TriangLevel(), ifacep3idx.GetBndInfo());//begin accumulating
+#if 1
+//write out
+    {
+        std::ofstream os( "quaqua_num_outer_iter.txt");
+        for (Uint i= 0; i != quaqua.num_outer_iter.size(); ++i)
+            os << i << '\t' << quaqua.num_outer_iter[i] << '\n';
+        os << '\n';
+        for (Uint i= 0; i != quaqua.num_inner_iter.size(); ++i)
+            os << i << '\t' << quaqua.num_inner_iter[i] << '\n';
+    }
+    if (P.get<int>( "SurfTransp.SolutionOutput.Freq") > 0)//write to file
+        DROPS::WriteFEToFile( xp3, mg, P.get<std::string>( "SurfTransp.SolutionOutput.Path") + "_p3", P.get<bool>( "SurfTransp.SolutionOutput.Binary"));
+
+    DROPS::NoBndDataCL<> nobnd;
+    DROPS::NoBndDataCL<Point3DCL> nobnd_vec;
+    VecDescCL the_sol_vd( &lset.idx);
+    LSInit( mg, the_sol_vd, the_sol_fun, /*t*/ 0.);
+    if (vtkwriter.get() != 0)
+    {
+        vtkwriter->Register( make_VTKScalar( lset.GetSolution(), "Levelset") );
+        vtkwriter->Register( make_VTKIfaceScalar( mg, xp3, "InterfaceSolP3"));
+        vtkwriter->Register( make_VTKScalar(      make_P3Eval( mg, nobnd, the_sol_vd),  "TrueSol"));
+        vtkwriter->Register( make_VTKVector( make_P3Eval( mg, nobnd_vec, lsgradrec), "LSGradRec") );
+        vtkwriter->Register( make_VTKVector( make_P3Eval( mg, nobnd_vec, to_iface), "to_iface") );
+        vtkwriter->Write( 0.);
+    }
+#endif
+}
+
+
+
 void StationaryStrategyDeformationP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::LevelsetP2CL& lset)
 {
     // Initialize level set and triangulation
@@ -2554,7 +2747,7 @@ int main (int argc, char* argv[])
                 if (P.get<int>( "SurfTransp.FEDegree") == 1)
                     StationaryStrategyP1( mg, adap, lset);
                 else
-                    StationaryStrategyP2( mg, adap, lset);//p2 fem
+                    StationaryStrategyP3( mg, adap, lset);//p2 fem
             }
         }
         else

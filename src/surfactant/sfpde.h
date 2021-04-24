@@ -26,12 +26,20 @@
 #include "num/discretize.h"
 #include <fstream>
 #include <math.h>
+#include "geom/multigrid.h"
+#include "num/lattice-eval.h"
+#include <cmath>
+#include "misc/funcmap.h"
+
+
 //#include <vector.h>
 #define BOOST_NO_EXCEPTIONS
 #define BOOST_EXCEPTION_DISABLE
 
 #ifndef DROPS_SFPDE_H
 #define DROPS_SFPDE_H
+
+using namespace DROPS;
 //namespace DROPS
 //{
 double xyz_rhs (const DROPS::Point3DCL& p, double);
@@ -67,7 +75,6 @@ extern int jG;
 extern int orderG;
 extern double gradTri[4][3];//store gradients of shape functions
 //extern DROPS::LocalP2CL<> localP2Set[10];
-
 
 
 

@@ -33,6 +33,7 @@
 //#include <cmath>
 //#include "phg.h"//inc phg package include file
 #include "surfactant/sfpde.h"
+#include "surfactant/femP3.h"
 
 #define _DEBUG
 
@@ -4776,6 +4777,8 @@ VTKIfaceScalarCL::put (VTKOutCL& cf) const
     IdxDescCL fullidx( P1_FE);
     if (u_.RowIdx->GetFE() == P2IF_FE)
         fullidx.SetFE( P2_FE);
+    if (u_.RowIdx->GetFE() == P3IF_FE)
+        fullidx.SetFE( P3_FE);
     fullidx.CreateNumbering( u_.RowIdx->TriangLevel(), mg_);
     std::cout<<"vtk scalar unknowns: "<<fullidx.NumUnknowns()<<std::endl;
     VecDescCL uext( &fullidx);
@@ -4787,6 +4790,8 @@ VTKIfaceScalarCL::put (VTKOutCL& cf) const
             cf.PutScalar( make_P1Eval( mg_, BndData_, uext), varName());*/
     else if (u_.RowIdx->GetFE() == P2IF_FE)
         cf.PutScalar( make_P2Eval( mg_, BndData_, uext), varName());
+    else if (u_.RowIdx->GetFE() == P3IF_FE)
+        cf.PutScalar( make_P3Eval( mg_, BndData_, uext), varName());
 
     fullidx.DeleteNumbering( mg_);
 }

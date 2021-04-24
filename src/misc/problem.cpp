@@ -27,6 +27,8 @@
 #include "num/quadrature.h"
 #include "num/lattice-eval.h"
 #include "parallel/exchange.h"
+#include "surfactant/femP3.h"
+
 
 
 namespace DROPS
@@ -37,7 +39,7 @@ std::vector<bool> IdxDescCL::IdxFree;
 
 IdxDescCL::IdxDescCL( FiniteElementT fe, const BndCondCL& bnd, double omit_bound)
     : FE_InfoCL( fe), Idx_( GetFreeIdx()), TriangLevel_( 0), NumUnknowns_( 0), Bnd_(bnd), Bnd_aux_(bnd),
-      extIdx_( omit_bound != -99 ? omit_bound : IsExtended() ? 1./32. : -1.) 
+      extIdx_( omit_bound != -99 ? omit_bound : IsExtended() ? 1./32. : -1.)
 // default value for omit_bound is 1./32. for XFEM and -1 otherwise
 {
 #ifdef _PAR
@@ -49,7 +51,7 @@ IdxDescCL::IdxDescCL( FiniteElementT fe, const BndCondCL& bnd, double omit_bound
 
 IdxDescCL::IdxDescCL( FiniteElementT fe, const BndCondCL& bnd1, const BndCondCL& bnd2, double omit_bound)
     : FE_InfoCL( fe), Idx_( GetFreeIdx()), TriangLevel_( 0), NumUnknowns_( 0), Bnd_(bnd1), Bnd_aux_(bnd2),
-      extIdx_( omit_bound != -99 ? omit_bound : IsExtended() ? 1./32. : -1.) 
+      extIdx_( omit_bound != -99 ? omit_bound : IsExtended() ? 1./32. : -1.)
 // default value for omit_bound is 1./32. for XFEM and -1 otherwise
 {
 #ifdef _PAR
@@ -480,6 +482,7 @@ void CreateNumbOnInterfaceP2 (const Uint idx, IdxT& counter, Uint stride,
     }
 }
 
+
 void IdxDescCL::CreateNumbOnInterface(Uint level, MultiGridCL& mg, const VecDescCL& ls,
                                       const BndDataCL<>& lsetbnd, double omit_bound)
 /// Uses CreateNumbOnInterfaceVertex on the triangulation with level \p level on the multigrid \p mg.
@@ -496,6 +499,12 @@ void IdxDescCL::CreateNumbOnInterface(Uint level, MultiGridCL& mg, const VecDesc
             mg.GetTriangVertexBegin(level), mg.GetTriangVertexEnd(level),
             mg.GetTriangTetraBegin( level), mg.GetTriangTetraEnd( level), ls, lsetbnd, omit_bound);
     else if ((GetFE() == P2IF_FE) || (GetFE() == vecP2IF_FE))
+        CreateNumbOnInterfaceP2( idxnum, NumUnknowns_, NumUnknownsVertex(),
+            mg.GetTriangVertexBegin(level), mg.GetTriangVertexEnd(level),
+            mg.GetTriangEdgeBegin(level),   mg.GetTriangEdgeEnd(level),
+            mg.GetTriangTetraBegin( level), mg.GetTriangTetraEnd( level),
+            ls, lsetbnd, omit_bound);
+    else if ((GetFE() == P3IF_FE) || (GetFE() == vecP3IF_FE))
         CreateNumbOnInterfaceP2( idxnum, NumUnknowns_, NumUnknownsVertex(),
             mg.GetTriangVertexBegin(level), mg.GetTriangVertexEnd(level),
             mg.GetTriangEdgeBegin(level),   mg.GetTriangEdgeEnd(level),

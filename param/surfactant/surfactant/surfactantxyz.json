@@ -48,7 +48,7 @@
 
             "StationaryPDE": true,
             "Wind":			"ConstantWind",
-            "Levelset":		"SphereDist",
+            "Levelset":		"LevelSetFunDrops",
             "Normal":		"NormalMovingEllipsoid",
             "Rhs":			"xyzRhs",
             "Solution":		"LaplaceBeltramixyzSol",
