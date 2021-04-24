@@ -121,6 +121,7 @@ class FE_InfoCL
             case P2X_FE:
             case P2R_FE:
             case P2IF_FE:
+            case P3IF_FE:
             case P2_FE:          NumUnknownsVertex_= NumUnknownsEdge_= 1; break;
             case vecP1IF_FE:
             case vecP1_FE:		 NumUnknownsVertex_ = 3; break;
