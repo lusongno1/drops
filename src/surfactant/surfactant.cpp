@@ -2309,6 +2309,7 @@ void StationaryStrategyP3 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     InterfaceMatrixAccuCL<LocalLaplaceBeltramiP3CL, InterfaceCommonDataP3CL> accuAp3( &Ap3, LocalLaplaceBeltramiP3CL( P.get<double>("SurfTransp.Visc")), cdatap3, "Ap3");//LocalLaplaceBeltramiP2CL
 #else
     InterfaceMatrixAccuCL<LocalLaplaceBeltramiP3CLHighQuad, InterfaceCommonDataP3CL> accuAp3( &Ap3, LocalLaplaceBeltramiP3CLHighQuad( P.get<double>("SurfTransp.Visc")), cdatap3, "Ap3");
+    //LocalLaplaceBeltramiP2CLHighQuad
 #endif
     accus.push_back( &accuAp3);
     //set up right hand side
@@ -2317,7 +2318,7 @@ void StationaryStrategyP3 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 #ifndef P3HIGH
     InterfaceVectorAccuCL<LocalVectorP3CL, InterfaceCommonDataP3CL> acculoadp3( &bp3, LocalVectorP3CL( the_rhs_fun, bp3.t), cdatap3);//LocalVectorP2CL
 #else
-    InterfaceVectorAccuCL<LocalVectorP3CLHighQuad, InterfaceCommonDataP3CL> acculoadp3( &bp3, LocalVectorP3CLHighQuad( the_rhs_fun, bp3.t), cdatap3);
+    InterfaceVectorAccuCL<LocalVectorP3CLHighQuad, InterfaceCommonDataP3CL> acculoadp3( &bp3, LocalVectorP3CLHighQuad( the_rhs_fun, bp3.t), cdatap3);//LocalVectorP2CLHighQuad
 #endif
     accus.push_back( &acculoadp3);
     accumulate( accus, mg, ifacep3idx.TriangLevel(), ifacep3idx.GetBndInfo());//begin tetra loop

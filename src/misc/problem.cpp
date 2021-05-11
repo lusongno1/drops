@@ -511,13 +511,21 @@ void CreateNumbOnInterfaceP3 (const Uint idx, IdxT& counter, Uint stride,//writt
     for (int i= 0; i < 10; ++i)
         p3[i][i]= 1.;
     // first set NoIdx in all vertices
+    int unknownCount = 0;
+    int vertexCount = 0;
+    int edgeCount = 0;
     for (MultiGridCL::TriangVertexIteratorCL vit= vbegin; vit != vend; ++vit) {
         vit->Unknowns.Prepare(idx);
         vit->Unknowns.Invalidate(idx);
+        //auto tmp = *(vit->Unknowns._unk);
+        unknownCount++;
+        vertexCount++;
     }
     for (MultiGridCL::TriangEdgeIteratorCL   eit= ebegin; eit != eend; ++eit) {
         eit->Unknowns.Prepare(idx);
         eit->Unknowns.Invalidate(idx);
+        unknownCount++;
+        edgeCount++;
     }
     // then create numbering of vertices at the interface
     const PrincipalLatticeCL& lat= PrincipalLatticeCL::instance( 1);
@@ -539,7 +547,7 @@ void CreateNumbOnInterfaceP3 (const Uint idx, IdxT& counter, Uint stride,//writt
 
         make_CompositeQuad5Domain2D( qdom, patch, *it);
         qp3.resize( qdom.vertex_size());
-        for (Uint i= 0; i < 10; ++i) {
+        for (Uint i= 0; i < 10; ++i) {//here is main content
             UnknownHandleCL& unknowns= i < 4 ? const_cast<VertexCL*>( it->GetVertex( i))->Unknowns
                                              : const_cast<EdgeCL*>( it->GetEdge( i - 4))->Unknowns;
             if (unknowns.Exist( idx))
@@ -547,7 +555,7 @@ void CreateNumbOnInterfaceP3 (const Uint idx, IdxT& counter, Uint stride,//writt
 
             evaluate_on_vertexes( p3[i], qdom, Addr( qp3));
             if (quad_codim1( qp3*qp3, qdom) > limit) {
-                unknowns( idx)= counter;
+                unknowns( idx)= counter;//set unknown index
                 counter+= stride;
             }
         }

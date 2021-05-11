@@ -800,6 +800,10 @@ public:
 
     void setup (const TetraCL&, const InterfaceCommonDataP3CL& cdata)
     {
+#if 0
+        SVectorCL<4> tmp(1.0,2.0,3.0,4.0);
+        std::cout<< cdata.p3[7](tmp)<<std::endl;
+#endif
         for (int i= 0; i < 10; ++i)
             resize_and_evaluate_on_vertexes ( cdata.p3[i], cdata.qdom, qp3[i]);
         //caculate discrete shape function values on triangles
