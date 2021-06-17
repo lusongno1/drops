@@ -733,9 +733,9 @@ void rhsIntFunP1(double x, double y, double z, double *ff)//how to define right 
     double fValue = xyz_rhs(p,0);
     // std::cout<<pValue<<std::endl;
     //getchar();
-    //*ff = pValue*fValue;
+    *ff = pValue*fValue;
 
-    *ff = 1;
+    //*ff = 1;
 }
 
 
