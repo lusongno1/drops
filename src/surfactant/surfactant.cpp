@@ -1139,6 +1139,7 @@ void Strategy (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::Levelse
     //delete &lset2;
 }
 
+#define HighQuadP1x
 void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::LevelsetP2CL& lset)
 {
     adap.MakeInitialTriang();
@@ -1155,25 +1156,33 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     //only consider the dofs on tet which interact with surface
 
     DROPS::MatDescCL M( &ifaceidx, &ifaceidx);
-    //DROPS::SetupInterfaceMassP1( mg, &M, lset.Phi, lset.GetBndData());
+#ifndef HighQuadP1
+    DROPS::SetupInterfaceMassP1( mg, &M, lset.Phi, lset.GetBndData());
+#else
     DROPS::SetupInterfaceMassP1HighQuad( mg, &M, lset.Phi, lset.GetBndData());
+#endif
     std::cout << "M is set up.\n";
 
 
     DROPS::MatDescCL A( &ifaceidx, &ifaceidx);
-    //DROPS::SetupLBP1( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
+#ifndef HighQuadP1
+    DROPS::SetupLBP1( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
+#else
     DROPS::SetupLBP1HighQuad( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
+#endif
     std::cout << "A is set up.\n";
 
     DROPS::MatrixCL L;
     L.LinComb( 1.0, A.Data, 1.0, M.Data);
 //   DROPS::MatrixCL& L= A.Data;
     DROPS::VecDescCL b( &ifaceidx);
-    // DROPS::SetupInterfaceRhsP1( mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
+#ifndef HighQuadP1
+    DROPS::SetupInterfaceRhsP1( mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
+#else
     DROPS::SetupInterfaceRhsP1HighQuad(mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
-
-    //DROPS::WriteToFile( M.Data, "m_iface.txt", "M");
-    //DROPS::WriteToFile( A.Data, "a_iface.txt", "A");
+#endif
+    DROPS::WriteToFile( M.Data, "m_iface.txt", "M");
+    DROPS::WriteToFile( A.Data, "a_iface.txt", "A");
     DROPS::WriteFEToFile( b, mg, "rhs_iface.txt", /*binary=*/ false);
 
     typedef DROPS::SSORPcCL SurfPcT;
@@ -1199,9 +1208,11 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
         vtkwriter->Register( make_VTKIfaceScalar( mg, x, "InterfaceSol"));
         vtkwriter->Write( 0.);
     }
-
-    //double L2_err( L2_error( lset.Phi, lset.GetBndData(), make_P1Eval( mg, nobnd, xext), the_sol_fun));
+#ifndef HighQuadP1
+    double L2_err( L2_error( lset.Phi, lset.GetBndData(), make_P1Eval( mg, nobnd, xext), the_sol_fun));
+#else
     double L2_err( L2_error_high_quad( lset.Phi, lset.GetBndData(), make_P1Eval( mg, nobnd, xext), the_sol_fun));
+#endif
     std::cout << "L_2-error: " << L2_err << std::endl;
 }
 

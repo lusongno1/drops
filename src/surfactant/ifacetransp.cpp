@@ -659,12 +659,12 @@ void SetupInterfaceRhsP1 (const MultiGridCL& mg, VecDescCL* v,
     std::cout << "entering SetupInterfaceRhsP1: " << num_unks << " dof... ";
 
     LocalP1CL<> p1[4];//put P1 finite element and get their value on tetra
-//   p1[0][0]= p1[1][1]= p1[2][2]= p1[3][3]= 1.; // P1-Basis-Functions
-    for(int i=0; i<4; i++)
-    {
-        for(int j=0; j<4; j++)
-            p1[i][j] = 1;
-    }
+    p1[0][0]= p1[1][1]= p1[2][2]= p1[3][3]= 1.; // P1-Basis-Functions
+//    for(int i=0; i<4; i++)
+//    {
+//        for(int j=0; j<4; j++)
+//            p1[i][j] = 1;
+//    }
 
     Quad5_2DCL<double> q[4], m;// define quad class to cal result
 
