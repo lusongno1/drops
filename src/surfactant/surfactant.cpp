@@ -1139,7 +1139,7 @@ void Strategy (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::Levelse
     //delete &lset2;
 }
 
-#define HighQuadP1x
+#define HighQuadP1
 void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::LevelsetP2CL& lset)
 {
     adap.MakeInitialTriang();
@@ -2061,7 +2061,7 @@ public:
         return new InterfaceL2AccuDeformP2CL( *this);
     }
 };
-#define P2HIGH0
+#define P2HIGH
 void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::LevelsetP2CL& lset)
 {
 //std::cout << P << std::endl;
@@ -2759,7 +2759,7 @@ int main (int argc, char* argv[])
                 if (P.get<int>( "SurfTransp.FEDegree") == 1)
                     StationaryStrategyP1( mg, adap, lset);
                 else
-                    StationaryStrategyP1( mg, adap, lset);//p2 fem
+                    StationaryStrategyP2( mg, adap, lset);//p2 fem
             }
         }
         else
