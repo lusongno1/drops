@@ -1,6 +1,6 @@
 /// \file
 /// \brief Solve a non-stationary convection-diffusion-equation on a moving interface
-/// \author LNM RWTH Aachen: Joerg Grande, LSEC: Song Lu
+/// \author LNM RWTH Aachen: LSEC: Song Lu
 
 /*
  * This file is part of DROPS.
@@ -2134,8 +2134,9 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 #endif
     accus.push_back( &accuAp2);
     //set up right hand side
-    DROPS::VecDescCL bp2( &ifacep2idx);
+
     //33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
+    DROPS::VecDescCL bp2( &ifacep2idx);
 #ifndef P2HIGH
     InterfaceVectorAccuCL<LocalVectorP2CL, InterfaceCommonDataP2CL> acculoadp2( &bp2, LocalVectorP2CL( the_rhs_fun, bp2.t), cdatap2);
 #else
@@ -2205,6 +2206,12 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 //    DROPS::WriteFEToFile( xp2, mg, "xp2_iface.txt", /*binary=*/ false);
 
 
+#if 1
+
+// calculate eigenfunctions
+    DROPS::VecDescCL eigenVec( &ifacep2idx);
+    int row =2;
+    getEigVec(eigenVec,row);
 
 //accumulate errors on every tetrahedron
     TetraAccumulatorTupleCL err_accus;//final tetra error accumulator
@@ -2215,11 +2222,15 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 #else
     InterfaceL2AccuP2CLHighQuad L2_accu( cdatap2, mg, "P2-solution");//error accumulater high quad version
 #endif
-    L2_accu.set_grid_function( xp2);//set solved solution
-    L2_accu.set_function( the_sol_fun, 0.);//set exaction solution
+    L2_accu.set_grid_function( eigenVec);//set solved solution
+    L2_accu.set_function( zero_fun, 0.);//set exaction solution
     L2_accu.set_grad_function( the_sol_grad_fun, 0.);//set gradient for exact sol
     err_accus.push_back( &L2_accu);
     accumulate( err_accus, mg, ifacep2idx.TriangLevel(), ifacep2idx.GetBndInfo());//begin accumulating
+
+#endif
+
+
 #if 1
 //write out
     {
@@ -2237,6 +2248,11 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     DROPS::NoBndDataCL<Point3DCL> nobnd_vec;
     VecDescCL the_sol_vd( &lset.idx);
     LSInit( mg, the_sol_vd, the_sol_fun, /*t*/ 0.);
+
+
+
+
+
     if (vtkwriter.get() != 0)
     {
         vtkwriter->Register( make_VTKScalar( lset.GetSolution(), "Levelset") );
@@ -2244,6 +2260,8 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
         vtkwriter->Register( make_VTKScalar(      make_P2Eval( mg, nobnd, the_sol_vd),  "TrueSol"));
         vtkwriter->Register( make_VTKVector( make_P2Eval( mg, nobnd_vec, lsgradrec), "LSGradRec") );
         vtkwriter->Register( make_VTKVector( make_P2Eval( mg, nobnd_vec, to_iface), "to_iface") );
+
+        vtkwriter->Register( make_VTKIfaceScalar( mg, eigenVec, "IfEigenFunP2"));
         vtkwriter->Write( 0.);
     }
 #endif
@@ -2759,7 +2777,7 @@ int main (int argc, char* argv[])
                 if (P.get<int>( "SurfTransp.FEDegree") == 1)
                     StationaryStrategyP1( mg, adap, lset);
                 else
-                    StationaryStrategyP1( mg, adap, lset);//p2 fem
+                    StationaryStrategyP2( mg, adap, lset);//p2 fem
             }
         }
         else

@@ -30,8 +30,9 @@
 #include "num/lattice-eval.h"
 #include <cmath>
 #include "misc/funcmap.h"
-
-
+#include <fstream>
+#include <sstream>
+#include <iostream>
 //#include <vector.h>
 #define BOOST_NO_EXCEPTIONS
 #define BOOST_EXCEPTION_DISABLE
@@ -68,6 +69,8 @@ void ouput_valarray(std::valarray<double> v);
 void cout2txt(double a);
 void coutTet(const DROPS::TetraCL& t);
 double level_set_function_drops (const DROPS::Point3DCL& p, double);
+void getEigVec(DROPS::VecDescCL &eigVec,int &row);
+double zero_fun (const DROPS::Point3DCL& p, double);
 
 extern double tet[4][3];
 extern int iG;
