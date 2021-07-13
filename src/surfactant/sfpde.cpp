@@ -91,7 +91,7 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
 //define right hand side and true solution
 //u = a*|x|^2/(12+|x|^2)*(3x1^2x2-x2^3)
 //f = a*(3x1^2x2-x2^3)
-#if 0
+#if 1
 double level_set_function_drops(const DROPS::Point3DCL& p, double)//directly modified in routine
 {
 
@@ -188,7 +188,7 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
 
 //test case 5
 //define level set function:atom
-#if 1
+#if 0
 double xyz_rhs (const DROPS::Point3DCL& p, double)
 {
 
