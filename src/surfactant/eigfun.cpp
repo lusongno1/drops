@@ -2062,6 +2062,8 @@ public:
     }
 };
 #define P2HIGH
+
+//int row;// =argv[1];
 void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::LevelsetP2CL& lset)
 {
 //std::cout << P << std::endl;
@@ -2231,9 +2233,9 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 #endif
 
 // calculate eigenfunctions
-    DROPS::VecDescCL eigenVec( &ifacep2idx);
-    int row =2;
-    getEigVec(eigenVec,row);
+ //   DROPS::VecDescCL eigenVec( &ifacep2idx);
+ //   int row =2;
+ //   getEigVec(eigenVec,row);
 
 #if 1
 
@@ -2258,7 +2260,14 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
 
 #endif
 
+    DROPS::VecDescCL eigenVec( &ifacep2idx);
 
+    int row = P.get<int>( "Eigen.EigenFunIdx");;
+            //row = P.get<int>( "Eigen.EigenFunIdx");
+    std::cout<<std::endl<<"eigenfunction index is "<< row <<std::endl<<std::endl;;
+
+
+    getEigVec(eigenVec,row);
     if (vtkwriter.get() != 0)
     {
         vtkwriter->Register( make_VTKScalar( lset.GetSolution(), "Levelset") );
@@ -2724,9 +2733,12 @@ int main (int argc, char* argv[])
     {
         ScopeTimerCL timer( "main");
 
-        DROPS::read_parameter_file_from_cmdline( P, argc, argv, "../../param/surfactant/surfactant/surfactantxyz.json");
+        DROPS::read_parameter_file_from_cmdline( P, argc, argv, "../../param/surfactant/surfactant/surfactantxyzEig.json");
         //P.read_json("../../param/surfactant/surfactant/surfactantxyz.json");
         std::cout << P << std::endl;
+        //row = P.get<int>( "Eigen.EigenFunIdx");
+       // std::cout<<"eigenfunction index is "<< row <<std::endl;
+
 
         DROPS::dynamicLoad(P.get<std::string>("General.DynamicLibsPrefix"), P.get<std::vector<std::string> >("General.DynamicLibs") );
 
