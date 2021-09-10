@@ -77,6 +77,7 @@ extern int iG;
 extern int jG;
 extern int orderG;
 extern double gradTri[4][3];//store gradients of shape functions
+extern int GLOBAL_TMP_COUNT;
 //extern DROPS::LocalP2CL<> localP2Set[10];
 
 

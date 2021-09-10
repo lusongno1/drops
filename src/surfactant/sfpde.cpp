@@ -30,6 +30,7 @@ int iG;
 int jG;
 int orderG = 10;
 double gradTri[4][3];
+int GLOBAL_TMP_COUNT = 0;
 
 //***************************************************define test case*******************************************************/
 static DROPS::RegisterScalarFunction regsca_level_set_function_drops( "LevelSetFunDrops", level_set_function_drops);

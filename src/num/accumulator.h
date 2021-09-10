@@ -143,13 +143,21 @@ AccumulatorTupleCL<VisitedT>::~AccumulatorTupleCL ()
         delete *it;
 }
 
+//int GLOBAL_TMP_COUNT2 = 0;
 template<class VisitedT>
 template <class ExternalIteratorCL>
 void AccumulatorTupleCL<VisitedT>::operator() (ExternalIteratorCL begin, ExternalIteratorCL end)
 {
     begin_iteration();
+    auto tmp = begin;
     for ( ; begin != end; ++begin)
+    {
+  //      std::cout<<"to tetra: "<<(begin-tmp)<<std::endl; //by lusong
+ //       std::cout<<"total count"<<GLOBAL_TMP_COUNT2<<std::endl;
         std::for_each( accus_.begin(), accus_.end(), std::bind2nd( std::mem_fun( &AccumulatorCL<VisitedT>::visit), *begin));
+
+    }
+
     finalize_iteration();
 }
 

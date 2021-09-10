@@ -312,12 +312,20 @@ public:
     {
         surf.clear();
         locp2_ls.assign( t, *ls, *lsetbnd);
-        evaluate_on_vertexes( locp2_ls, *lat, Addr( ls_loc));
+
+        //evaluate_on_vertexes( locp2_ls, *lat, Addr( ls_loc));
+        for(int i=0; i<4; i++) //modified by lusong
+        {
+            auto v = t.GetVertex(i)->GetCoord();
+            ls_loc[i] = level_set_function_drops(v,0);
+        }
+
+
         if (equal_signs( ls_loc))
             return;
-        surf.make_patch<MergeCutPolicyCL>( *lat, ls_loc);
-        if (surf.empty())
-            return;
+        surf.make_patch<MergeCutPolicyCL>( *lat, ls_loc);//use if there is patch to judge intersection, see surf.empyty();
+        if (surf.empty())//same signs, make_patch still return empty
+            return;//surf is judging sign, if empty slip
 
         if (compute_quaddomains_)
         {
@@ -325,6 +333,8 @@ public:
             quaqua.set_point( &t, BaryCoordCL()); // set the current tetra.
             qdom_projected.assign( surf, qdom, quaqua);
         }
+
+
     }
 
     virtual InterfaceCommonDataP2CL* clone (int clone_id)
@@ -678,10 +688,10 @@ public:
 
     virtual void visit (const TetraCL& t)
     {
-        const InterfaceCommonDataT& cdata= cdata_.get_clone();
-        if (cdata.empty())
+        const InterfaceCommonDataT& cdata= cdata_.get_clone();//if cdata_ is empty, omit
+        if (cdata.empty()) //here modified by lusong, if there is no patch, return
             return;
-        local_mat.setup( t, cdata);
+        local_mat.setup( t, cdata);//InterfaceCommonDataP2CL
         GetLocalNumbInterface( numr.begin(), t, *mat_->RowIdx);
         GetLocalNumbInterface( numc.begin(), t, *mat_->ColIdx);
         update_global_matrix( *M, local_mat, numr.begin(), numc.begin());
@@ -1531,7 +1541,7 @@ public:
 
         }
         //if(IdxPos!=-1)
-         //   cout2txt(vec[IdxPos]);
+        //   cout2txt(vec[IdxPos]);
         //   std::cout<<cdata.qdom_projected.absdets()<<std::endl;
         // getchar();
     }
@@ -1587,7 +1597,7 @@ public:
             // getchar();
 
         }
-       // cout2txt(res);
+        // cout2txt(res);
         //      getchar();
     }
     LocalVectorP2CLHighQuad (instat_scalar_fun_ptr f, double time) : f_( f), time_( time) {}
@@ -1696,8 +1706,8 @@ public:
         SVectorCL<3> sf_grad_jG;
         getSurfaceGradient(gradiG,n,sf_grad_iG);
         getSurfaceGradient(gradjG,n,sf_grad_jG);
-       // sf_grad_iG = Winv[3]*sf_grad_iG;
-     //   sf_grad_jG = Winv[3]*sf_grad_jG;
+        // sf_grad_iG = Winv[3]*sf_grad_iG;
+        //   sf_grad_jG = Winv[3]*sf_grad_jG;
         *ff = dotP3(sf_grad_iG,sf_grad_jG);
         //*ff  = 1;
     }
@@ -1816,6 +1826,7 @@ public:
 
     void setup (const TetraCL& t, const InterfaceCommonDataP2CL& cdata)
     {
+        //std::cout<<GLOBAL_TMP_COUNT++<<std::endl; //by lusong
         for (int i= 0; i < 10; ++i)
             localP2Set[i] = cdata.p2[i];
         GetTet2DArr(t,tet);
