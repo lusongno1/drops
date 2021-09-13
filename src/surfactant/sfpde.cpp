@@ -92,7 +92,7 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
 //define right hand side and true solution
 //u = a*|x|^2/(12+|x|^2)*(3x1^2x2-x2^3)
 //f = a*(3x1^2x2-x2^3)
-#if 1
+#if 0
 double level_set_function_drops(const DROPS::Point3DCL& p, double)//directly modified in routine
 {
 
@@ -111,6 +111,63 @@ void lsFun(double x, double y, double z, double *value)
 void lsGrad(double x, double y, double z, double *grad)
 ///* the gradient of the level set function */
 {
+    grad[0] = x + x;
+    grad[1] = y + y;
+    grad[2] = z + z;
+}
+double a(1.0);
+double xyz_rhs (const DROPS::Point3DCL& p, double)
+{
+    return 3.0*p[0]*p[0]*p[1]-p[1]*p[1]*p[1];
+    //return a/std::pow( p.norm(), 3.)*(3.*p[0]*p[0]*p[1]-p[1]*p[1]*p[1]);
+}
+double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+{
+    return (p.norm_sq()/(12.+p.norm_sq()))*xyz_rhs(p,0.);
+}
+DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
+{
+//   DROPS::Point3DCL tmp{6*a/13*p[0]*p[1],-3*a/13*p[1]*p[1],0};
+    DROPS::Point3DCL tmp= 3./std::pow( p.norm(), 3)
+                          *( DROPS::MakePoint3D(2.*p[0]*p[1], p[0]*p[0] - p[1]*p[1], 0.) -
+                             (3.*p[0]*p[0]*p[1] - std::pow(p[1], 3))/p.norm_sq()*p);
+    return tmp;// This equals tmp - inner_prod( p/p.norm(), tmp)*p/p.norm().
+}
+
+#endif
+
+
+// test case 3b, case 3 with a surface shift
+#if 0
+double shift = sqrt(2)-1+0.3;
+double level_set_function_drops(const DROPS::Point3DCL& p, double)//directly modified in routine
+{
+
+    double x = p[0],y=p[1],z=p[2];
+
+    x = x+shift;
+    y = y+shift;
+    z = z+shift;
+    return x * x + y * y + z * z - 1.0;
+    //return p.norm()-1.0;
+}
+
+
+void lsFun(double x, double y, double z, double *value)
+{
+    x = x+shift;
+    y = y+shift;
+    z = z+shift;
+    *value = x * x + y * y + z * z - 1.0;
+}
+
+
+void lsGrad(double x, double y, double z, double *grad)
+///* the gradient of the level set function */
+{
+    x = x+shift;
+    y = y+shift;
+    z = z+shift;
     grad[0] = x + x;
     grad[1] = y + y;
     grad[2] = z + z;
@@ -189,7 +246,7 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
 
 //test case 5
 //define level set function:atom
-#if 0
+#if 1
 double xyz_rhs (const DROPS::Point3DCL& p, double)
 {
 

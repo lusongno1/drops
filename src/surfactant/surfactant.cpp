@@ -48,6 +48,7 @@
 #include <surfactant/sfpde.h>
 #include <surfactant/femP3.h>
 //#include <phg.h>
+#include "num/directsolver.h"
 
 using namespace DROPS;
 
@@ -2168,7 +2169,7 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     DROPS::WriteFEToFile( bp2, mg, "rhsp2_iface.txt", /*binary=*/ false);
 #endif
 
-
+#if 0
 //define solver and solve linear equations
     typedef DROPS::SSORPcCL SurfPcT;
 //     typedef DROPS::JACPcCL SurfPcT;
@@ -2179,7 +2180,19 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     surfsolver.Solve( Lp2, xp2.Data, bp2.Data, xp2.RowIdx->GetEx());
     std::cout << "Iter: " << surfsolver.GetIter() << "\tres: " << surfsolver.GetResid() << '\n';
     DROPS::WriteFEToFile( xp2, mg, "xp2_iface.txt", /*binary=*/ false);
+#endif
 
+#if 1
+//define direct solver
+    DROPS::VecDescCL xp2( &ifacep2idx);
+    DROPS::DirectSymmSolverCL dsolver(Lp2);
+    dsolver.Solve(Lp2,xp2.Data,bp2.Data);
+    //dsolver.Update(A);
+    //dsolver.Solve(A,x,b);
+    //DROPS::DirectNonSymmSolverCL dnsolver(A);
+    //dnsolver.Solve(A,x,b);
+
+#endif
 
 //define solver and solve linear equations
 //    typedef DROPS::SSORPcCL SurfPcT;

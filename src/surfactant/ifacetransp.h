@@ -318,14 +318,21 @@ public:
         {
             auto v = t.GetVertex(i)->GetCoord();
             ls_loc[i] = level_set_function_drops(v,0);
+            //if(abs(ls_loc[i])<1e-5) return;
         }
 
 
-        if (equal_signs( ls_loc))
+        if (equal_signs( ls_loc))//if there is one sign is zero, still go on
             return;
         surf.make_patch<MergeCutPolicyCL>( *lat, ls_loc);//use if there is patch to judge intersection, see surf.empyty();
         if (surf.empty())//same signs, make_patch still return empty
+        {//if one of ls_loc is zero, still surf is empty while equal_signs is true
+            //std::cout<<"error"<<std::endl;
+            //std::cout<<ls_loc[0]<<" "<<ls_loc[1]<<" "<<ls_loc[2]<<" "<<ls_loc[3]<<std::endl;
+            //getchar();
             return;//surf is judging sign, if empty slip
+        }
+
 
         if (compute_quaddomains_)
         {

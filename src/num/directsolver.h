@@ -29,6 +29,9 @@
 #include "cholmod.h"
 #include "umfpack.h"
 
+
+using UF_long = long int;
+
 namespace DROPS {
 
 /*******************************************************************
@@ -40,6 +43,8 @@ namespace DROPS {
 /*******************************************************************
 *   D I R E C T N O N S Y M M S O L V E R   C L                    *
 *******************************************************************/
+//typedef u_long UF_long;
+
 class DirectNonSymmSolverCL {
 
 private:
