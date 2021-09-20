@@ -1186,14 +1186,28 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     DROPS::WriteToFile( A.Data, "a_iface.txt", "A");
     DROPS::WriteFEToFile( b, mg, "rhs_iface.txt", /*binary=*/ false);
 
+
+#if 0
     typedef DROPS::SSORPcCL SurfPcT;
     SurfPcT surfpc;
     typedef DROPS::PCGSolverCL<SurfPcT> SurfSolverT;
     SurfSolverT surfsolver( surfpc, P.get<int>("SurfTransp.Solver.Iter"), P.get<double>("SurfTransp.Solver.Tol"), true);
-
     DROPS::VecDescCL x( &ifaceidx);
     surfsolver.Solve( L, x.Data, b.Data, x.RowIdx->GetEx());
     std::cout << "Iter: " << surfsolver.GetIter() << "\tres: " << surfsolver.GetResid() << '\n';
+#endif
+
+#if 1
+//define direct solver
+    DROPS::VecDescCL x( &ifaceidx);
+    DROPS::DirectSymmSolverCL dsolver(L);
+    dsolver.Solve(L,x.Data,b.Data);
+    //dsolver.Update(A);
+    //dsolver.Solve(A,x,b);
+    //DROPS::DirectNonSymmSolverCL dnsolver(A);
+    //dnsolver.Solve(A,x,b);
+
+#endif
 
     if (P.get<int>( "SurfTransp.SolutionOutput.Freq") > 0)
         DROPS::WriteFEToFile( x, mg, P.get<std::string>( "SurfTransp.SolutionOutput.Path"), P.get<bool>( "SurfTransp.SolutionOutput.Binary"));
@@ -2169,7 +2183,7 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     DROPS::WriteFEToFile( bp2, mg, "rhsp2_iface.txt", /*binary=*/ false);
 #endif
 
-#if 0
+#if 1
 //define solver and solve linear equations
     typedef DROPS::SSORPcCL SurfPcT;
 //     typedef DROPS::JACPcCL SurfPcT;
@@ -2182,7 +2196,7 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     DROPS::WriteFEToFile( xp2, mg, "xp2_iface.txt", /*binary=*/ false);
 #endif
 
-#if 1
+#if 0
 //define direct solver
     DROPS::VecDescCL xp2( &ifacep2idx);
     DROPS::DirectSymmSolverCL dsolver(Lp2);
@@ -2772,7 +2786,7 @@ int main (int argc, char* argv[])
                 if (P.get<int>( "SurfTransp.FEDegree") == 1)
                     StationaryStrategyP1( mg, adap, lset);
                 else
-                    StationaryStrategyP2( mg, adap, lset);//p2 fem
+                    StationaryStrategyP1( mg, adap, lset);//p2 fem
             }
         }
         else

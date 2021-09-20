@@ -249,8 +249,12 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
 #if 1
 double xyz_rhs (const DROPS::Point3DCL& p, double)
 {
+    double x = p[0];
+    double y = p[1];
+    double z = p[2];
 
-    return p[0]*p[1]*p[2]-12.*p[0]*p[1]*p[2]*(p.norm_sq()-2);
+    //return p[0]+p[1]+p[2];//p[0]*p[1]*p[2]-12.*p[0]*p[1]*p[2]*(p.norm_sq()-2);
+    return pow(y,2)*sin(x)+exp(z);//p[0]*p[1]*p[2]-12.*p[0]*p[1]*p[2]*(p.norm_sq()-2);
 }
 double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
 {
@@ -278,7 +282,8 @@ double level_set_function_drops (const DROPS::Point3DCL& p, double)
     //DROPS::Point3DCL x( p - PosDrop);
     //double value=0;
     //lsFun(x[0], x[1], x[2], &value);
-    double result = pow((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1,2.0)-(y*y)*(6.4E+1/2.5E+1)-1.3E+1/1.0E+1;;
+   // double result = pow((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1,2.0)-(y*y)*(6.4E+1/2.5E+1)-1.3E+1/1.0E+1;
+    double result = pow((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1,2.0)-(y*y)*(6.4E+1/2.5E+1)-1.3E+1/1.0E+1;
     return result;
     //return value;
 }
@@ -286,75 +291,141 @@ static DROPS::RegisterScalarFunction regsca_sphere_dist_lset( "LevelSetFunDrops"
 
 void lsFun(double x, double y, double z, double *value)
 {
-    *value = pow((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1,2.0)-(y*y)*(6.4E+1/2.5E+1)-1.3E+1/1.0E+1;
+    //*value = pow((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1,2.0)-(y*y)*(6.4E+1/2.5E+1)-1.3E+1/1.0E+1;
+     *value = pow((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1,2.0)-(y*y)*(6.4E+1/2.5E+1)-1.3E+1/1.0E+1;
 }
 
 
 void lsGrad(double x, double y, double z, double *grad)
 /* the gradient of the level set function */
 {
+    //grad[0] = x*((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1);
     grad[0] = x*((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1);
-    grad[1] = (y*((x*x)*2.75625E+5+(y*y)*7.77924E+5+(z*z)*2.75625E+5-1.00775E+6))/3.90625E+5;
+    //grad[1] = (y*((x*x)*2.75625E+5+(y*y)*7.77924E+5+(z*z)*2.75625E+5-1.00775E+6))/3.90625E+5;
+    grad[1] = y*(-1.28E+2/2.5E+1)+y*((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1)*2.8224;
+    //grad[2] = z*((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1);
     grad[2] = z*((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1);
 }
 #endif
 
 
+//test case 6
+//define level set, Donut
+#if 0
+double xyz_rhs (const DROPS::Point3DCL& p, double)
+{
+
+    return p[0]+p[1]+p[2];//p[0]*p[1]*p[2]-12.*p[0]*p[1]*p[2]*(p.norm_sq()-2);
+}
+double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+{
+    return p[0]*p[1]*p[2];
+}
+
+
+DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
+{
+    DROPS::Point3DCL tmp{p[1]*p[2],p[0]*p[2],p[0]*p[1]};
+    return tmp;
+}
+
+
+
+
+double level_set_function_drops (const DROPS::Point3DCL& p, double)
+{
+
+    double x = p[0];
+    double y = p[1];
+    double z = p[2];
+    //DROPS::Point3DCL RadDrop(1,1,1);
+    //DROPS::Point3DCL PosDrop(0,0,0);
+    //DROPS::Point3DCL x( p - PosDrop);
+    //double value=0;
+    //lsFun(x[0], x[1], x[2], &value);
+   // double result = pow((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1,2.0)-(y*y)*(6.4E+1/2.5E+1)-1.3E+1/1.0E+1;
+    double result = sqrt(pow(sqrt(x*x+y*y)-1.0,2.0)+z*z)-3.0/5.0;;
+    return result;
+    //return value;
+}
+static DROPS::RegisterScalarFunction regsca_sphere_dist_lset( "LevelSetFunDrops", level_set_function_drops);
+
+void lsFun(double x, double y, double z, double *value)
+{
+    //*value = pow((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1,2.0)-(y*y)*(6.4E+1/2.5E+1)-1.3E+1/1.0E+1;
+     *value = sqrt(pow(sqrt(x*x+y*y)-1.0,2.0)+z*z)-3.0/5.0;
+}
+
+
+void lsGrad(double x, double y, double z, double *grad)
+/* the gradient of the level set function */
+{
+    //grad[0] = x*((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1);
+    grad[0] = x*1.0/sqrt(x*x+y*y)*1.0/sqrt(pow(sqrt(x*x+y*y)-1.0,2.0)+z*z)*(sqrt(x*x+y*y)-1.0);
+    //grad[1] = (y*((x*x)*2.75625E+5+(y*y)*7.77924E+5+(z*z)*2.75625E+5-1.00775E+6))/3.90625E+5;
+    grad[1] = y*1.0/sqrt(x*x+y*y)*1.0/sqrt(pow(sqrt(x*x+y*y)-1.0,2.0)+z*z)*(sqrt(x*x+y*y)-1.0);
+    //grad[2] = z*((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1);
+    grad[2] = z*1.0/sqrt(pow(sqrt(x*x+y*y)-1.0,2.0)+z*z);
+}
+#endif
+
+
+
 
 //test case 6
 //define level set function:tooth
-//#if 1
-//double xyz_rhs (const DROPS::Point3DCL& p, double)
-//{
-//    return p[0]+p[1]+p[2];
-//
-//    //return p[0]*p[1]*p[2]-12.*p[0]*p[1]*p[2]*(p.norm_sq()-2);
-//}
-//double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
-//{
-//    return p[0]*p[1]*p[2];
-//}
-//
-//
-//DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
-//{
-//    DROPS::Point3DCL tmp{p[1]*p[2],p[0]*p[2],p[0]*p[1]};
-//    return tmp;
-//}
-//
-//
-//
-//
-//double level_set_function_drops (const DROPS::Point3DCL& p, double)
-//{
-//    double x = p[0];
-//    double y = p[1];
-//    double z = p[2];
-//    //DROPS::Point3DCL RadDrop(1,1,1);
-//    //DROPS::Point3DCL PosDrop(0,0,0);
-//    //DROPS::Point3DCL x( p - PosDrop);
-//    //double value=0;
-//    //lsFun(x[0], x[1], x[2], &value);
-//    double result = (x*x)*(-1.6E+1/2.5E+1)+(x*x*x*x)*(2.56E+2/6.25E+2)-(y*y)*(1.6E+1/2.5E+1)+(y*y*y*y)*(2.56E+2/6.25E+2)-(z*z)*(1.6E+1/2.5E+1)+(z*z*z*z)*(2.56E+2/6.25E+2);
-//    //return value;
-//}
-//static DROPS::RegisterScalarFunction regsca_sphere_dist_lset( "LevelSetFunDrops", level_set_function_drops);
-//
-//void lsFun(double x, double y, double z, double *value)
-//{
-//    *value = (x*x)*(-1.6E+1/2.5E+1)+(x*x*x*x)*(2.56E+2/6.25E+2)-(y*y)*(1.6E+1/2.5E+1)+(y*y*y*y)*(2.56E+2/6.25E+2)-(z*z)*(1.6E+1/2.5E+1)+(z*z*z*z)*(2.56E+2/6.25E+2);
-//}
-//
-//void lsGrad(double x, double y, double z, double *grad)
-///* the gradient of the level set function */
-//{
-//    grad[0] = x*((x*x)*3.2E+1-2.5E+1)*(3.2E+1/6.25E+2);
-//    grad[1] = y*((y*y)*3.2E+1-2.5E+1)*(3.2E+1/6.25E+2);
-//    grad[2] = z*((z*z)*3.2E+1-2.5E+1)*(3.2E+1/6.25E+2);
-//}
-//#endif
+#if 0
+double xyz_rhs (const DROPS::Point3DCL& p, double)
+{
+    return p[0]+p[1]+p[2];
 
-//test for the gyroid, heart-shape and torus, just have a thy
+    //return p[0]*p[1]*p[2]-12.*p[0]*p[1]*p[2]*(p.norm_sq()-2);
+}
+double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double)
+{
+    return p[0]*p[1]*p[2];
+}
+
+
+DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, double)
+{
+    DROPS::Point3DCL tmp{p[1]*p[2],p[0]*p[2],p[0]*p[1]};
+    return tmp;
+}
+
+
+
+
+double level_set_function_drops (const DROPS::Point3DCL& p, double)
+{
+    double x = p[0];
+    double y = p[1];
+    double z = p[2];
+    //DROPS::Point3DCL RadDrop(1,1,1);
+    //DROPS::Point3DCL PosDrop(0,0,0);
+    //DROPS::Point3DCL x( p - PosDrop);
+    //double value=0;
+    //lsFun(x[0], x[1], x[2], &value);
+    double result = (x*x)*(-1.6E+1/2.5E+1)+(x*x*x*x)*(2.56E+2/6.25E+2)-(y*y)*(1.6E+1/2.5E+1)+(y*y*y*y)*(2.56E+2/6.25E+2)-(z*z)*(1.6E+1/2.5E+1)+(z*z*z*z)*(2.56E+2/6.25E+2);
+    //return value;
+}
+static DROPS::RegisterScalarFunction regsca_sphere_dist_lset( "LevelSetFunDrops", level_set_function_drops);
+
+void lsFun(double x, double y, double z, double *value)
+{
+    *value = (x*x)*(-1.6E+1/2.5E+1)+(x*x*x*x)*(2.56E+2/6.25E+2)-(y*y)*(1.6E+1/2.5E+1)+(y*y*y*y)*(2.56E+2/6.25E+2)-(z*z)*(1.6E+1/2.5E+1)+(z*z*z*z)*(2.56E+2/6.25E+2);
+}
+
+void lsGrad(double x, double y, double z, double *grad)
+/* the gradient of the level set function */
+{
+    grad[0] = x*((x*x)*3.2E+1-2.5E+1)*(3.2E+1/6.25E+2);
+    grad[1] = y*((y*y)*3.2E+1-2.5E+1)*(3.2E+1/6.25E+2);
+    grad[2] = z*((z*z)*3.2E+1-2.5E+1)*(3.2E+1/6.25E+2);
+}
+#endif
+
+//test for the gyroid, heart-shape and torus, justest have a thy
 #if 0
 double level_set_function_drops(const DROPS::Point3DCL& p, double)//directly modified in routine
 {
