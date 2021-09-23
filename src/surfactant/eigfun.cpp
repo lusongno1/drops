@@ -1139,82 +1139,7 @@ void Strategy (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::Levelse
     //delete &lset2;
 }
 
-#define HighQuadP1
-void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::LevelsetP2CL& lset)
-{
-    adap.MakeInitialTriang();
 
-    lset.CreateNumbering( mg.GetLastLevel(), &lset.idx);
-    lset.Phi.SetIdx( &lset.idx);
-    // LinearLSInit( mg, lset.Phi, the_lset_fun);
-    LSInit( mg, lset.Phi, the_lset_fun, 0.);
-
-    DROPS::IdxDescCL ifaceidx( P1IF_FE);
-    ifaceidx.GetXidx().SetBound( P.get<double>("SurfTransp.XFEMReduced"));
-    ifaceidx.CreateNumbering( mg.GetLastLevel(), mg, &lset.Phi, &lset.GetBndData());
-    std::cout << "NumUnknowns: " << ifaceidx.NumUnknowns() << std::endl;
-    //only consider the dofs on tet which interact with surface
-
-    DROPS::MatDescCL M( &ifaceidx, &ifaceidx);
-#ifndef HighQuadP1
-    DROPS::SetupInterfaceMassP1( mg, &M, lset.Phi, lset.GetBndData());
-#else
-    DROPS::SetupInterfaceMassP1HighQuad( mg, &M, lset.Phi, lset.GetBndData());
-#endif
-    std::cout << "M is set up.\n";
-
-
-    DROPS::MatDescCL A( &ifaceidx, &ifaceidx);
-#ifndef HighQuadP1
-    DROPS::SetupLBP1( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
-#else
-    DROPS::SetupLBP1HighQuad( mg, &A, lset.Phi, lset.GetBndData(), P.get<double>("SurfTransp.Visc"));
-#endif
-    std::cout << "A is set up.\n";
-
-    DROPS::MatrixCL L;
-    L.LinComb( 1.0, A.Data, 1.0, M.Data);
-//   DROPS::MatrixCL& L= A.Data;
-    DROPS::VecDescCL b( &ifaceidx);
-#ifndef HighQuadP1
-    DROPS::SetupInterfaceRhsP1( mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
-#else
-    DROPS::SetupInterfaceRhsP1HighQuad(mg, &b, lset.Phi, lset.GetBndData(), the_rhs_fun);
-#endif
-    DROPS::WriteToFile( M.Data, "m_iface.txt", "M");
-    DROPS::WriteToFile( A.Data, "a_iface.txt", "A");
-    DROPS::WriteFEToFile( b, mg, "rhs_iface.txt", /*binary=*/ false);
-
-    typedef DROPS::SSORPcCL SurfPcT;
-    SurfPcT surfpc;
-    typedef DROPS::PCGSolverCL<SurfPcT> SurfSolverT;
-    SurfSolverT surfsolver( surfpc, P.get<int>("SurfTransp.Solver.Iter"), P.get<double>("SurfTransp.Solver.Tol"), true);
-
-    DROPS::VecDescCL x( &ifaceidx);
-    surfsolver.Solve( L, x.Data, b.Data, x.RowIdx->GetEx());
-    std::cout << "Iter: " << surfsolver.GetIter() << "\tres: " << surfsolver.GetResid() << '\n';
-
-    if (P.get<int>( "SurfTransp.SolutionOutput.Freq") > 0)
-        DROPS::WriteFEToFile( x, mg, P.get<std::string>( "SurfTransp.SolutionOutput.Path"), P.get<bool>( "SurfTransp.SolutionOutput.Binary"));
-
-    DROPS::IdxDescCL ifacefullidx( DROPS::P1_FE);
-    ifacefullidx.CreateNumbering( mg.GetLastLevel(), mg);//only consider the dof interact with exact surface
-    DROPS::VecDescCL xext( &ifacefullidx);
-    DROPS::Extend( mg, x, xext);//fixup the edge-dofs, much more, how to understand???
-    DROPS::NoBndDataCL<> nobnd;
-    if (vtkwriter.get() != 0)
-    {
-        vtkwriter->Register( make_VTKScalar( lset.GetSolution(), "Levelset") );
-        vtkwriter->Register( make_VTKIfaceScalar( mg, x, "InterfaceSol"));
-        vtkwriter->Write( 0.);
-    }
-#ifndef HighQuadP1
-    double L2_err( L2_error( lset.Phi, lset.GetBndData(), make_P1Eval( mg, nobnd, xext), the_sol_fun));
-#else
-    double L2_err( L2_error_high_quad( lset.Phi, lset.GetBndData(), make_P1Eval( mg, nobnd, xext), the_sol_fun));
-#endif
-    std::cout << "L_2-error: " << L2_err << std::endl;
-}
 
 /// \brief Accumulate L2-norms and errors on the higher order zero level.
 /// Works for P1IF_FE, P2IF_FE, and C-functions. All functions are evaluated on the P2-levelset.
@@ -2061,6 +1986,46 @@ public:
         return new InterfaceL2AccuDeformP2CL( *this);
     }
 };
+
+
+#define HighQuadP1
+void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::LevelsetP2CL& lset)
+{
+    adap.MakeInitialTriang();
+
+    lset.CreateNumbering( mg.GetLastLevel(), &lset.idx);
+    lset.Phi.SetIdx( &lset.idx);
+    // LinearLSInit( mg, lset.Phi, the_lset_fun);
+    LSInit( mg, lset.Phi, the_lset_fun, 0.);
+
+    DROPS::IdxDescCL ifaceidx( P1IF_FE);
+    ifaceidx.GetXidx().SetBound( P.get<double>("SurfTransp.XFEMReduced"));
+    ifaceidx.CreateNumbering( mg.GetLastLevel(), mg, &lset.Phi, &lset.GetBndData());
+    std::cout << "NumUnknowns: " << ifaceidx.NumUnknowns() << std::endl;
+    //only consider the dofs on tet which interact with surface
+    DROPS::VecDescCL eigenVec( &ifaceidx);
+
+    int row = P.get<int>( "Eigen.EigenFunIdx");;
+            //row = P.get<int>( "Eigen.EigenFunIdx");
+    std::cout<<std::endl<<"eigenfunction index is "<< row <<std::endl<<std::endl;;
+
+
+    getEigVec(eigenVec,row);
+    if (vtkwriter.get() != 0)
+    {
+        vtkwriter->Register( make_VTKScalar( lset.GetSolution(), "Levelset") );
+ //       vtkwriter->Register( make_VTKIfaceScalar( mg, xp2, "InterfaceSolP2"));
+ //       vtkwriter->Register( make_VTKScalar(      make_P2Eval( mg, nobnd, the_sol_vd),  "TrueSol"));
+ //      vtkwriter->Register( make_VTKVector( make_P2Eval( mg, nobnd_vec, lsgradrec), "LSGradRec") );
+ //      vtkwriter->Register( make_VTKVector( make_P2Eval( mg, nobnd_vec, to_iface), "to_iface") );
+        vtkwriter->Register( make_VTKIfaceScalar( mg, eigenVec, "IfEigenFun"));
+        vtkwriter->Write( 0.);
+    }
+}
+
+
+
+
 #define P2HIGH
 
 //int row;// =argv[1];
@@ -2280,6 +2245,10 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     }
 #endif
 }
+
+
+
+
 
 
 #define P3HIGH0
@@ -2794,7 +2763,7 @@ int main (int argc, char* argv[])
                // if (P.get<int>( "SurfTransp.FEDegree") == 1)
                //     StationaryStrategyP1( mg, adap, lset);
                // else
-                    StationaryStrategyP2( mg, adap, lset);//p2 fem
+                    StationaryStrategyP1( mg, adap, lset);//p2 fem StationaryStrategyP2
             }
         }
         else
