@@ -2652,6 +2652,8 @@ u(double x, double y, double z, double *f)
 
 int main (int argc, char* argv[])
 {
+    //remark:still use surfactant file to generate stiffness matrix and
+    //mass matrix , which is more robust
     //template for the use of high order quad module in phg
 
 #ifdef TEST
@@ -2777,7 +2779,7 @@ int main (int argc, char* argv[])
                 if (P.get<int>( "SurfTransp.FEDegree") == 1)
                     StationaryStrategyP1( mg, adap, lset);
                 else
-                    StationaryStrategyP1( mg, adap, lset);//p2 fem
+                    StationaryStrategyP2( mg, adap, lset);//p2 fem
             }
         }
         else

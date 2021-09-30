@@ -2786,7 +2786,7 @@ int main (int argc, char* argv[])
                 if (P.get<int>( "SurfTransp.FEDegree") == 1)
                     StationaryStrategyP1( mg, adap, lset);
                 else
-                    StationaryStrategyP1( mg, adap, lset);//p2 fem
+                    StationaryStrategyP2( mg, adap, lset);//p2 fem
             }
         }
         else
