@@ -324,6 +324,28 @@ public:
 
         if (equal_signs( ls_loc))//if there is one sign is zero, still go on
             return;
+
+        GetTet2DArr(t,tet);
+//        double res;
+//        int n = phgQuadInterface2(
+//                    lsFun,		/* the level set function */
+//                    2,		/* polynomial order of the level set function */
+//                    lsGrad,	/* the gradient of the level set function */
+//                    tet,		/* coordinates of the vertices of the tetra */
+//                    oneFun,		/* the integrand */
+//                    1,		/* dimension of the integrand */
+//                    DOF_PROJ_NONE,	/* projection type for surface integral */
+//                    0,		/* integration type (-1, 0, 1) */
+//                    orderG,		/* order of the 1D Gaussian quadrature */
+//                    &res,		/* the computed integral */
+//                    NULL		/* pointer returning the computed rule */
+//                );
+//        if(res<0.0073583)//0.0071
+//            return;
+
+
+
+
         surf.make_patch<MergeCutPolicyCL>( *lat, ls_loc);//use if there is patch to judge intersection, see surf.empyty();
         if (surf.empty())//same signs, make_patch still return empty
         {//if one of ls_loc is zero, still surf is empty while equal_signs is true

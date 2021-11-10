@@ -43,6 +43,13 @@ double zero_fun (const DROPS::Point3DCL& p, double)
 }
 
 
+void oneFun(double x, double y, double z, double *value)
+{
+    //*value = pow((x*x)/4.0+(y*y)*(4.41E+2/6.25E+2)+(z*z)/4.0+9.0/1.0E+1,2.0)-(y*y)*(6.4E+1/2.5E+1)-1.3E+1/1.0E+1;
+     *value = 1;
+}
+
+
 // test case 1
 //define right hand side and true solution
 //my test case，f = 3*(x+y+z) for problem -\Delta u + u = f
@@ -246,7 +253,7 @@ DROPS::Point3DCL laplace_beltrami_xyz_sol_grad (const DROPS::Point3DCL& p, doubl
 
 //test case 5
 //define level set function:atom
-#if 1
+#if 0
 double xyz_rhs (const DROPS::Point3DCL& p, double)
 {
     double x = p[0];
@@ -374,7 +381,7 @@ void lsGrad(double x, double y, double z, double *grad)
 
 //test case 6
 //define level set function:tooth
-#if 0
+#if 1
 double xyz_rhs (const DROPS::Point3DCL& p, double)
 {
     return p[0]+p[1]+p[2];

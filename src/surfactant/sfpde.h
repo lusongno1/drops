@@ -47,6 +47,7 @@ double xyz_rhs (const DROPS::Point3DCL& p, double);
 double laplace_beltrami_xyz_sol (const DROPS::Point3DCL& p, double);
 void lsFun(double x, double y, double z, double *value);
 void lsGrad(double x, double y, double z, double *grad);
+void oneFun(double x, double y, double z, double *value);
 //}
 
 void vecMinus(double a[3],double b[3],double (&result)[3]);

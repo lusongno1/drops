@@ -2196,15 +2196,25 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     DROPS::WriteFEToFile( xp2, mg, "xp2_iface.txt", /*binary=*/ false);
 #endif
 
-#if 0
+#if 1
+
 //define direct solver
+# if 0
     DROPS::VecDescCL xp2( &ifacep2idx);
     DROPS::DirectSymmSolverCL dsolver(Lp2);
     dsolver.Solve(Lp2,xp2.Data,bp2.Data);
+    dsolver.Update(Lp2);
+    dsolver.Solve(Lp2,xp2.Data,bp2.Data);
+#endif
     //dsolver.Update(A);
     //dsolver.Solve(A,x,b);
-    //DROPS::DirectNonSymmSolverCL dnsolver(A);
+    //DROPS::DirectNonSymmSolverCL dnsolver(Lp2);
     //dnsolver.Solve(A,x,b);
+# if 0
+    DROPS::VecDescCL xp2( &ifacep2idx);
+    DROPS::DirectNonSymmSolverCL dnsolver(Lp2);
+    dnsolver.Solve(Lp2,xp2.Data,bp2.Data);
+#endif
 
 #endif
 
