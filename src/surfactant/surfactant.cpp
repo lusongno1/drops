@@ -856,7 +856,7 @@ double H1_error (const DROPS::VecDescCL& ls, const BndDataCL<>& lsbnd,
 
 template<class DiscP1FunType>
 double H1_error_p2 (const DROPS::VecDescCL& ls, const BndDataCL<>& lsbnd,
-                 const DiscP1FunType& discsol, VecDescCL &sol_vec,DROPS::IdxDescCL &ifaceidx, MatDescCL &A)
+                    const DiscP1FunType& discsol, VecDescCL &sol_vec,DROPS::IdxDescCL &ifaceidx, MatDescCL &A)
 {
     //IdxDescCL* idx= const_cast<IdxDescCL*>( discsol.GetSolution()->RowIdx);
     //IdxDescCL* idx = &ifaceidx;
@@ -1520,6 +1520,7 @@ public:
 };
 
 static LocalP2CL<double> localP2RhsCp;
+LocalP1CL<Point3DCL> dfG;
 //err accumulator unit, high quad version
 class InterfaceL2AccuP2CLHighQuad: public TetraAccumulatorCL
 {
@@ -1679,6 +1680,48 @@ public:
         //  *ff = 1;
     }
 
+    static void localErrIntFunH1(double x, double y, double z, double *ff)
+    {
+        //qfgradgridG f_grad
+        //auto BCs = getBaryCoords(tet,x,y,z);
+
+        DROPS::Point3DCL p(x,y,z);
+        auto BCs = getBaryCoords(tet,x,y,z);
+
+        Point3DCL df = laplace_beltrami_xyz_sol_grad(p,0);
+        Point3DCL dfgrid = dfG(BCs);
+
+        double n[3];
+        getSfNormalVec(x,y,z,n);
+        SVectorCL<3> sf_grad_f;
+        SVectorCL<3> sf_grad_fgrid;
+        getSurfaceGradient(df,n,sf_grad_f);
+        getSurfaceGradient(dfgrid,n,sf_grad_fgrid);
+        //sf_grad_fgrid = dfgrid;
+        double s = 0;
+        for(int i=0;i<3;i++)
+        {
+
+            s = s+ (sf_grad_f[i]-sf_grad_fgrid[i])*(sf_grad_f[i]-sf_grad_fgrid[i]);
+        }
+        *ff = s;
+
+    //    *ff = dotP3(sf_grad_f-sf_grad_fgrid,sf_grad_f-sf_grad_fgrid);
+ //       *ff = 0;
+//        double dfcal
+//
+//        auto BCs = getBaryCoords(tet,x,y,z);
+//        double fcal = localP2RhsCp(BCs);
+//        DROPS::Point3DCL p(x,y,z);
+//        double fext = laplace_beltrami_xyz_sol(p,0);
+//        *ff = (fcal-fext)*(fcal-fext);
+
+        //     DROPS::BaryCoordCL tmp{0.051566846126417189,0.07044162180172904,0.1244933792871029,
+        //   0.75349815278465082};
+        //   std::cout<<localP2RhsCp(tmp)<<std::endl;
+        //  *ff = 1;
+    }
+
     virtual void visit (const TetraCL& t)//accumulator main function
     {
         GetTet2DArr(t,tet);//change tetra to C-style
@@ -1735,11 +1778,9 @@ public:
 
             //cout2txt(res);
 
-
         }
-
-        GridFunctionCL<Point3DCL> qfgradgrid,
-                       qfgrad;
+        GridFunctionCL<Point3DCL> qfgradgrid;
+        GridFunctionCL<Point3DCL> qfgrad;
         if (fvd != 0)
         {
             qfgradgrid.resize( cdata.qdom.vertex_size());
@@ -1773,8 +1814,35 @@ public:
         }
         if (fvd != 0 && f_grad != 0)
         {
-            GridFunctionCL<Point3DCL> qerr( qfgradgrid - qfgrad);
-            tid0p->grad_err[tid]+= quad_2D( cdata.qdom_projected.absdets()*dot( qerr, qerr), cdata.qdom);
+            LocalP2CL<> localP2Fcal(t,make_P2Eval( mg, nobnddata, *fvd));
+            //LocalP2CL<> localP2Fcal( t, *fvd, nobnddata);
+           // LocalP1CL<Point3DCL> df;
+            loc_lb.setup( t, cdata);
+            auto df = localP2Fcal[0]*loc_lb.get_gradp2( 0);
+            for (Uint i= 1; i < 10; ++i)
+            {
+                df = df + localP2Fcal[i]*loc_lb.get_gradp2( i);
+            }
+            dfG = df;
+
+
+            int n = phgQuadInterface2(
+                        lsFun,		/* the level set function */
+                        2,		/* polynomial order of the level set function */
+                        lsGrad,	/* the gradient of the level set function */
+                        tet,		/* coordinates of the vertices of the tetra */
+                        localErrIntFunH1,		/* the integrand */
+                        1,		/* dimension of the integrand */
+                        DOF_PROJ_NONE,	/* projection type for surface integral */
+                        0,		/* integration type (-1, 0, 1) */
+                        orderG,		/* order of the 1D Gaussian quadrature */
+                        &res,		/* the computed integral */
+                        NULL		/* pointer returning the computed rule */
+                    );
+
+
+            tid0p->grad_err[tid] += res;
+
         }
     }
 
@@ -2133,7 +2201,7 @@ public:
         return new InterfaceL2AccuDeformP2CL( *this);
     }
 };
-#define P2HIGHX
+#define P2HIGH
 void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::LevelsetP2CL& lset)
 {
 //std::cout << P << std::endl;
@@ -2305,8 +2373,8 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     err_accus.push_back( &cdatap2);//push back cdata, include P2 element
     //444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
 
- //       InterfaceL2AccuP2CLHighQuad (const InterfaceCommonDataP2CL& cdata, const MultiGridCL& mg_arg, std::string name= std::string())
-  //      : cdata_( cdata), mg( mg_arg), name_( name), fvd( 0), f( 0), f_time( 0.),  loc_lb( 1.), f_grad( 0), f_grad_time( 0.) {}
+//       InterfaceL2AccuP2CLHighQuad (const InterfaceCommonDataP2CL& cdata, const MultiGridCL& mg_arg, std::string name= std::string())
+    //      : cdata_( cdata), mg( mg_arg), name_( name), fvd( 0), f( 0), f_time( 0.),  loc_lb( 1.), f_grad( 0), f_grad_time( 0.) {}
 
 
 #ifndef P2HIGH

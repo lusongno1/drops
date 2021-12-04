@@ -1660,6 +1660,11 @@ public:
         return qgradp2[i];
     }
 
+    const LocalP1CL<Point3DCL>& get_gradp2 (size_t i)
+    {
+        return gradp2[i];
+    }
+
     void setup (const TetraCL& t, const InterfaceCommonDataP2CL& cdata)
     {
         if (cdata.surf.normal_empty())
