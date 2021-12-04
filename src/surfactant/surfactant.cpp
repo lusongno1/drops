@@ -1470,6 +1470,9 @@ public:
             //cout2txt(tmp);
         }
 
+
+
+
         GridFunctionCL<Point3DCL> qfgradgrid,
                        qfgrad;
         if (fvd != 0)
@@ -2322,6 +2325,9 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     //double H1_err= H1_error_p2( lset.Phi, lset.GetBndData(), make_P2Eval( mg, nobnd, xp2), the_sol_vd,ifacep2idx,Ap2);
     std::cout << "L_2-error: " << L2_accu.err_acc<<std::endl;
 //    std::cout << "H_1-error: "<< H1_err <<std::endl;
+    std::cout << "H_1-error: " << L2_accu.grad_err_acc<<std::endl;
+
+
 #if 1
 //write out
     {
