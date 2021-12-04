@@ -565,7 +565,7 @@ void SetupLBP1 (const MultiGridCL& mg, MatDescCL* mat, const VecDescCL& ls, cons
     const IdxDescCL* RowIdx= mat->RowIdx;//row index info of A
     accumulate( accus, mg, RowIdx->TriangLevel(), RowIdx->GetBndInfo());//calculate intergrant by accumulate
 
-    // WriteToFile( mat->Data, "lb.txt", "lb");
+    //WriteToFile( mat->Data, "lb.txt", "lb");
 }
 
 

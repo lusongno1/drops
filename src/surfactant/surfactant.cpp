@@ -819,6 +819,57 @@ double H1_error (const DROPS::VecDescCL& ls, const BndDataCL<>& lsbnd,
     return std::sqrt( dot(A.Data*diff, diff));
 }
 
+
+
+template<class DiscP1FunType>
+double H1_error (const DROPS::VecDescCL& ls, const BndDataCL<>& lsbnd,
+                 const DiscP1FunType& discsol, DROPS::instat_scalar_fun_ptr extsol,DROPS::IdxDescCL &ifaceidx)
+{
+    //IdxDescCL* idx= const_cast<IdxDescCL*>( discsol.GetSolution()->RowIdx);
+    IdxDescCL* idx = &ifaceidx;
+    MatDescCL A( idx, idx);
+    SetupLBP1( discsol.GetMG(), &A, ls, lsbnd, 1.);
+    VecDescCL sol_vec( idx);
+    P1Init (extsol, sol_vec, discsol.GetMG(), discsol.GetTime());
+    // sol_vec.t= discsol.GetTime();
+    // SetupInterfaceRhsP1( discsol.GetMG(), &sol_vec, ls, lsbnd, extsol);
+    const VectorCL diff( discsol.GetSolution()->Data - sol_vec.Data);
+    return std::sqrt( dot(A.Data*diff, diff));
+}
+
+
+template<class DiscP1FunType>
+double H1_error (const DROPS::VecDescCL& ls, const BndDataCL<>& lsbnd,
+                 const DiscP1FunType& discsol, DROPS::instat_scalar_fun_ptr extsol,DROPS::IdxDescCL &ifaceidx, MatDescCL &A)
+{
+    //IdxDescCL* idx= const_cast<IdxDescCL*>( discsol.GetSolution()->RowIdx);
+    IdxDescCL* idx = &ifaceidx;
+    //MatDescCL A( idx, idx);
+    //SetupLBP1( discsol.GetMG(), &A, ls, lsbnd, 1.);
+    VecDescCL sol_vec( idx);
+    P1Init (extsol, sol_vec, discsol.GetMG(), discsol.GetTime());
+    // sol_vec.t= discsol.GetTime();
+    // SetupInterfaceRhsP1( discsol.GetMG(), &sol_vec, ls, lsbnd, extsol);
+    const VectorCL diff( discsol.GetSolution()->Data - sol_vec.Data);
+    return std::sqrt( dot(A.Data*diff, diff));
+}
+
+template<class DiscP1FunType>
+double H1_error_p2 (const DROPS::VecDescCL& ls, const BndDataCL<>& lsbnd,
+                 const DiscP1FunType& discsol, VecDescCL &sol_vec,DROPS::IdxDescCL &ifaceidx, MatDescCL &A)
+{
+    //IdxDescCL* idx= const_cast<IdxDescCL*>( discsol.GetSolution()->RowIdx);
+    //IdxDescCL* idx = &ifaceidx;
+    //MatDescCL A( idx, idx);
+    //SetupLBP1( discsol.GetMG(), &A, ls, lsbnd, 1.);
+    //VecDescCL sol_vec( idx);
+    //P2Init (extsol, sol_vec, discsol.GetMG(), discsol.GetTime());
+    // sol_vec.t= discsol.GetTime();
+    // SetupInterfaceRhsP1( discsol.GetMG(), &sol_vec, ls, lsbnd, extsol);
+    const VectorCL diff( discsol.GetSolution()->Data - sol_vec.Data);
+    return std::sqrt( dot(A.Data*diff, diff));
+}
+
 double L2_norm (const DROPS::MultiGridCL& mg, const DROPS::VecDescCL& ls, const BndDataCL<>& lsbnd,
                 DROPS::instat_scalar_fun_ptr extsol)
 {
@@ -1187,7 +1238,7 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     DROPS::WriteFEToFile( b, mg, "rhs_iface.txt", /*binary=*/ false);
 
 
-#if 0
+#if 1
     typedef DROPS::SSORPcCL SurfPcT;
     SurfPcT surfpc;
     typedef DROPS::PCGSolverCL<SurfPcT> SurfSolverT;
@@ -1197,7 +1248,7 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     std::cout << "Iter: " << surfsolver.GetIter() << "\tres: " << surfsolver.GetResid() << '\n';
 #endif
 
-#if 1
+#if 0
 //define direct solver
     DROPS::VecDescCL x( &ifaceidx);
     DROPS::DirectSymmSolverCL dsolver(L);
@@ -1225,10 +1276,13 @@ void StationaryStrategyP1 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     }
 #ifndef HighQuadP1
     double L2_err( L2_error( lset.Phi, lset.GetBndData(), make_P1Eval( mg, nobnd, xext), the_sol_fun));
+    //double H1_err= H1_error( lset.Phi, lset.GetBndData(), make_P1Eval( mg, nobnd, x), the_sol_fun,ifaceidx);
 #else
     double L2_err( L2_error_high_quad( lset.Phi, lset.GetBndData(), make_P1Eval( mg, nobnd, xext), the_sol_fun));
 #endif
-    std::cout << "L_2-error: " << L2_err << std::endl;
+    double H1_err= H1_error( lset.Phi, lset.GetBndData(), make_P1Eval( mg, nobnd, x), the_sol_fun,ifaceidx,A);
+    std::cout << "L_2-error: " << L2_err<<std::endl;
+    std::cout << "H_1-error: "<< H1_err <<std::endl;
 }
 
 /// \brief Accumulate L2-norms and errors on the higher order zero level.
@@ -2076,7 +2130,7 @@ public:
         return new InterfaceL2AccuDeformP2CL( *this);
     }
 };
-#define P2HIGH
+#define P2HIGHX
 void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DROPS::LevelsetP2CL& lset)
 {
 //std::cout << P << std::endl;
@@ -2247,6 +2301,11 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     TetraAccumulatorTupleCL err_accus;//final tetra error accumulator
     err_accus.push_back( &cdatap2);//push back cdata, include P2 element
     //444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
+
+ //       InterfaceL2AccuP2CLHighQuad (const InterfaceCommonDataP2CL& cdata, const MultiGridCL& mg_arg, std::string name= std::string())
+  //      : cdata_( cdata), mg( mg_arg), name_( name), fvd( 0), f( 0), f_time( 0.),  loc_lb( 1.), f_grad( 0), f_grad_time( 0.) {}
+
+
 #ifndef P2HIGH
     InterfaceL2AccuP2CL L2_accu( cdatap2, mg, "P2-solution");//interface L2 accumulator
 #else
@@ -2257,6 +2316,12 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     L2_accu.set_grad_function( the_sol_grad_fun, 0.);//set gradient for exact sol
     err_accus.push_back( &L2_accu);
     accumulate( err_accus, mg, ifacep2idx.TriangLevel(), ifacep2idx.GetBndInfo());//begin accumulating
+    DROPS::NoBndDataCL<> nobnd;
+    VecDescCL the_sol_vd( &lset.idx);
+    //LSInit( mg, the_sol_vd, the_sol_fun, /*t*/ 0.);
+    //double H1_err= H1_error_p2( lset.Phi, lset.GetBndData(), make_P2Eval( mg, nobnd, xp2), the_sol_vd,ifacep2idx,Ap2);
+    std::cout << "L_2-error: " << L2_accu.err_acc<<std::endl;
+//    std::cout << "H_1-error: "<< H1_err <<std::endl;
 #if 1
 //write out
     {
@@ -2270,10 +2335,7 @@ void StationaryStrategyP2 (DROPS::MultiGridCL& mg, DROPS::AdapTriangCL& adap, DR
     if (P.get<int>( "SurfTransp.SolutionOutput.Freq") > 0)//write to file
         DROPS::WriteFEToFile( xp2, mg, P.get<std::string>( "SurfTransp.SolutionOutput.Path") + "_p2", P.get<bool>( "SurfTransp.SolutionOutput.Binary"));
 
-    DROPS::NoBndDataCL<> nobnd;
     DROPS::NoBndDataCL<Point3DCL> nobnd_vec;
-    VecDescCL the_sol_vd( &lset.idx);
-    LSInit( mg, the_sol_vd, the_sol_fun, /*t*/ 0.);
     if (vtkwriter.get() != 0)
     {
         vtkwriter->Register( make_VTKScalar( lset.GetSolution(), "Levelset") );
@@ -2787,7 +2849,7 @@ int main (int argc, char* argv[])
                     false, /* <- P2DG */
                     -1,    /* <- level */
                     P.get<bool>("VTK.ReUseTimeFile")));
-        if (P.get<bool>( "SurfTransp.Exp.StationaryPDE"))
+        if(true)//(P.get<bool>( "SurfTransp.Exp.StationaryPDE"))
         {
             if (P.get<std::string>("LevelsetMapper.DeformationMethod") != "")
                 StationaryStrategyDeformationP2( mg, adap, lset);
